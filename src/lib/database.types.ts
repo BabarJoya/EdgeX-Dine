@@ -83,6 +83,52 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"floor_areas": {
+                  Row: {
+                    "branch_id": string,"created_at": string,"id": string,"name": string,"sort_order": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"created_at"?: string,"id"?: string,"name": string,"sort_order"?: number,"tenant_id": string
+                  }
+                  Update: {
+                    "branch_id"?: string,"created_at"?: string,"id"?: string,"name"?: string,"sort_order"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "floor_areas_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"guest_requests": {
+                  Row: {
+                    "acknowledged_at": string | null,"branch_id": string,"created_at": string,"handled_by": string | null,"id": string,"note": string,"resolved_at": string | null,"session_id": string | null,"status": Database["public"]['Enums']["guest_request_status"],"table_id": string,"tenant_id": string,"type": Database["public"]['Enums']["guest_request_type"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "acknowledged_at"?: string | null,"branch_id": string,"created_at"?: string,"handled_by"?: string | null,"id"?: string,"note"?: string,"resolved_at"?: string | null,"session_id"?: string | null,"status"?: Database["public"]['Enums']["guest_request_status"],"table_id": string,"tenant_id": string,"type": Database["public"]['Enums']["guest_request_type"]
+                  }
+                  Update: {
+                    "acknowledged_at"?: string | null,"branch_id"?: string,"created_at"?: string,"handled_by"?: string | null,"id"?: string,"note"?: string,"resolved_at"?: string | null,"session_id"?: string | null,"status"?: Database["public"]['Enums']["guest_request_status"],"table_id"?: string,"tenant_id"?: string,"type"?: Database["public"]['Enums']["guest_request_type"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "guest_requests_session_id_tenant_id_fkey"
+      columns: ["session_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "table_sessions"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "guest_requests_table_id_tenant_id_fkey"
+      columns: ["table_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "tables"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"kitchen_stations": {
                   Row: {
                     "created_at": string,"id": string,"is_active": boolean,"name": string,"sort_order": number,"tenant_id": string,"updated_at": string
@@ -187,6 +233,122 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
+    }
+                  ]
+                },"order_counters": {
+                  Row: {
+                    "branch_id": string,"business_date": string,"last_number": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"business_date": string,"last_number"?: number
+                  }
+                  Update: {
+                    "branch_id"?: string,"business_date"?: string,"last_number"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "order_counters_branch_id_fkey"
+      columns: ["branch_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"order_item_modifiers": {
+                  Row: {
+                    "group_name": string,"id": string,"modifier_id": string | null,"name": string,"order_item_id": string,"price_minor": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "group_name": string,"id"?: string,"modifier_id"?: string | null,"name": string,"order_item_id": string,"price_minor": number,"tenant_id": string
+                  }
+                  Update: {
+                    "group_name"?: string,"id"?: string,"modifier_id"?: string | null,"name"?: string,"order_item_id"?: string,"price_minor"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "order_item_modifiers_modifier_id_fkey"
+      columns: ["modifier_id"]
+isOneToOne: false
+      referencedRelation: "modifiers"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_item_modifiers_order_item_id_tenant_id_fkey"
+      columns: ["order_item_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"order_items": {
+                  Row: {
+                    "created_at": string,"id": string,"kitchen_station_id": string | null,"line_total_minor": number,"modifiers_minor": number,"name": string,"notes": string,"order_id": string,"product_id": string | null,"quantity": number,"status": Database["public"]['Enums']["order_status"],"tenant_id": string,"unit_price_minor": number,"variant_id": string | null,"variant_name": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"kitchen_station_id"?: string | null,"line_total_minor": number,"modifiers_minor"?: number,"name": string,"notes"?: string,"order_id": string,"product_id"?: string | null,"quantity": number,"status"?: Database["public"]['Enums']["order_status"],"tenant_id": string,"unit_price_minor": number,"variant_id"?: string | null,"variant_name"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"kitchen_station_id"?: string | null,"line_total_minor"?: number,"modifiers_minor"?: number,"name"?: string,"notes"?: string,"order_id"?: string,"product_id"?: string | null,"quantity"?: number,"status"?: Database["public"]['Enums']["order_status"],"tenant_id"?: string,"unit_price_minor"?: number,"variant_id"?: string | null,"variant_name"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "order_items_kitchen_station_id_fkey"
+      columns: ["kitchen_station_id"]
+isOneToOne: false
+      referencedRelation: "kitchen_stations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_items_order_id_tenant_id_fkey"
+      columns: ["order_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "order_items_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_items_variant_id_fkey"
+      columns: ["variant_id"]
+isOneToOne: false
+      referencedRelation: "product_variants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"orders": {
+                  Row: {
+                    "accepted_at": string | null,"branch_id": string,"business_date": string,"cancel_reason": string | null,"created_at": string,"created_by": string | null,"currency": string,"discount_minor": number,"id": string,"notes": string,"order_number": number,"ready_at": string | null,"served_at": string | null,"service_minor": number,"session_id": string | null,"source": Database["public"]['Enums']["order_source"],"status": Database["public"]['Enums']["order_status"],"subtotal_minor": number,"table_id": string | null,"tax_minor": number,"tenant_id": string,"total_minor": number,"type": Database["public"]['Enums']["order_type"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string | null,"branch_id": string,"business_date": string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency": string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number": number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source": Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id": string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                  }
+                  Update: {
+                    "accepted_at"?: string | null,"branch_id"?: string,"business_date"?: string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number"?: number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source"?: Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id"?: string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "orders_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "orders_session_id_tenant_id_fkey"
+      columns: ["session_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "table_sessions"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "orders_table_id_tenant_id_fkey"
+      columns: ["table_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "tables"
+      referencedColumns: ["id","tenant_id"]
     }
                   ]
                 },"permissions": {
@@ -427,6 +589,58 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"table_sessions": {
+                  Row: {
+                    "branch_id": string,"closed_at": string | null,"closed_by": string | null,"guest_token": string,"id": string,"opened_at": string,"status": Database["public"]['Enums']["session_status"],"table_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"closed_at"?: string | null,"closed_by"?: string | null,"guest_token"?: string,"id"?: string,"opened_at"?: string,"status"?: Database["public"]['Enums']["session_status"],"table_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "branch_id"?: string,"closed_at"?: string | null,"closed_by"?: string | null,"guest_token"?: string,"id"?: string,"opened_at"?: string,"status"?: Database["public"]['Enums']["session_status"],"table_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "table_sessions_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "table_sessions_table_id_tenant_id_fkey"
+      columns: ["table_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "tables"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"tables": {
+                  Row: {
+                    "area_id": string | null,"branch_id": string,"created_at": string,"id": string,"is_active": boolean,"label": string,"pos_x": number,"pos_y": number,"qr_token": string,"seats": number,"shape": Database["public"]['Enums']["table_shape"],"status": Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "area_id"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "area_id"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "tables_area_id_branch_id_fkey"
+      columns: ["area_id","branch_id"]
+isOneToOne: false
+      referencedRelation: "floor_areas"
+      referencedColumns: ["id","branch_id"]
+    },{
+      foreignKeyName: "tables_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"tenant_invites": {
                   Row: {
                     "accepted_at": string | null,"all_branches": boolean,"branch_ids": (string)[],"created_at": string,"email": string,"expires_at": string,"id": string,"invited_by": string | null,"role_id": string,"tenant_id": string,"token": string
@@ -502,8 +716,20 @@ isOneToOne: false
             "accept_invite":
 { Args: { "p_token": string }; Returns: string
                            },
+"close_table_session":
+{ Args: { "p_session_id": string }; Returns: undefined
+                           },
+"create_guest_request":
+{ Args: { "p_note"?: string,"p_table_token": string,"p_type": Database["public"]['Enums']["guest_request_type"] }; Returns: Json
+                           },
 "create_tenant":
 { Args: { "p_branch_name": string,"p_city"?: string,"p_country"?: string,"p_currency"?: string,"p_name": string,"p_slug": string,"p_timezone"?: string }; Returns: string
+                           },
+"get_guest_menu":
+{ Args: { "p_slug": string,"p_table_token"?: string }; Returns: Json
+                           },
+"get_guest_session":
+{ Args: { "p_guest_token": string }; Returns: Json
                            },
 "get_invite":
 { Args: { "p_token": string }; Returns: {
@@ -519,11 +745,20 @@ isOneToOne: false
 "my_permissions":
 { Args: { "p_tenant_id": string }; Returns: (string)[]
                            },
+"place_guest_order":
+{ Args: { "p_items": Json,"p_notes"?: string,"p_table_token": string }; Returns: Json
+                           },
+"regenerate_table_qr":
+{ Args: { "p_table_id": string }; Returns: string
+                           },
 "remove_member":
 { Args: { "p_member_id": string }; Returns: undefined
                            },
 "reorder_menu":
 { Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
+                           },
+"respond_guest_request":
+{ Args: { "p_request_id": string,"p_status": Database["public"]['Enums']["guest_request_status"] }; Returns: undefined
                            },
 "save_modifier_group":
 { Args: { "p_group": Json,"p_modifiers": Json }; Returns: string
@@ -534,12 +769,18 @@ isOneToOne: false
 "set_role_permissions":
 { Args: { "p_permissions": (string)[],"p_role_id": string }; Returns: undefined
                            },
+"set_table_status":
+{ Args: { "p_status": Database["public"]['Enums']["table_status"],"p_table_id": string }; Returns: undefined
+                           },
 "update_member":
 { Args: { "p_all_branches": boolean,"p_branch_ids"?: (string)[],"p_member_id": string,"p_role_id": string,"p_status"?: Database["public"]['Enums']["member_status"] }; Returns: undefined
+                           },
+"update_order_status":
+{ Args: { "p_order_id": string,"p_reason"?: string,"p_status": Database["public"]['Enums']["order_status"] }; Returns: undefined
                            }
           }
           Enums: {
-            "billing_cycle": "monthly"|"yearly","member_status": "active"|"disabled","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","tenant_status": "active"|"suspended"
+            "billing_cycle": "monthly"|"yearly","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","session_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -659,7 +900,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "billing_cycle": ["monthly", "yearly"],"member_status": ["active", "disabled"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"tenant_status": ["active", "suspended"]
+            "billing_cycle": ["monthly", "yearly"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"session_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"]
           }
         }
 } as const
