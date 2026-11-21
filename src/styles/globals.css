@@ -4,6 +4,7 @@
 @import '@fontsource/ibm-plex-sans/600.css';
 @import '@fontsource/ibm-plex-mono/400.css';
 @import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/noto-nastaliq-urdu/400.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -117,6 +118,7 @@
 @theme inline {
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-urdu: 'Noto Nastaliq Urdu', 'IBM Plex Sans', serif;
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
@@ -190,4 +192,14 @@
   ::selection {
     background: color-mix(in srgb, var(--link) 22%, transparent);
   }
+}
+
+/* Urdu (Nastaliq) needs taller lines than Latin text. */
+[lang='ur'] {
+  font-family: var(--font-urdu);
+  line-height: 2;
+}
+input[lang='ur'],
+textarea[lang='ur'] {
+  line-height: 1.9;
 }

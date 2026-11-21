@@ -68,6 +68,6 @@ Requires Docker.
 npm run db:start     # prints the local URL and anon key
 cp .env.example .env.local   # paste them in
 npm run dev
-npm run db:test      # 55 tenant-isolation / permission tests
+npm run db:test      # tenant-isolation, permission and menu tests
 npm run test:e2e     # browser tests against the local database
 ```

@@ -69,7 +69,7 @@ and kitchen screens that need it are built.
 
 ---
 
-## Phase 2 — Owner dashboard, branding & menu management (≈2 weeks)
+## Phase 2 — Owner dashboard, branding & menu management (≈2 weeks) ✅ Done
 
 **Tables:** `categories` (with subcategories via `parent_id`), `products`,
 `product_variants`, `modifier_groups`, `modifiers`, `product_modifier_groups`,
@@ -83,6 +83,13 @@ and kitchen screens that need it are built.
 - Simple owner dashboard home (KPIs filled in later).
 
 **Done when:** an owner can build a full real menu with Urdu translations, and branch-level prices or availability override the default.
+
+**Delivered:** menu builder (categories + subcategories, items with sizes,
+reusable add-on groups, kitchen stations, labels, photos resized in the
+browser, one-tap "sold out", Urdu names in Nastaliq, per-branch price and
+availability). 39 new database tests, including schema-wide guards that fail
+CI if any future table is missing RLS. Restaurant branding/profile was
+delivered in Phase 1 Settings.
 
 ---
 

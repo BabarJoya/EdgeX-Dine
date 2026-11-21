@@ -8,7 +8,6 @@ import {
   ReceiptText,
   ShieldCheck,
   Users,
-  UtensilsCrossed,
 } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
@@ -29,6 +28,7 @@ const UpcomingPage = lazy(() =>
   import('@/pages/app/upcoming').then((m) => ({ default: m.UpcomingPage })),
 )
 const StaffPage = lazy(() => named(import('@/pages/app/staff'), 'StaffPage'))
+const MenuPage = lazy(() => named(import('@/pages/app/menu'), 'MenuPage'))
 const SettingsPage = lazy(() => named(import('@/pages/app/settings'), 'SettingsPage'))
 const DesignSystemPage = lazy(() => named(import('@/pages/design-system'), 'DesignSystemPage'))
 const LoginPage = lazy(() => named(import('@/pages/auth/login'), 'LoginPage'))
@@ -73,14 +73,6 @@ const upcoming = [
     phase: 'Phase 3',
     description: 'Floor plan, table status and QR codes.',
     summary: 'Draw your floor plan, add tables and print a QR code card for each one.',
-  },
-  {
-    path: 'menu',
-    title: 'Menu',
-    icon: UtensilsCrossed,
-    phase: 'Phase 2',
-    description: 'Categories, items, variants and add-ons.',
-    summary: 'Build your menu once and use it on the QR menu, POS and online ordering.',
   },
   {
     path: 'customers',
@@ -135,6 +127,7 @@ export const router = createBrowserRouter(
             { index: true, element: s(<OverviewPage />) },
             { path: 'staff', element: s(<StaffPage />) },
             { path: 'settings', element: s(<SettingsPage />) },
+            { path: 'menu', element: s(<MenuPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
             ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],

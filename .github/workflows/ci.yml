@@ -14,8 +14,8 @@ jobs:
     name: Lint, typecheck, unit tests, build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -30,33 +30,33 @@ jobs:
     name: Database (migrations, lint, RLS tests)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          version: latest
-      - run: supabase db start
-      - run: supabase db lint --level warning --fail-on warning
-      - run: supabase test db
+          node-version: 22
+          cache: npm
+      # Supabase CLI comes from package-lock.json: same version as local dev.
+      - run: npm ci
+      - run: npx supabase db start
+      - run: npx supabase db lint --level warning --fail-on warning
+      - run: npx supabase test db
 
   e2e:
     name: End-to-end (real Supabase)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - name: Start Supabase (database, auth, API)
-        run: supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,mailpit,storage-api,realtime
+      - run: npm ci
+      - name: Start Supabase (database, auth, API, storage)
+        run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,mailpit,realtime
       - name: Point the app at local Supabase
         run: |
-          eval "$(supabase status -o env | grep -E '^(API_URL|ANON_KEY)=')"
+          eval "$(npx supabase status -o env | grep -E '^(API_URL|ANON_KEY)=')"
           echo "VITE_SUPABASE_URL=$API_URL" > .env.local
           echo "VITE_SUPABASE_ANON_KEY=$ANON_KEY" >> .env.local
-      - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
