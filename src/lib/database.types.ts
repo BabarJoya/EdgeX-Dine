@@ -149,6 +149,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"kitchen_tickets": {
+                  Row: {
+                    "accepted_at": string | null,"branch_id": string,"created_at": string,"id": string,"order_id": string,"priority": boolean,"ready_at": string | null,"started_at": string | null,"station_id": string | null,"station_key": string | null,"status": Database["public"]['Enums']["ticket_status"],"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "accepted_at"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"order_id": string,"priority"?: boolean,"ready_at"?: string | null,"started_at"?: string | null,"station_id"?: string | null,"station_key"?: never,"status"?: Database["public"]['Enums']["ticket_status"],"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "accepted_at"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"order_id"?: string,"priority"?: boolean,"ready_at"?: string | null,"started_at"?: string | null,"station_id"?: string | null,"station_key"?: never,"status"?: Database["public"]['Enums']["ticket_status"],"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "kitchen_tickets_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "kitchen_tickets_order_id_tenant_id_fkey"
+      columns: ["order_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "kitchen_tickets_station_id_fkey"
+      columns: ["station_id"]
+isOneToOne: false
+      referencedRelation: "kitchen_stations"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"member_branches": {
                   Row: {
                     "branch_id": string,"member_id": string,"tenant_id": string
@@ -617,14 +649,14 @@ isOneToOne: false
                   ]
                 },"tables": {
                   Row: {
-                    "area_id": string | null,"branch_id": string,"created_at": string,"id": string,"is_active": boolean,"label": string,"pos_x": number,"pos_y": number,"qr_token": string,"seats": number,"shape": Database["public"]['Enums']["table_shape"],"status": Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at": string
+                    "area_id": string | null,"branch_id": string,"created_at": string,"id": string,"is_active": boolean,"label": string,"pos_x": number,"pos_y": number,"qr_token": string,"seats": number,"shape": Database["public"]['Enums']["table_shape"],"status": Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at": string,"waiter_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "area_id"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at"?: string
+                    "area_id"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label": string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id": string,"updated_at"?: string,"waiter_id"?: string | null
                   }
                   Update: {
-                    "area_id"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id"?: string,"updated_at"?: string
+                    "area_id"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"label"?: string,"pos_x"?: number,"pos_y"?: number,"qr_token"?: string,"seats"?: number,"shape"?: Database["public"]['Enums']["table_shape"],"status"?: Database["public"]['Enums']["table_status"],"tenant_id"?: string,"updated_at"?: string,"waiter_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -716,6 +748,9 @@ isOneToOne: false
             "accept_invite":
 { Args: { "p_token": string }; Returns: string
                            },
+"assign_table_waiter":
+{ Args: { "p_table_id": string,"p_user_id": string }; Returns: undefined
+                           },
 "close_table_session":
 { Args: { "p_session_id": string }; Returns: undefined
                            },
@@ -742,11 +777,17 @@ isOneToOne: false
 "is_slug_available":
 { Args: { "p_slug": string }; Returns: boolean
                            },
+"merge_table_sessions":
+{ Args: { "p_from_session_id": string,"p_into_session_id": string }; Returns: undefined
+                           },
 "my_permissions":
 { Args: { "p_tenant_id": string }; Returns: (string)[]
                            },
 "place_guest_order":
 { Args: { "p_items": Json,"p_notes"?: string,"p_table_token": string }; Returns: Json
+                           },
+"place_staff_order":
+{ Args: { "p_items": Json,"p_notes"?: string,"p_table_id": string }; Returns: Json
                            },
 "regenerate_table_qr":
 { Args: { "p_table_id": string }; Returns: string
@@ -772,15 +813,24 @@ isOneToOne: false
 "set_table_status":
 { Args: { "p_status": Database["public"]['Enums']["table_status"],"p_table_id": string }; Returns: undefined
                            },
+"set_ticket_priority":
+{ Args: { "p_priority": boolean,"p_ticket_id": string }; Returns: undefined
+                           },
+"transfer_table_session":
+{ Args: { "p_session_id": string,"p_to_table_id": string }; Returns: undefined
+                           },
 "update_member":
 { Args: { "p_all_branches": boolean,"p_branch_ids"?: (string)[],"p_member_id": string,"p_role_id": string,"p_status"?: Database["public"]['Enums']["member_status"] }; Returns: undefined
                            },
 "update_order_status":
 { Args: { "p_order_id": string,"p_reason"?: string,"p_status": Database["public"]['Enums']["order_status"] }; Returns: undefined
+                           },
+"update_ticket_status":
+{ Args: { "p_status": Database["public"]['Enums']["ticket_status"],"p_ticket_id": string }; Returns: undefined
                            }
           }
           Enums: {
-            "billing_cycle": "monthly"|"yearly","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","session_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended"
+            "billing_cycle": "monthly"|"yearly","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","session_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended","ticket_status": "new"|"accepted"|"preparing"|"ready"|"served"|"cancelled"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -900,7 +950,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "billing_cycle": ["monthly", "yearly"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"session_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"]
+            "billing_cycle": ["monthly", "yearly"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"session_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"],"ticket_status": ["new", "accepted", "preparing", "ready", "served", "cancelled"]
           }
         }
 } as const
