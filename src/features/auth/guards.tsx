@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AccountGate } from '@/features/platform/account-status'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { useAuth } from './auth-provider'
 
@@ -32,7 +33,7 @@ export function RequireTenant({ children }: { children?: ReactNode }) {
   const { membership, loading } = useTenant()
   if (loading) return <FullPageLoader />
   if (!membership) return <Navigate to="/onboarding" replace />
-  return children ?? <Outlet />
+  return <AccountGate>{children ?? <Outlet />}</AccountGate>
 }
 
 /** Auth pages: send signed-in users on to where they were going. */

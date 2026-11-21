@@ -531,7 +531,8 @@ as $$
 begin
   perform private.assert_platform_admin();
   update public.platform_settings set require_approval = p_require_approval, grace_days = p_grace_days,
-    support_email = nullif(trim(p_support_email), ''), updated_at = now();
+    support_email = nullif(trim(p_support_email), ''), updated_at = now()
+  where id;  -- single-row table; the API rejects UPDATE without WHERE
 end;
 $$;
 

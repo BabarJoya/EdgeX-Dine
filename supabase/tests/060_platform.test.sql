@@ -34,6 +34,10 @@ grant all on tests.ids to authenticated, anon;
 create function tests.id(k text) returns uuid language sql as $$ select v::uuid from tests.ids where ids.k = id.k $$;
 create function tests.v(k text) returns text language sql as $$ select v from tests.ids where ids.k = v.k $$;
 grant execute on all functions in schema tests to authenticated, anon;
+-- Baselines: the database may already hold other restaurants (e.g. from browser tests).
+insert into tests.ids values ('base_active', (select count(*) from public.tenants where status = 'active')::text);
+insert into tests.ids values ('base_all', (select count(*) from public.tenants)::text);
+insert into tests.ids values ('base_audit', (select count(*) from public.audit_logs where action = 'platform_status')::text);
 
 -- Fixtures --------------------------------------------------------------------
 select tests.act_as('00000000-0000-0000-0000-00000000a111');
@@ -61,10 +65,10 @@ select is((select min(price_monthly_minor) from public.subscription_plans), 4999
 select throws_ok($$ update public.profiles set is_platform_admin = true where id = auth.uid() $$, '42501', null, 'or make themselves admin');
 
 select tests.act_as('00000000-0000-0000-0000-0000000000ad');
-select is((public.admin_overview() -> 'tenants' ->> 'active')::int, 2, 'admin sees platform totals');
-select is(jsonb_array_length(public.admin_list_tenants()), 2, 'admin lists all restaurants');
-select is(jsonb_array_length(public.admin_list_tenants('lahore')), 1, 'and can search them');
-select is((public.admin_list_tenants('karachi') -> 0 ->> 'owner_email'), 'ali@karachigrill.pk', 'with the owner''s email');
+select is((public.admin_overview() -> 'tenants' ->> 'active')::int, tests.v('base_active')::int + 2, 'admin sees platform totals');
+select is(jsonb_array_length(public.admin_list_tenants()), least(500, tests.v('base_all')::int + 2), 'admin lists all restaurants');
+select is(jsonb_array_length(public.admin_list_tenants('lahore-bites')), 1, 'and can search them');
+select is((public.admin_list_tenants('karachi-grill') -> 0 ->> 'owner_email'), 'ali@karachigrill.pk', 'with the owner''s email');
 select is(jsonb_array_length(public.admin_tenant_detail(tests.id('t_ali')) -> 'members'), 2, 'restaurant detail shows its team');
 select is((select count(*)::int from public.orders), 0, 'admin cannot read restaurants'' orders directly (support view only)');
 
@@ -79,7 +83,7 @@ select throws_ok(format($$ select public.place_guest_order(%L, '[{"product_id":"
   'P0002', null, 'guests cannot order at a suspended restaurant');
 select tests.act_as('00000000-0000-0000-0000-0000000000ad');
 select public.admin_set_tenant_status(tests.id('t_ali'), 'active', 'Paid');
-select ok((select count(*) from public.audit_logs where action = 'platform_status') = 2, 'status changes are audited with reasons');
+select ok((select count(*) from public.audit_logs where action = 'platform_status') = tests.v('base_audit')::int + 2, 'status changes are audited with reasons');
 
 -- Expiry → read-only -------------------------------------------------------------------
 select public.admin_set_subscription(tests.id('t_ali'), (select id from public.subscription_plans where code = 'professional'),

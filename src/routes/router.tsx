@@ -1,4 +1,4 @@
-import { ChartColumn, ChefHat, Package, ShieldCheck, Users } from 'lucide-react'
+import { ChartColumn, Package, Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -38,9 +38,15 @@ const KitchenPage = lazy(() => named(import('@/pages/ops/kitchen'), 'KitchenPage
 const WaiterPage = lazy(() => named(import('@/pages/ops/waiter'), 'WaiterPage'))
 const PosPage = lazy(() => named(import('@/pages/ops/pos'), 'PosPage'))
 const ReceiptPage = lazy(() => named(import('@/pages/receipt'), 'ReceiptPage'))
-const StationPlaceholder = lazy(() =>
-  import('@/pages/ops/station-placeholder').then((m) => ({ default: m.StationPlaceholder })),
+const AdminLayout = lazy(() => named(import('@/pages/admin/admin'), 'AdminLayout'))
+const AdminOverviewPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminOverviewPage'))
+const AdminRestaurantsPage = lazy(() =>
+  named(import('@/pages/admin/admin'), 'AdminRestaurantsPage'),
 )
+const AdminPlansPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminPlansPage'))
+const AdminSupportPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSupportPage'))
+const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSettingsPage'))
+const SupportPage = lazy(() => named(import('@/pages/app/support'), 'SupportPage'))
 const GuestMenuPage = lazy(() => named(import('@/pages/guest/guest-menu'), 'GuestMenuPage'))
 
 function PageFallback() {
@@ -81,12 +87,6 @@ const upcoming = [
   },
 ]
 
-const station = (name: string, icon: typeof ChefHat, phase: string, summary: string) => (
-  <RequireAuth>
-    {s(<StationPlaceholder name={name} icon={icon} phase={phase} summary={summary} />)}
-  </RequireAuth>
-)
-
 export const router = createBrowserRouter(
   isSupabaseConfigured
     ? [
@@ -111,6 +111,7 @@ export const router = createBrowserRouter(
             { path: 'menu', element: s(<MenuPage />) },
             { path: 'tables', element: s(<TablesPage />) },
             { path: 'orders', element: s(<OrdersPage />) },
+            { path: 'support', element: s(<SupportPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
             ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],
@@ -150,12 +151,14 @@ export const router = createBrowserRouter(
         },
         {
           path: '/admin',
-          element: station(
-            'Platform admin',
-            ShieldCheck,
-            'Phase 6',
-            'Manage restaurants, subscription plans and platform billing.',
-          ),
+          element: <RequireAuth>{s(<AdminLayout />)}</RequireAuth>,
+          children: [
+            { index: true, element: s(<AdminOverviewPage />) },
+            { path: 'restaurants', element: s(<AdminRestaurantsPage />) },
+            { path: 'plans', element: s(<AdminPlansPage />) },
+            { path: 'support', element: s(<AdminSupportPage />) },
+            { path: 'settings', element: s(<AdminSettingsPage />) },
+          ],
         },
         { path: '/m/:slug', element: s(<GuestMenuPage />) },
         { path: '*', element: <NotFoundPage /> },

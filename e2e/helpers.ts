@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
 
@@ -61,4 +62,15 @@ export const asGuest = {
       headers: { apikey: ANON, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     }),
+}
+
+/**
+ * Direct SQL on the local test database, for setup the app deliberately
+ * cannot do (e.g. making someone a platform admin).
+ */
+export function sql(query: string) {
+  const url = process.env.TEST_DB_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+  return execFileSync('psql', [url, '-v', 'ON_ERROR_STOP=1', '-qtAc', query], {
+    encoding: 'utf8',
+  }).trim()
 }

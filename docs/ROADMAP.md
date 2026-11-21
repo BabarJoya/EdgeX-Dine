@@ -184,7 +184,7 @@ Phase 6 starts.
 
 ---
 
-## Phase 6 — Super Admin, subscriptions & plan gating (≈2 weeks)
+## Phase 6 — Super Admin, subscriptions & plan gating (≈2 weeks) ✅ Done
 
 - **Super Admin panel** (`/admin`): list of tenants, approve or suspend, impersonate with an audit trail, platform activity, global settings.
 - Plan builder: prices (PKR / USD), monthly or yearly, trial days, limits (branches, tables, staff, monthly orders), feature flags (KDS, online ordering, inventory, reports, custom branding, API).
@@ -194,6 +194,20 @@ Phase 6 starts.
 - Starter / Professional / Enterprise plans seeded as configurable data, not hard-coded.
 
 **Done when:** a suspended or expired tenant loses access correctly, and plan limits are enforced in the database even when the API is called directly.
+
+**Delivered:** platform console (/admin) with overview and MRR, restaurant
+search and detail, approve / suspend / reactivate with audited reasons,
+manual payments (bank, Raast, JazzCash, Easypaisa, cash) that extend the
+paid period, trial extensions, plan builder (prices, limits, features,
+trial plan), support inbox, platform settings (approval, grace period).
+Restaurants: plan comparison and change requests, payment history, Help &
+support, awaiting-approval / suspended screens, trial-ending and read-only
+banners. Expired plans go read-only after the grace period (view and renew
+only, no orders or payments, guests cannot order); kitchen display is gated
+by plan. 41 new database tests. **Not done:** signing in _as_ a restaurant
+(impersonation) needs a server-side function with the service-role key and
+an audit trail; the read-only restaurant detail covers support for now.
+Automatic card billing comes with the Phase 8 payment gateway.
 
 ---
 

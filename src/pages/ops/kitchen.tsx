@@ -1,5 +1,6 @@
 import { ChefHat, Flag, RotateCcw, Volume2, VolumeX } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { StationLayout } from '@/components/layout/station-layout'
 import { RequirePerm } from '@/components/require-perm'
@@ -15,6 +16,8 @@ import {
   type Ticket,
 } from '@/features/kitchen/api'
 import { useMenu } from '@/features/menu/api'
+import { hasFeature } from '@/features/platform/features'
+import { useTenantAccess } from '@/features/platform/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { ChooseBranch } from '@/pages/app/tables'
 import { errorMessage } from '@/lib/errors'
@@ -25,7 +28,26 @@ import { cn } from '@/lib/utils'
 const NONE = 'none'
 
 export function KitchenPage() {
-  const { branch } = useTenant()
+  const { branch, tenantId } = useTenant()
+  const access = useTenantAccess(tenantId)
+  if (access.data && !hasFeature(access.data.features, 'kds')) {
+    return (
+      <StationLayout title="Kitchen display">
+        <main className="grid flex-1 place-items-center p-6">
+          <EmptyState
+            icon={ChefHat}
+            title="The kitchen display isn't in your plan"
+            description="Upgrade to Professional to send orders to kitchen screens by station, with timers and sound alerts."
+            action={
+              <Button asChild>
+                <Link to="/app/settings?tab=plan">See plans</Link>
+              </Button>
+            }
+          />
+        </main>
+      </StationLayout>
+    )
+  }
   return (
     <RequirePerm any={['kitchen.view']}>
       <KitchenScreen key={branch?.id ?? 'all'} />

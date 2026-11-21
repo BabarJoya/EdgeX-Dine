@@ -2,6 +2,7 @@ import { PanelLeft } from 'lucide-react'
 import { useState } from 'react'
 import { Outlet } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { AccountBanner } from '@/features/platform/account-status'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { BranchSwitcher, TenantSwitcher } from './context-switcher'
 import { SidebarContent } from './sidebar'
@@ -53,6 +54,8 @@ export function AppShell() {
         <div className="flex border-b px-4 py-2 sm:hidden">
           <BranchSwitcher />
         </div>
+
+        <AccountBanner />
 
         <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />

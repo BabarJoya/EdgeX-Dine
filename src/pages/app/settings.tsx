@@ -1,5 +1,6 @@
 import { MapPin, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { RequirePerm } from '@/components/require-perm'
 import { Alert } from '@/components/ui/alert'
@@ -42,16 +43,17 @@ import {
   useUpdateTenant,
   type BranchInput,
 } from '@/features/settings/api'
+import { PlanTab } from '@/features/platform/plan-tab'
 import { BillingSettings } from '@/features/pos/billing-settings'
-import { useBranches, useSubscription } from '@/features/tenant/api'
+import { useBranches } from '@/features/tenant/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { errorMessage } from '@/lib/errors'
 import { SLUG_PATTERN } from '@/lib/slug'
 import type { Tables } from '@/lib/supabase'
-import { daysUntil, formatMoney } from '@/lib/utils'
 
 export function SettingsPage() {
   const { can } = useTenant()
+  const [params] = useSearchParams()
   const tabs = [
     can('settings.manage') && { value: 'restaurant', label: 'Restaurant' },
     can('branches.manage') && { value: 'branches', label: 'Branches' },
@@ -62,7 +64,7 @@ export function SettingsPage() {
   return (
     <RequirePerm any={['settings.manage', 'branches.manage', 'billing.manage']}>
       <PageHeader title="Settings" description="Restaurant profile, branches and subscription." />
-      <Tabs defaultValue={tabs[0].value}>
+      <Tabs defaultValue={tabs.find((t) => t.value === params.get('tab'))?.value ?? tabs[0].value}>
         <TabsList>
           {tabs.map((t) => (
             <TabsTrigger key={t.value} value={t.value}>
@@ -361,55 +363,5 @@ function BranchDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function PlanTab() {
-  const { tenantId } = useTenant()
-  const sub = useSubscription(tenantId)
-  if (sub.isPending) return <Skeleton className="h-40 w-full max-w-2xl" />
-  if (!sub.data) return <EmptyState icon={MapPin} title="No subscription found" />
-  const plan = sub.data.subscription_plans
-  const limits = plan.limits as Record<string, number>
-  const trialDaysLeft = sub.data.trial_ends_at ? daysUntil(sub.data.trial_ends_at) : null
-
-  return (
-    <Card className="max-w-2xl">
-      <CardHeader className="flex-row items-start justify-between gap-4">
-        <div>
-          <CardTitle>{plan.name} plan</CardTitle>
-          <CardDescription>{plan.description}</CardDescription>
-        </div>
-        <Badge
-          variant={
-            sub.data.status === 'trialing'
-              ? 'warning'
-              : sub.data.status === 'active'
-                ? 'success'
-                : 'destructive'
-          }
-        >
-          {sub.data.status === 'trialing' ? `Trial · ${trialDaysLeft} days left` : sub.data.status}
-        </Badge>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="text-2xl font-semibold tabular-nums">
-          {formatMoney(plan.price_monthly_minor, plan.currency)}
-          <span className="text-sm font-normal text-muted-foreground"> / month</span>
-        </div>
-        <dl className="grid grid-cols-3 gap-3 text-sm">
-          {(['branches', 'tables', 'staff'] as const).map((k) => (
-            <div key={k} className="rounded-md bg-muted/60 px-3 py-2">
-              <dt className="text-xs text-muted-foreground capitalize">{k}</dt>
-              <dd className="font-medium tabular-nums">{limits[k] ?? 'Unlimited'}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="text-[13px] text-muted-foreground">
-          Plan changes and online billing arrive in Phase 6. Until then, contact EdgeX support to
-          upgrade.
-        </p>
-      </CardContent>
-    </Card>
   )
 }

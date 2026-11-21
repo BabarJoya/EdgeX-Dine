@@ -2,7 +2,7 @@ import { NavLink } from 'react-router'
 import { cn } from '@/lib/utils'
 import { Logo } from './logo'
 import { useTenant } from '@/features/tenant/tenant-provider'
-import { ownerNav, settingsNav, visible, type NavItem } from './nav'
+import { ownerNav, settingsNav, supportNav, visible, type NavItem } from './nav'
 
 function SidebarLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const Icon = item.icon
@@ -62,11 +62,10 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      {visible(settingsNav, can) && (
-        <div className="border-t border-sidebar-border px-3 py-3">
-          <SidebarLink item={settingsNav} onNavigate={onNavigate} />
-        </div>
-      )}
+      <div className="grid gap-0.5 border-t border-sidebar-border px-3 py-3">
+        <SidebarLink item={supportNav} onNavigate={onNavigate} />
+        {visible(settingsNav, can) && <SidebarLink item={settingsNav} onNavigate={onNavigate} />}
+      </div>
     </div>
   )
 }

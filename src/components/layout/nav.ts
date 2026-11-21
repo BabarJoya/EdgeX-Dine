@@ -7,6 +7,7 @@ import {
   MonitorPlay,
   Package,
   ReceiptText,
+  LifeBuoy,
   Settings,
   UserCog,
   Users,
@@ -68,3 +69,5 @@ export const settingsNav: NavItem = {
 export function visible(item: NavItem, can: (perm: string) => boolean) {
   return !item.perms || item.perms.some(can)
 }
+
+export const supportNav: NavItem = { label: 'Help & support', to: '/app/support', icon: LifeBuoy }

@@ -1,4 +1,5 @@
-import { KeyRound, LogOut } from 'lucide-react'
+import { KeyRound, LogOut, ShieldCheck } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import {
   DropdownMenu,
@@ -9,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/features/auth/auth-provider'
+import { useIsPlatformAdmin } from '@/features/platform/api'
 import { SetPinDialog } from '@/features/pos/cashier-gate'
 import { useTenant } from '@/features/tenant/tenant-provider'
 
@@ -21,6 +23,8 @@ export function UserMenu() {
   const { user, signOut } = useAuth()
   const { membership, can } = useTenant()
   const [pinOpen, setPinOpen] = useState(false)
+  const isAdmin = useIsPlatformAdmin()
+  const navigate = useNavigate()
   const name = (user?.user_metadata?.full_name as string | undefined) || user?.email || ''
 
   return (
@@ -41,6 +45,11 @@ export function UserMenu() {
             )}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {isAdmin.data && (
+            <DropdownMenuItem onSelect={() => navigate('/admin')}>
+              <ShieldCheck /> Platform admin
+            </DropdownMenuItem>
+          )}
           {can('pos.use') && (
             <DropdownMenuItem onSelect={() => setPinOpen(true)}>
               <KeyRound /> Set POS PIN
