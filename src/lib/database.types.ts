@@ -57,6 +57,52 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"categories": {
+                  Row: {
+                    "created_at": string,"description": string,"id": string,"image_path": string | null,"is_active": boolean,"name": string,"parent_id": string | null,"sort_order": number,"tenant_id": string,"translations": NonNullable<Json>,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string,"id"?: string,"image_path"?: string | null,"is_active"?: boolean,"name": string,"parent_id"?: string | null,"sort_order"?: number,"tenant_id": string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string,"id"?: string,"image_path"?: string | null,"is_active"?: boolean,"name"?: string,"parent_id"?: string | null,"sort_order"?: number,"tenant_id"?: string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "categories_parent_id_tenant_id_fkey"
+      columns: ["parent_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "categories_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"kitchen_stations": {
+                  Row: {
+                    "created_at": string,"id": string,"is_active": boolean,"name": string,"sort_order": number,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"name": string,"sort_order"?: number,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"sort_order"?: number,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "kitchen_stations_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"member_branches": {
                   Row: {
                     "branch_id": string,"member_id": string,"tenant_id": string
@@ -80,6 +126,46 @@ isOneToOne: false
       columns: ["member_id","tenant_id"]
 isOneToOne: false
       referencedRelation: "tenant_members"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"modifier_groups": {
+                  Row: {
+                    "created_at": string,"id": string,"max_select": number,"min_select": number,"name": string,"sort_order": number,"tenant_id": string,"translations": NonNullable<Json>,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"max_select"?: number,"min_select"?: number,"name": string,"sort_order"?: number,"tenant_id": string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"max_select"?: number,"min_select"?: number,"name"?: string,"sort_order"?: number,"tenant_id"?: string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "modifier_groups_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"modifiers": {
+                  Row: {
+                    "group_id": string,"id": string,"is_available": boolean,"name": string,"price_minor": number,"sort_order": number,"tenant_id": string,"translations": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "group_id": string,"id"?: string,"is_available"?: boolean,"name": string,"price_minor"?: number,"sort_order"?: number,"tenant_id": string,"translations"?: NonNullable<Json>
+                  }
+                  Update: {
+                    "group_id"?: string,"id"?: string,"is_available"?: boolean,"name"?: string,"price_minor"?: number,"sort_order"?: number,"tenant_id"?: string,"translations"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "modifiers_group_id_tenant_id_fkey"
+      columns: ["group_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "modifier_groups"
       referencedColumns: ["id","tenant_id"]
     }
                   ]
@@ -116,6 +202,110 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"product_branch_overrides": {
+                  Row: {
+                    "branch_id": string,"is_available": boolean | null,"price_minor": number | null,"product_id": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"is_available"?: boolean | null,"price_minor"?: number | null,"product_id": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "branch_id"?: string,"is_available"?: boolean | null,"price_minor"?: number | null,"product_id"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_branch_overrides_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "product_branch_overrides_product_id_tenant_id_fkey"
+      columns: ["product_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"product_modifier_groups": {
+                  Row: {
+                    "group_id": string,"product_id": string,"sort_order": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "group_id": string,"product_id": string,"sort_order"?: number,"tenant_id": string
+                  }
+                  Update: {
+                    "group_id"?: string,"product_id"?: string,"sort_order"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_modifier_groups_group_id_tenant_id_fkey"
+      columns: ["group_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "modifier_groups"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "product_modifier_groups_product_id_tenant_id_fkey"
+      columns: ["product_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"product_variants": {
+                  Row: {
+                    "id": string,"is_default": boolean,"name": string,"price_minor": number,"product_id": string,"sort_order": number,"tenant_id": string,"translations": NonNullable<Json>
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"is_default"?: boolean,"name": string,"price_minor": number,"product_id": string,"sort_order"?: number,"tenant_id": string,"translations"?: NonNullable<Json>
+                  }
+                  Update: {
+                    "id"?: string,"is_default"?: boolean,"name"?: string,"price_minor"?: number,"product_id"?: string,"sort_order"?: number,"tenant_id"?: string,"translations"?: NonNullable<Json>
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_variants_product_id_tenant_id_fkey"
+      columns: ["product_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"products": {
+                  Row: {
+                    "category_id": string,"compare_at_price_minor": number | null,"created_at": string,"description": string,"id": string,"image_path": string | null,"is_active": boolean,"is_available": boolean,"kitchen_station_id": string | null,"name": string,"prep_time_minutes": number | null,"price_minor": number,"sku": string | null,"sort_order": number,"tags": (string)[],"tenant_id": string,"translations": NonNullable<Json>,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"compare_at_price_minor"?: number | null,"created_at"?: string,"description"?: string,"id"?: string,"image_path"?: string | null,"is_active"?: boolean,"is_available"?: boolean,"kitchen_station_id"?: string | null,"name": string,"prep_time_minutes"?: number | null,"price_minor"?: number,"sku"?: string | null,"sort_order"?: number,"tags"?: (string)[],"tenant_id": string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Update: {
+                    "category_id"?: string,"compare_at_price_minor"?: number | null,"created_at"?: string,"description"?: string,"id"?: string,"image_path"?: string | null,"is_active"?: boolean,"is_available"?: boolean,"kitchen_station_id"?: string | null,"name"?: string,"prep_time_minutes"?: number | null,"price_minor"?: number,"sku"?: string | null,"sort_order"?: number,"tags"?: (string)[],"tenant_id"?: string,"translations"?: NonNullable<Json>,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "products_category_id_tenant_id_fkey"
+      columns: ["category_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "products_kitchen_station_id_tenant_id_fkey"
+      columns: ["kitchen_station_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "kitchen_stations"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "products_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"profiles": {
                   Row: {
@@ -331,6 +521,15 @@ isOneToOne: false
                            },
 "remove_member":
 { Args: { "p_member_id": string }; Returns: undefined
+                           },
+"reorder_menu":
+{ Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
+                           },
+"save_modifier_group":
+{ Args: { "p_group": Json,"p_modifiers": Json }; Returns: string
+                           },
+"save_product":
+{ Args: { "p_group_ids"?: (string)[],"p_product": Json,"p_variants"?: Json }; Returns: string
                            },
 "set_role_permissions":
 { Args: { "p_permissions": (string)[],"p_role_id": string }; Returns: undefined
