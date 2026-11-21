@@ -60,7 +60,9 @@ export function TenantProvider({ children }: { children: ReactNode }) {
   const [branchChoice, setBranchChoice] = useState<Record<string, string>>({})
   const stored = tenantId ? (branchChoice[tenantId] ?? read(branchKey(tenantId))) : null
   let branchId: string | null
-  if (stored && branches.some((b) => b.id === stored)) branchId = stored
+  // A single-branch restaurant never needs "All branches".
+  if (branches.length === 1) branchId = branches[0].id
+  else if (stored && branches.some((b) => b.id === stored)) branchId = stored
   else if (stored === 'all' && membership?.all_branches) branchId = null
   else branchId = membership?.all_branches ? null : (branches[0]?.id ?? null)
 

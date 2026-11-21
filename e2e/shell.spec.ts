@@ -16,9 +16,11 @@ test('wrong password shows a clear error', async ({ page }) => {
   await expect(page.getByText('Wrong email or password.')).toBeVisible()
 })
 
-test('guest QR menu is public and has no staff navigation', async ({ page }) => {
-  await page.goto('/m/demo-restaurant')
-  await expect(page.getByText('demo-restaurant')).toBeVisible()
+test('guest QR menu is public, handles unknown restaurants, and has no staff navigation', async ({
+  page,
+}) => {
+  await page.goto('/m/no-such-restaurant')
+  await expect(page.getByRole('heading', { name: 'Menu not found' })).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Main' })).toHaveCount(0)
 })
 

@@ -64,7 +64,7 @@ export function BranchSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuLabel>Branch</DropdownMenuLabel>
-        {canSeeAll && (
+        {canSeeAll && branches.length > 1 && (
           <DropdownMenuItem onSelect={() => setBranchId(null)}>
             <span className="flex-1">All branches</span>
             {branchId === null && <Check className="!text-foreground" />}

@@ -15,3 +15,13 @@ describe('formatMoney', () => {
     expect(formatMoney(1999, 'USD', 'en-US')).toBe('$19.99')
   })
 })
+
+import { ageLabel } from './time'
+describe('ageLabel', () => {
+  const now = Date.parse('2026-11-21T12:00:00Z')
+  it('reads naturally', () => {
+    expect(ageLabel('2026-11-21T11:59:40Z', now)).toBe('just now')
+    expect(ageLabel('2026-11-21T11:55:00Z', now)).toBe('5 min ago')
+    expect(ageLabel('2026-11-21T10:30:00Z', now)).toBe('1 h 30 min ago')
+  })
+})

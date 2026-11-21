@@ -51,8 +51,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Start Supabase (database, auth, API, storage)
-        run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,mailpit,realtime
+      - name: Start Supabase (database, auth, API, storage, realtime)
+        run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,mailpit
       - name: Point the app at local Supabase
         run: |
           eval "$(npx supabase status -o env | grep -E '^(API_URL|ANON_KEY)=')"

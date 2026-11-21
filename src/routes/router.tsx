@@ -1,11 +1,9 @@
 import {
-  Armchair,
   ChartColumn,
   ChefHat,
   HandPlatter,
   MonitorPlay,
   Package,
-  ReceiptText,
   ShieldCheck,
   Users,
 } from 'lucide-react'
@@ -29,6 +27,9 @@ const UpcomingPage = lazy(() =>
 )
 const StaffPage = lazy(() => named(import('@/pages/app/staff'), 'StaffPage'))
 const MenuPage = lazy(() => named(import('@/pages/app/menu'), 'MenuPage'))
+const TablesPage = lazy(() => named(import('@/pages/app/tables'), 'TablesPage'))
+const OrdersPage = lazy(() => named(import('@/pages/app/orders'), 'OrdersPage'))
+const PrintQrPage = lazy(() => named(import('@/pages/print-qr'), 'PrintQrPage'))
 const SettingsPage = lazy(() => named(import('@/pages/app/settings'), 'SettingsPage'))
 const DesignSystemPage = lazy(() => named(import('@/pages/design-system'), 'DesignSystemPage'))
 const LoginPage = lazy(() => named(import('@/pages/auth/login'), 'LoginPage'))
@@ -58,22 +59,6 @@ function PageFallback() {
 const s = (node: ReactNode) => <Suspense fallback={<PageFallback />}>{node}</Suspense>
 
 const upcoming = [
-  {
-    path: 'orders',
-    title: 'Orders',
-    icon: ReceiptText,
-    phase: 'Phase 3',
-    description: 'Every dine-in, takeaway and delivery order.',
-    summary: 'Orders from the QR menu, waiters and the POS will be listed here with live status.',
-  },
-  {
-    path: 'tables',
-    title: 'Tables',
-    icon: Armchair,
-    phase: 'Phase 3',
-    description: 'Floor plan, table status and QR codes.',
-    summary: 'Draw your floor plan, add tables and print a QR code card for each one.',
-  },
   {
     path: 'customers',
     title: 'Customers',
@@ -128,9 +113,19 @@ export const router = createBrowserRouter(
             { path: 'staff', element: s(<StaffPage />) },
             { path: 'settings', element: s(<SettingsPage />) },
             { path: 'menu', element: s(<MenuPage />) },
+            { path: 'tables', element: s(<TablesPage />) },
+            { path: 'orders', element: s(<OrdersPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
             ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],
+        },
+        {
+          path: '/print/qr',
+          element: (
+            <RequireAuth>
+              <RequireTenant>{s(<PrintQrPage />)}</RequireTenant>
+            </RequireAuth>
+          ),
         },
         {
           path: '/pos',

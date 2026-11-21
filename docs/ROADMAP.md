@@ -93,7 +93,7 @@ delivered in Phase 1 Settings.
 
 ---
 
-## Phase 3 — Tables, QR codes & guest ordering ⭐ (≈2–3 weeks)
+## Phase 3 — Tables, QR codes & guest ordering ⭐ (≈2–3 weeks) ✅ Done
 
 **Tables:** `floor_areas`, `tables` (with `qr_token`, `status`, `position`),
 `table_sessions`, `qr_codes` (also covers the restaurant-wide menu QR), `orders`,
@@ -106,6 +106,17 @@ delivered in Phase 1 Settings.
 - Guest Zone: current-session order history, live status tracking (Broadcast), call waiter (Assistance / Water / Napkins / Bill / Other), request bill, feedback.
 
 **Done when:** a guest on a cheap Android phone over 3G can scan, order, and see the status change in under about 2 seconds, and tampered prices or tokens are rejected (with tests).
+
+**Delivered:** areas, tables with drag-to-arrange floor plan and statuses,
+printable A4 QR cards (English + Urdu), QR regeneration, guest menu in
+English/Urdu (RTL) with brand colour, sizes and add-on rules, cart, order
+tracking, call waiter / water / napkins / bill; staff Orders page with live
+updates (Supabase Realtime) and guest requests; close table. All prices are
+computed in the database; 47 new database tests cover tampering, flooding,
+cross-tenant items and branch scope. **Adjusted:** guest order tracking
+refreshes every 4 seconds (robust on weak mobile data) instead of a push
+channel; staff screens are instant. Table transfer/merge moves to Phase 4
+with the waiter app; tax and service charge are applied at billing (Phase 5).
 
 ---
 
