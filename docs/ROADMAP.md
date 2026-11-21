@@ -120,7 +120,7 @@ with the waiter app; tax and service charge are applied at billing (Phase 5).
 
 ---
 
-## Phase 4 — Kitchen Display & Waiter app ⭐ (≈2 weeks)
+## Phase 4 — Kitchen Display & Waiter app ⭐ (≈2 weeks) ✅ Done
 
 **Tables:** `kitchen_tickets`, `kitchen_ticket_items`, `order_status_events`.
 
@@ -131,6 +131,18 @@ with the waiter app; tax and service charge are applied at billing (Phase 5).
 - Reconnection handling: when a realtime connection comes back, the screen re-fetches the current state so no tickets are missed.
 
 **Done when:** a full end-to-end Playwright test passes (guest orders → right station shows the ticket → kitchen marks it ready → waiter is notified → served), and the kitchen screen survives a 30-second network drop without losing tickets.
+
+**Delivered:** automatic per-station tickets; kitchen display with station
+filter (remembered per screen), age timers (amber at 8 min, red at 15),
+rush flag, accept/start/ready, quick "Ready", recall, sound alerts, full
+screen, dark mode; waiter phone app with tables (all/mine), guest requests,
+"ready at the pass", table view with add order (same item picker as
+guests), move, merge, claim/release, close. Tables page also has move and
+merge. Order status follows the kitchen tickets automatically. Screens
+refetch every 15–20 s as a safety net when realtime drops. 39 new database
+tests. **Moved:** staff PIN login for shared tablets → Phase 5 (with cashier
+shifts, where per-person attribution matters most); waiter response-time
+analytics → Phase 7 reports (timestamps are already recorded).
 
 ---
 

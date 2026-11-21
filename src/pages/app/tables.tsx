@@ -57,6 +57,7 @@ import {
   type Session,
   type Table,
 } from '@/features/floor/api'
+import { MoveTableDialog } from '@/features/floor/move-dialog'
 import { QrSvg } from '@/features/floor/qr'
 import { tableStatusMeta } from '@/features/floor/status'
 import { useActiveOrders, useLiveOrders } from '@/features/orders/api'
@@ -288,6 +289,8 @@ function TablesContent() {
         <TableSheet
           table={selectedTable}
           areas={data.areas}
+          tables={data.tables}
+          sessions={data.sessions}
           session={sessionFor(selectedTable.id) ?? null}
           onClose={() => setSelected(null)}
         />
@@ -576,11 +579,15 @@ function AreasDialog({ areas, onClose }: { areas: Area[]; onClose: () => void })
 function TableSheet({
   table,
   areas,
+  tables,
+  sessions,
   session,
   onClose,
 }: {
   table: Table
   areas: Area[]
+  tables: Table[]
+  sessions: Session[]
   session: Session | null
   onClose: () => void
 }) {
@@ -603,6 +610,9 @@ function TableSheet({
     shape: table.shape,
   })
   const [confirmRegen, setConfirmRegen] = useState(false)
+  const [moving, setMoving] = useState<{ mode: 'transfer' | 'merge'; session: Session } | null>(
+    null,
+  )
   const url = tableUrl(slug, table.qr_token)
   const canManage = can('tables.manage')
   const error = setStatus.error ?? closeSession.error ?? regen.error ?? save.error ?? del.error
@@ -688,6 +698,24 @@ function TableSheet({
                     <p className="mt-1.5 text-xs text-muted-foreground">
                       Billing and payment arrive in Phase 5. Closing marks the table for cleaning.
                     </p>
+                  </div>
+                )}
+                {(can('orders.edit') || can('tables.manage')) && (
+                  <div className="grid grid-cols-2 gap-2 border-t p-3">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => session && setMoving({ mode: 'transfer', session })}
+                    >
+                      Move guests
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => session && setMoving({ mode: 'merge', session })}
+                    >
+                      Merge with table
+                    </Button>
                   </div>
                 )}
               </div>
@@ -835,6 +863,16 @@ function TableSheet({
             </section>
           )}
         </div>
+        {moving && (
+          <MoveTableDialog
+            mode={moving.mode}
+            table={table}
+            session={moving.session}
+            tables={tables}
+            sessions={sessions}
+            onClose={() => setMoving(null)}
+          />
+        )}
       </SheetContent>
     </Sheet>
   )

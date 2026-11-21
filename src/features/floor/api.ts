@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { Json } from '@/lib/database.types'
 import { supabase, type Enums, type Tables } from '@/lib/supabase'
 
 export type Table = Tables<'tables'>
@@ -175,4 +176,83 @@ export function useCloseSession(branchId: string | null) {
 
 export function tableUrl(slug: string, token: string) {
   return `${window.location.origin}/m/${slug}?t=${token}`
+}
+
+function useFloorAndOrders() {
+  const qc = useQueryClient()
+  return () =>
+    Promise.all([
+      qc.invalidateQueries({ queryKey: ['floor'] }),
+      qc.invalidateQueries({ queryKey: ['orders'] }),
+      qc.invalidateQueries({ queryKey: ['tickets'] }),
+    ])
+}
+
+export function useTransferSession() {
+  const refresh = useFloorAndOrders()
+  return useMutation({
+    mutationFn: async (v: { sessionId: string; toTableId: string }) =>
+      ok(
+        supabase.rpc('transfer_table_session', {
+          p_session_id: v.sessionId,
+          p_to_table_id: v.toTableId,
+        }),
+      ),
+    onSuccess: refresh,
+  })
+}
+
+export function useMergeSessions() {
+  const refresh = useFloorAndOrders()
+  return useMutation({
+    mutationFn: async (v: { fromSessionId: string; intoSessionId: string }) =>
+      ok(
+        supabase.rpc('merge_table_sessions', {
+          p_from_session_id: v.fromSessionId,
+          p_into_session_id: v.intoSessionId,
+        }),
+      ),
+    onSuccess: refresh,
+  })
+}
+
+export function useAssignWaiter() {
+  const refresh = useFloorAndOrders()
+  return useMutation({
+    mutationFn: async (v: { tableId: string; userId: string | null }) =>
+      ok(
+        supabase.rpc('assign_table_waiter', {
+          p_table_id: v.tableId,
+          p_user_id: v.userId as string,
+        }),
+      ),
+    onSuccess: refresh,
+  })
+}
+
+export function usePlaceStaffOrder() {
+  const refresh = useFloorAndOrders()
+  return useMutation({
+    mutationFn: async (v: {
+      tableId: string
+      items: {
+        product_id: string
+        variant_id: string | null
+        quantity: number
+        modifier_ids: string[]
+        notes: string
+      }[]
+      notes: string
+    }) => {
+      const data = await ok(
+        supabase.rpc('place_staff_order', {
+          p_table_id: v.tableId,
+          p_items: v.items as unknown as Json,
+          p_notes: v.notes,
+        }),
+      )
+      return data as unknown as { order_id: string; order_number: number; total_minor: number }
+    },
+    onSuccess: refresh,
+  })
 }

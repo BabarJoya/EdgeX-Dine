@@ -1,12 +1,4 @@
-import {
-  ChartColumn,
-  ChefHat,
-  HandPlatter,
-  MonitorPlay,
-  Package,
-  ShieldCheck,
-  Users,
-} from 'lucide-react'
+import { ChartColumn, ChefHat, MonitorPlay, Package, ShieldCheck, Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -42,6 +34,8 @@ const ResetPasswordPage = lazy(() =>
 )
 const AcceptInvitePage = lazy(() => named(import('@/pages/auth/accept-invite'), 'AcceptInvitePage'))
 const OnboardingPage = lazy(() => named(import('@/pages/onboarding'), 'OnboardingPage'))
+const KitchenPage = lazy(() => named(import('@/pages/ops/kitchen'), 'KitchenPage'))
+const WaiterPage = lazy(() => named(import('@/pages/ops/waiter'), 'WaiterPage'))
 const StationPlaceholder = lazy(() =>
   import('@/pages/ops/station-placeholder').then((m) => ({ default: m.StationPlaceholder })),
 )
@@ -138,20 +132,18 @@ export const router = createBrowserRouter(
         },
         {
           path: '/kds',
-          element: station(
-            'Kitchen display',
-            ChefHat,
-            'Phase 4',
-            'Live order tickets per kitchen station, with timers and sound alerts.',
+          element: (
+            <RequireAuth>
+              <RequireTenant>{s(<KitchenPage />)}</RequireTenant>
+            </RequireAuth>
           ),
         },
         {
           path: '/waiter',
-          element: station(
-            'Waiter app',
-            HandPlatter,
-            'Phase 4',
-            "Assigned tables, order taking and guest requests on the waiter's phone.",
+          element: (
+            <RequireAuth>
+              <RequireTenant>{s(<WaiterPage />)}</RequireTenant>
+            </RequireAuth>
           ),
         },
         {

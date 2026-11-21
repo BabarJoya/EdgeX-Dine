@@ -46,6 +46,7 @@
   --info-soft: #e8eef9;
   --success: #24704a;
   --success-soft: #e5f1ea;
+  --success-foreground: #ffffff;
   --warning: #96600f; /* golden amber */
   --warning-soft: #f8eedb;
   --destructive: #b42318;
@@ -60,6 +61,10 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #22365a;
   --sidebar-highlight: #d9a441; /* amber marker for the active item */
+
+  /* Guest menu accent; restaurants override it with their brand colour. */
+  --guest-accent: var(--primary);
+  --guest-accent-fg: var(--primary-foreground);
 
   /* Charts: ordered for distinguishability, not rainbow */
   --chart-1: #13233f;
@@ -94,6 +99,7 @@
   --info-soft: #18243a;
   --success: #6fc196;
   --success-soft: #132a20;
+  --success-foreground: #0b1f15;
   --warning: #e3b562;
   --warning-soft: #2c2214;
   --destructive: #f08a80;
@@ -146,6 +152,7 @@
   --color-info-soft: var(--info-soft);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --color-destructive: var(--destructive);
