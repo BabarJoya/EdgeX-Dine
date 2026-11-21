@@ -1077,6 +1077,9 @@ isOneToOne: false
 "create_tenant":
 { Args: { "p_branch_name": string,"p_city"?: string,"p_country"?: string,"p_currency"?: string,"p_name": string,"p_slug": string,"p_timezone"?: string }; Returns: string
                            },
+"dashboard_today":
+{ Args: { "p_branch_id": string,"p_tenant_id": string }; Returns: Json
+                           },
 "get_guest_menu":
 { Args: { "p_slug": string,"p_table_token"?: string }; Returns: Json
                            },
@@ -1147,6 +1150,9 @@ isOneToOne: false
                            },
 "respond_guest_request":
 { Args: { "p_request_id": string,"p_status": Database["public"]['Enums']["guest_request_status"] }; Returns: undefined
+                           },
+"sales_report":
+{ Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
                            },
 "save_modifier_group":
 { Args: { "p_group": Json,"p_modifiers": Json }; Returns: string
