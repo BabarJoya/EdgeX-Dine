@@ -37,16 +37,62 @@ export type Database = {
                   Relationships: [
                     
                   ]
-                },"branches": {
+                },"bill_counters": {
                   Row: {
-                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"id": string,"is_active": boolean,"name": string,"phone": string | null,"tenant_id": string,"timezone": string | null,"updated_at": string
+                    "branch_id": string,"business_date": string,"last_number": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
+                    "branch_id": string,"business_date": string,"last_number"?: number
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
+                    "branch_id"?: string,"business_date"?: string,"last_number"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "bill_counters_branch_id_fkey"
+      columns: ["branch_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"bills": {
+                  Row: {
+                    "base_minor": number,"bill_number": number,"branch_id": string,"business_date": string,"created_at": string,"created_by": string | null,"currency": string,"customer_name": string | null,"customer_phone": string | null,"discount_minor": number,"discount_note": string,"id": string,"paid_at": string | null,"paid_base_minor": number,"paid_total_minor": number,"receipt_token": string,"service_bps": number,"service_minor": number,"session_id": string | null,"status": Database["public"]['Enums']["bill_status"],"subtotal_minor": number,"tax_minor": number,"tenant_id": string,"type": Database["public"]['Enums']["order_type"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "base_minor"?: number,"bill_number": number,"branch_id": string,"business_date": string,"created_at"?: string,"created_by"?: string | null,"currency": string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id": string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                  }
+                  Update: {
+                    "base_minor"?: number,"bill_number"?: number,"branch_id"?: string,"business_date"?: string,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id"?: string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "bills_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "bills_session_id_tenant_id_fkey"
+      columns: ["session_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "table_sessions"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"branches": {
+                  Row: {
+                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -55,6 +101,46 @@ export type Database = {
 isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
+    }
+                  ]
+                },"cash_movements": {
+                  Row: {
+                    "amount_minor": number,"created_at": string,"created_by": string | null,"id": string,"reason": string,"shift_id": string,"tenant_id": string,"type": Database["public"]['Enums']["cash_movement_type"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"created_at"?: string,"created_by"?: string | null,"id"?: string,"reason": string,"shift_id": string,"tenant_id": string,"type": Database["public"]['Enums']["cash_movement_type"]
+                  }
+                  Update: {
+                    "amount_minor"?: number,"created_at"?: string,"created_by"?: string | null,"id"?: string,"reason"?: string,"shift_id"?: string,"tenant_id"?: string,"type"?: Database["public"]['Enums']["cash_movement_type"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "cash_movements_shift_id_tenant_id_fkey"
+      columns: ["shift_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "cash_shifts"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
+                },"cash_shifts": {
+                  Row: {
+                    "branch_id": string,"closed_at": string | null,"counted_cash_minor": number | null,"expected_cash_minor": number | null,"id": string,"notes": string,"opened_at": string,"opening_float_minor": number,"status": Database["public"]['Enums']["shift_status"],"tenant_id": string,"user_id": string,"variance_minor": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"closed_at"?: string | null,"counted_cash_minor"?: number | null,"expected_cash_minor"?: number | null,"id"?: string,"notes"?: string,"opened_at"?: string,"opening_float_minor"?: number,"status"?: Database["public"]['Enums']["shift_status"],"tenant_id": string,"user_id": string,"variance_minor"?: number | null
+                  }
+                  Update: {
+                    "branch_id"?: string,"closed_at"?: string | null,"counted_cash_minor"?: number | null,"expected_cash_minor"?: number | null,"id"?: string,"notes"?: string,"opened_at"?: string,"opening_float_minor"?: number,"status"?: Database["public"]['Enums']["shift_status"],"tenant_id"?: string,"user_id"?: string,"variance_minor"?: number | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "cash_shifts_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
     }
                   ]
                 },"categories": {
@@ -353,17 +439,23 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "accepted_at": string | null,"branch_id": string,"business_date": string,"cancel_reason": string | null,"created_at": string,"created_by": string | null,"currency": string,"discount_minor": number,"id": string,"notes": string,"order_number": number,"ready_at": string | null,"served_at": string | null,"service_minor": number,"session_id": string | null,"source": Database["public"]['Enums']["order_source"],"status": Database["public"]['Enums']["order_status"],"subtotal_minor": number,"table_id": string | null,"tax_minor": number,"tenant_id": string,"total_minor": number,"type": Database["public"]['Enums']["order_type"],"updated_at": string
+                    "accepted_at": string | null,"bill_id": string | null,"branch_id": string,"business_date": string,"cancel_reason": string | null,"created_at": string,"created_by": string | null,"currency": string,"discount_minor": number,"id": string,"notes": string,"order_number": number,"ready_at": string | null,"served_at": string | null,"service_minor": number,"session_id": string | null,"source": Database["public"]['Enums']["order_source"],"status": Database["public"]['Enums']["order_status"],"subtotal_minor": number,"table_id": string | null,"tax_minor": number,"tenant_id": string,"total_minor": number,"type": Database["public"]['Enums']["order_type"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted_at"?: string | null,"branch_id": string,"business_date": string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency": string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number": number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source": Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id": string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "accepted_at"?: string | null,"bill_id"?: string | null,"branch_id": string,"business_date": string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency": string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number": number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source": Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id": string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Update: {
-                    "accepted_at"?: string | null,"branch_id"?: string,"business_date"?: string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number"?: number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source"?: Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id"?: string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "accepted_at"?: string | null,"bill_id"?: string | null,"branch_id"?: string,"business_date"?: string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"discount_minor"?: number,"id"?: string,"notes"?: string,"order_number"?: number,"ready_at"?: string | null,"served_at"?: string | null,"service_minor"?: number,"session_id"?: string | null,"source"?: Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"subtotal_minor"?: number,"table_id"?: string | null,"tax_minor"?: number,"tenant_id"?: string,"total_minor"?: number,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "orders_bill_fk"
+      columns: ["bill_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "bills"
+      referencedColumns: ["id","tenant_id"]
+    },{
       foreignKeyName: "orders_branch_id_tenant_id_fkey"
       columns: ["branch_id","tenant_id"]
 isOneToOne: false
@@ -383,6 +475,32 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"payments": {
+                  Row: {
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"note": string,"received_by": string,"reference": string | null,"shift_id": string,"status": Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"note"?: string,"received_by": string,"reference"?: string | null,"shift_id": string,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor"?: number | null
+                  }
+                  Update: {
+                    "amount_minor"?: number,"base_minor"?: number,"bill_id"?: string,"branch_id"?: string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"note"?: string,"received_by"?: string,"reference"?: string | null,"shift_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps"?: number,"tax_minor"?: number,"tenant_id"?: string,"tendered_minor"?: number | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_bill_id_tenant_id_fkey"
+      columns: ["bill_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "bills"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "payments_shift_id_tenant_id_fkey"
+      columns: ["shift_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "cash_shifts"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"permissions": {
                   Row: {
                     "description": string,"key": string,"label": string,"module": string,"sort_order": number
@@ -393,6 +511,46 @@ isOneToOne: false
                   }
                   Update: {
                     "description"?: string,"key"?: string,"label"?: string,"module"?: string,"sort_order"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"pos_operator_sessions": {
+                  Row: {
+                    "branch_id": string,"created_at": string,"device_user_id": string,"expires_at": string,"operator_id": string,"revoked_at": string | null,"tenant_id": string,"token": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"created_at"?: string,"device_user_id": string,"expires_at"?: string,"operator_id": string,"revoked_at"?: string | null,"tenant_id": string,"token"?: string
+                  }
+                  Update: {
+                    "branch_id"?: string,"created_at"?: string,"device_user_id"?: string,"expires_at"?: string,"operator_id"?: string,"revoked_at"?: string | null,"tenant_id"?: string,"token"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "pos_operator_sessions_branch_id_fkey"
+      columns: ["branch_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "pos_operator_sessions_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"pos_unlock_attempts": {
+                  Row: {
+                    "device_user_id": string,"failures": number,"locked_until": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "device_user_id": string,"failures"?: number,"locked_until"?: string | null
+                  }
+                  Update: {
+                    "device_user_id"?: string,"failures"?: number,"locked_until"?: string | null
                   }
                   Relationships: [
                     
@@ -515,6 +673,32 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"refunds": {
+                  Row: {
+                    "amount_minor": number,"created_at": string,"id": string,"payment_id": string,"reason": string,"refunded_by": string,"shift_id": string,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"created_at"?: string,"id"?: string,"payment_id": string,"reason": string,"refunded_by": string,"shift_id": string,"tenant_id": string
+                  }
+                  Update: {
+                    "amount_minor"?: number,"created_at"?: string,"id"?: string,"payment_id"?: string,"reason"?: string,"refunded_by"?: string,"shift_id"?: string,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "refunds_payment_id_tenant_id_fkey"
+      columns: ["payment_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "refunds_shift_id_tenant_id_fkey"
+      columns: ["shift_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "cash_shifts"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"role_permissions": {
                   Row: {
                     "permission_key": string,"role_id": string,"tenant_id": string
@@ -579,6 +763,26 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
+    }
+                  ]
+                },"staff_pins": {
+                  Row: {
+                    "member_id": string,"pin_hash": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "member_id": string,"pin_hash": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "member_id"?: string,"pin_hash"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "staff_pins_member_id_tenant_id_fkey"
+      columns: ["member_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenant_members"
+      referencedColumns: ["id","tenant_id"]
     }
                   ]
                 },"subscription_plans": {
@@ -748,11 +952,20 @@ isOneToOne: false
             "accept_invite":
 { Args: { "p_token": string }; Returns: string
                            },
+"apply_bill_discount":
+{ Args: { "p_amount_minor": number,"p_bill_id": string,"p_note": string,"p_operator_token"?: string }; Returns: undefined
+                           },
 "assign_table_waiter":
 { Args: { "p_table_id": string,"p_user_id": string }; Returns: undefined
                            },
+"close_shift":
+{ Args: { "p_counted_cash_minor": number,"p_notes"?: string,"p_operator_token"?: string,"p_shift_id": string }; Returns: Json
+                           },
 "close_table_session":
 { Args: { "p_session_id": string }; Returns: undefined
+                           },
+"create_counter_order":
+{ Args: { "p_branch_id": string,"p_customer_name"?: string,"p_customer_phone"?: string,"p_items": Json,"p_notes"?: string,"p_operator_token"?: string,"p_type": Database["public"]['Enums']["order_type"] }; Returns: Json
                            },
 "create_guest_request":
 { Args: { "p_note"?: string,"p_table_token": string,"p_type": Database["public"]['Enums']["guest_request_type"] }; Returns: Json
@@ -771,6 +984,9 @@ isOneToOne: false
               "email": string,"is_valid": boolean,"role_name": string,"tenant_name": string
             }[]
                            },
+"get_receipt":
+{ Args: { "p_receipt_token": string }; Returns: Json
+                           },
 "invite_member":
 { Args: { "p_all_branches"?: boolean,"p_branch_ids"?: (string)[],"p_email": string,"p_role_id": string,"p_tenant_id": string }; Returns: string
                            },
@@ -783,11 +999,29 @@ isOneToOne: false
 "my_permissions":
 { Args: { "p_tenant_id": string }; Returns: (string)[]
                            },
+"open_shift":
+{ Args: { "p_branch_id": string,"p_opening_float_minor": number,"p_operator_token"?: string }; Returns: string
+                           },
+"open_table_bill":
+{ Args: { "p_operator_token"?: string,"p_session_id": string }; Returns: string
+                           },
 "place_guest_order":
 { Args: { "p_items": Json,"p_notes"?: string,"p_table_token": string }; Returns: Json
                            },
 "place_staff_order":
 { Args: { "p_items": Json,"p_notes"?: string,"p_table_id": string }; Returns: Json
+                           },
+"pos_lock":
+{ Args: { "p_operator_token": string }; Returns: undefined
+                           },
+"pos_unlock":
+{ Args: { "p_branch_id": string,"p_pin": string }; Returns: Json
+                           },
+"record_cash_movement":
+{ Args: { "p_amount_minor": number,"p_operator_token"?: string,"p_reason": string,"p_shift_id": string,"p_type": Database["public"]['Enums']["cash_movement_type"] }; Returns: undefined
+                           },
+"refund_payment":
+{ Args: { "p_operator_token"?: string,"p_payment_id": string,"p_reason": string }; Returns: undefined
                            },
 "regenerate_table_qr":
 { Args: { "p_table_id": string }; Returns: string
@@ -807,6 +1041,9 @@ isOneToOne: false
 "save_product":
 { Args: { "p_group_ids"?: (string)[],"p_product": Json,"p_variants"?: Json }; Returns: string
                            },
+"set_my_pin":
+{ Args: { "p_pin": string,"p_tenant_id": string }; Returns: undefined
+                           },
 "set_role_permissions":
 { Args: { "p_permissions": (string)[],"p_role_id": string }; Returns: undefined
                            },
@@ -815,6 +1052,12 @@ isOneToOne: false
                            },
 "set_ticket_priority":
 { Args: { "p_priority": boolean,"p_ticket_id": string }; Returns: undefined
+                           },
+"shift_report":
+{ Args: { "p_shift_id": string }; Returns: Json
+                           },
+"take_payment":
+{ Args: { "p_base_minor": number,"p_bill_id": string,"p_method": Database["public"]['Enums']["payment_method"],"p_note"?: string,"p_operator_token"?: string,"p_reference"?: string,"p_tendered_minor"?: number }; Returns: Json
                            },
 "transfer_table_session":
 { Args: { "p_session_id": string,"p_to_table_id": string }; Returns: undefined
@@ -830,7 +1073,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "billing_cycle": "monthly"|"yearly","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","session_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended","ticket_status": "new"|"accepted"|"preparing"|"ready"|"served"|"cancelled"
+            "bill_status": "open"|"paid"|"refunded"|"void","billing_cycle": "monthly"|"yearly","cash_movement_type": "in"|"out","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","payment_method": "cash"|"card"|"wallet"|"bank_transfer","payment_status": "completed"|"refunded","session_status": "open"|"closed","shift_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended","ticket_status": "new"|"accepted"|"preparing"|"ready"|"served"|"cancelled"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -950,7 +1193,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "billing_cycle": ["monthly", "yearly"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"session_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"],"ticket_status": ["new", "accepted", "preparing", "ready", "served", "cancelled"]
+            "bill_status": ["open", "paid", "refunded", "void"],"billing_cycle": ["monthly", "yearly"],"cash_movement_type": ["in", "out"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"payment_method": ["cash", "card", "wallet", "bank_transfer"],"payment_status": ["completed", "refunded"],"session_status": ["open", "closed"],"shift_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"],"ticket_status": ["new", "accepted", "preparing", "ready", "served", "cancelled"]
           }
         }
 } as const
