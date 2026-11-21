@@ -1,0 +1,2 @@
+-- Local development seed data. Runs after migrations on `supabase db reset`.
+-- Phase 1 adds the system roles, permissions and subscription plans here.

@@ -13,22 +13,22 @@ in every phase, not saved for the end.
 
 ## 0. Key architecture decisions (lock these in before Phase 1)
 
-| Topic | Decision | Why |
-|---|---|---|
-| Repo layout | One Vite + React + TS app with lazy-loaded route groups (`/admin`, `/app`, `/pos`, `/kds`, `/waiter`, `/m/:slug`), plus a `supabase/` folder (migrations, seed, edge functions, tests) | One codebase stays easy to manage. Code-splitting keeps the customer menu bundle small. |
-| Tenancy model | `tenants` (business / billing account) → `branches`. Brand fields live on `tenants`. Drop the separate `restaurants` table for now and add `brands` later only if multi-brand groups need it. | Avoids a redundant level that has to be joined into every RLS check. |
-| Membership & roles | `tenant_members(user_id, tenant_id, role_id)` + `member_branches(member_id, branch_id)`. `roles` are per tenant, seeded from system templates. `role_permissions` maps roles to permission keys such as `orders.refund`. | Configurable permissions per role and per branch, as the spec requires. |
-| RLS pattern | `SECURITY DEFINER STABLE` helpers: `is_tenant_member(tid)`, `has_perm(tid, perm, branch_id)`. Every policy uses `(select auth.uid())`. `tenant_id` is never taken from the client. A trigger sets it from the parent record / membership. | Blocks cross-tenant access and keeps policies fast. |
-| Guests (QR customers) | Guests never write to tables directly. A QR code holds an unguessable `table.qr_token`. Menu reads and order writes go through RPCs / Edge Functions that check the token, open or reuse a `table_session`, **recalculate all prices on the server**, and apply rate limits. Guests get a session token for tracking. | Public endpoints are the biggest attack surface in this product. |
-| Realtime | Staff screens use `postgres_changes` (RLS-filtered). Guest tracking uses **Broadcast on private channels** (`session:<id>`), fed by DB triggers. | Guests are anonymous, so `postgres_changes` + RLS is the wrong fit for them. |
-| Money | Integer minor units (`amount_paisa bigint`) plus `currency` on the tenant. Product name and price are copied into `order_items` when the order is placed. | No rounding bugs, and old invoices don't change when the menu changes. |
-| Order numbers | Per-branch daily counter table, assigned inside a transaction | Gives readable numbers like "#042" for kitchen and guests. |
-| Tax | Configurable tax rules per branch, **including different rates by payment method** (Pakistani provincial authorities have used different rates for card and cash payments). Service charge and discounts are calculated on the server. | Pakistan compliance comes first. |
-| Testing | pgTAP for RLS/policy tests, Vitest for logic, Playwright for end-to-end flows (guest → kitchen → waiter → POS). Supabase CLI for local development. GitHub Actions CI. | A "Phase 9 security testing" step is too late to find a tenant data leak. |
+| Topic                 | Decision                                                                                                                                                                                                                                                                                                              | Why                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Repo layout           | One Vite + React + TS app with lazy-loaded route groups (`/admin`, `/app`, `/pos`, `/kds`, `/waiter`, `/m/:slug`), plus a `supabase/` folder (migrations, seed, edge functions, tests)                                                                                                                                | One codebase stays easy to manage. Code-splitting keeps the customer menu bundle small. |
+| Tenancy model         | `tenants` (business / billing account) → `branches`. Brand fields live on `tenants`. Drop the separate `restaurants` table for now and add `brands` later only if multi-brand groups need it.                                                                                                                         | Avoids a redundant level that has to be joined into every RLS check.                    |
+| Membership & roles    | `tenant_members(user_id, tenant_id, role_id)` + `member_branches(member_id, branch_id)`. `roles` are per tenant, seeded from system templates. `role_permissions` maps roles to permission keys such as `orders.refund`.                                                                                              | Configurable permissions per role and per branch, as the spec requires.                 |
+| RLS pattern           | `SECURITY DEFINER STABLE` helpers: `is_tenant_member(tid)`, `has_perm(tid, perm, branch_id)`. Every policy uses `(select auth.uid())`. `tenant_id` is never taken from the client. A trigger sets it from the parent record / membership.                                                                             | Blocks cross-tenant access and keeps policies fast.                                     |
+| Guests (QR customers) | Guests never write to tables directly. A QR code holds an unguessable `table.qr_token`. Menu reads and order writes go through RPCs / Edge Functions that check the token, open or reuse a `table_session`, **recalculate all prices on the server**, and apply rate limits. Guests get a session token for tracking. | Public endpoints are the biggest attack surface in this product.                        |
+| Realtime              | Staff screens use `postgres_changes` (RLS-filtered). Guest tracking uses **Broadcast on private channels** (`session:<id>`), fed by DB triggers.                                                                                                                                                                      | Guests are anonymous, so `postgres_changes` + RLS is the wrong fit for them.            |
+| Money                 | Integer minor units (`amount_paisa bigint`) plus `currency` on the tenant. Product name and price are copied into `order_items` when the order is placed.                                                                                                                                                             | No rounding bugs, and old invoices don't change when the menu changes.                  |
+| Order numbers         | Per-branch daily counter table, assigned inside a transaction                                                                                                                                                                                                                                                         | Gives readable numbers like "#042" for kitchen and guests.                              |
+| Tax                   | Configurable tax rules per branch, **including different rates by payment method** (Pakistani provincial authorities have used different rates for card and cash payments). Service charge and discounts are calculated on the server.                                                                                | Pakistan compliance comes first.                                                        |
+| Testing               | pgTAP for RLS/policy tests, Vitest for logic, Playwright for end-to-end flows (guest → kitchen → waiter → POS). Supabase CLI for local development. GitHub Actions CI.                                                                                                                                                | A "Phase 9 security testing" step is too late to find a tenant data leak.               |
 
 ---
 
-## Phase 0 — Foundation (≈1 week)
+## Phase 0 — Foundation (≈1 week) ✅ Done
 
 **Goal:** an empty but production-shaped project.
 
@@ -207,21 +207,21 @@ Phase 6 starts.
 
 ## Timeline summary (one developer + AI assistance, rough)
 
-| Phase | Scope | Est. |
-|---|---|---|
-| 0 | Foundation | 1 wk |
-| 1 | DB, auth, tenancy, RBAC | 2 wk |
-| 2 | Owner dashboard & menu | 2 wk |
-| 3 | Tables, QR, guest ordering | 2–3 wk |
-| 4 | KDS & waiter app | 2 wk |
-| 5 | POS & split pay | 2–3 wk |
-| **MVP** | **Pilot launch** | **~11–13 wk** |
-| 6 | Super Admin & subscriptions | 2 wk |
-| 7 | Reports & analytics | 1–2 wk |
-| 8 | Pakistan integrations | 2–3 wk |
-| 9 | Inventory & costing | 2–3 wk |
-| 10 | Online ordering, reservations, reviews | 2 wk |
-| 11 | Hardening & scale | ongoing |
+| Phase   | Scope                                  | Est.          |
+| ------- | -------------------------------------- | ------------- |
+| 0       | Foundation                             | 1 wk          |
+| 1       | DB, auth, tenancy, RBAC                | 2 wk          |
+| 2       | Owner dashboard & menu                 | 2 wk          |
+| 3       | Tables, QR, guest ordering             | 2–3 wk        |
+| 4       | KDS & waiter app                       | 2 wk          |
+| 5       | POS & split pay                        | 2–3 wk        |
+| **MVP** | **Pilot launch**                       | **~11–13 wk** |
+| 6       | Super Admin & subscriptions            | 2 wk          |
+| 7       | Reports & analytics                    | 1–2 wk        |
+| 8       | Pakistan integrations                  | 2–3 wk        |
+| 9       | Inventory & costing                    | 2–3 wk        |
+| 10      | Online ordering, reservations, reviews | 2 wk          |
+| 11      | Hardening & scale                      | ongoing       |
 
 ## Changes from the original prompt (and why)
 
