@@ -1,4 +1,4 @@
-import { ChartColumn, ChefHat, MonitorPlay, Package, ShieldCheck, Users } from 'lucide-react'
+import { ChartColumn, ChefHat, Package, ShieldCheck, Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -36,6 +36,8 @@ const AcceptInvitePage = lazy(() => named(import('@/pages/auth/accept-invite'), 
 const OnboardingPage = lazy(() => named(import('@/pages/onboarding'), 'OnboardingPage'))
 const KitchenPage = lazy(() => named(import('@/pages/ops/kitchen'), 'KitchenPage'))
 const WaiterPage = lazy(() => named(import('@/pages/ops/waiter'), 'WaiterPage'))
+const PosPage = lazy(() => named(import('@/pages/ops/pos'), 'PosPage'))
+const ReceiptPage = lazy(() => named(import('@/pages/receipt'), 'ReceiptPage'))
 const StationPlaceholder = lazy(() =>
   import('@/pages/ops/station-placeholder').then((m) => ({ default: m.StationPlaceholder })),
 )
@@ -123,13 +125,13 @@ export const router = createBrowserRouter(
         },
         {
           path: '/pos',
-          element: station(
-            'POS',
-            MonitorPlay,
-            'Phase 5',
-            'Touch-friendly billing with split payments, discounts and thermal receipts.',
+          element: (
+            <RequireAuth>
+              <RequireTenant>{s(<PosPage />)}</RequireTenant>
+            </RequireAuth>
           ),
         },
+        { path: '/r/:token', element: s(<ReceiptPage />) },
         {
           path: '/kds',
           element: (

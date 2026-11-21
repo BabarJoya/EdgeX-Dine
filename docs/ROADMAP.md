@@ -146,7 +146,7 @@ analytics → Phase 7 reports (timestamps are already recorded).
 
 ---
 
-## Phase 5 — POS, billing & Split Pay ⭐ (≈2–3 weeks)
+## Phase 5 — POS, billing & Split Pay ⭐ (≈2–3 weeks) ✅ Done
 
 **Tables:** `payments`, `payment_splits`, `refunds`, `cash_shifts`,
 `cash_movements`, `discounts`, `tax_rules`, `receipts`, `customers` (basic).
@@ -158,6 +158,21 @@ analytics → Phase 7 reports (timestamps are already recorded).
 - Cashier shifts: opening float, cash in/out, closing count, variance, Z-report / daily closing.
 
 **Done when:** a full real service day can run on the system and the closing report matches the cash in the drawer.
+
+**Delivered:** branch tax settings with separate cash / card / wallet
+rates, service charge (dine-in), NTN/STRN and receipt footer; touch POS
+with tables, takeaway and delivery (customer name/phone), today's bills;
+discounts (percent or amount, with reason, permission-checked); payments
+taxed per method so mixed cash/card splits are correct; split whole,
+equally, by item or by amount; cash change with quick-note buttons;
+refunds; 80 mm receipts + public receipt link + WhatsApp share; cashier
+shifts with float, cash in/out, X/Z-reports and over/short; shared-device
+PIN login (6 digits, bcrypt, unique per restaurant, 5-try lockout) with
+every action checked against the cashier's own role. 53 new database
+tests. **Moved:** guest-side self-payment needs a payment gateway → Phase 8;
+a customers directory (CRM) → Phase 10 (name/phone are saved on bills now).
+**Note:** amounts keep paisa precision; rounding to whole rupees at the
+till can be added as a setting if restaurants want it.
 
 ---
 

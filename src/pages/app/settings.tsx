@@ -42,6 +42,7 @@ import {
   useUpdateTenant,
   type BranchInput,
 } from '@/features/settings/api'
+import { BillingSettings } from '@/features/pos/billing-settings'
 import { useBranches, useSubscription } from '@/features/tenant/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { errorMessage } from '@/lib/errors'
@@ -54,6 +55,7 @@ export function SettingsPage() {
   const tabs = [
     can('settings.manage') && { value: 'restaurant', label: 'Restaurant' },
     can('branches.manage') && { value: 'branches', label: 'Branches' },
+    can('branches.manage') && { value: 'billing', label: 'Billing & tax' },
     { value: 'plan', label: 'Plan' },
   ].filter(Boolean) as { value: string; label: string }[]
 
@@ -76,6 +78,11 @@ export function SettingsPage() {
         {can('branches.manage') && (
           <TabsContent value="branches">
             <BranchesTab />
+          </TabsContent>
+        )}
+        {can('branches.manage') && (
+          <TabsContent value="billing">
+            <BillingSettings />
           </TabsContent>
         )}
         <TabsContent value="plan">

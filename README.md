@@ -4,7 +4,7 @@ Multi-tenant restaurant management SaaS: QR ordering, kitchen display, waiter ap
 POS with split payments, and multi-branch management.
 
 - **Plan:** [docs/ROADMAP.md](docs/ROADMAP.md)
-- **Status:** Phases 0–4 complete (foundation; auth, multi-tenancy, roles; menu; tables, QR codes and guest ordering; kitchen display and waiter app). Phase 5 (POS, billing and split pay) next.
+- **Status:** Phases 0–5 complete — the MVP: QR ordering, kitchen display, waiter app, POS with split payments, cashier shifts. Phase 6 (Super Admin and subscriptions) next.
 - **Going live:** [docs/SETUP.md](docs/SETUP.md) — connect Supabase and deploy to Vercel.
 
 ## Stack
@@ -25,7 +25,7 @@ Local database (requires Docker):
 ```bash
 npm run db:start   # starts Supabase locally and prints the anon key
 npm run db:reset   # re-applies migrations + seed
-npm run db:test    # 180 pgTAP tests (RLS, tenant isolation, menu, ordering, kitchen)
+npm run db:test    # 233 pgTAP tests (RLS, tenant isolation, menu, ordering, kitchen, billing)
 npm run db:types   # regenerate src/lib/database.types.ts
 ```
 

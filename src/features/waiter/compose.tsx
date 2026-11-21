@@ -1,5 +1,5 @@
 import { Minus, Plus, Search, X } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,15 @@ import { ItemSheet } from '@/features/guest/item-sheet'
 import { errorMessage } from '@/lib/errors'
 import { cn, formatMoney } from '@/lib/utils'
 
+export type ComposerItem = {
+  product_id: string
+  variant_id: string | null
+  quantity: number
+  modifier_ids: string[]
+  notes: string
+}
+
+/** Waiter: add an order to a table's sitting. */
 export function OrderComposer({
   menu,
   table,
@@ -22,13 +31,47 @@ export function OrderComposer({
   table: Table
   onClose: () => void
 }) {
+  const place = usePlaceStaffOrder()
+  return (
+    <ItemComposer
+      menu={menu}
+      title={`Table ${table.label}`}
+      submitLabel="Send to kitchen"
+      onClose={onClose}
+      onSubmit={async (items, notes) => {
+        const r = await place.mutateAsync({ tableId: table.id, items, notes })
+        toast.success(`Order #${r.order_number} sent to the kitchen`)
+        onClose()
+      }}
+    />
+  )
+}
+
+/** Shared item picker + review used by the waiter app and the POS. */
+export function ItemComposer({
+  menu,
+  title,
+  submitLabel,
+  extra,
+  onSubmit,
+  onClose,
+}: {
+  menu: GuestMenu
+  title: string
+  submitLabel: string
+  /** Extra fields on the review step (e.g. customer name for takeaway). */
+  extra?: ReactNode
+  onSubmit: (items: ComposerItem[], notes: string) => Promise<void>
+  onClose: () => void
+}) {
   const [query, setQuery] = useState('')
   const [categoryId, setCategoryId] = useState<string | null>(null)
   const [open, setOpen] = useState<GuestProduct | null>(null)
   const [lines, setLines] = useState<CartLine[]>([])
   const [notes, setNotes] = useState('')
   const [review, setReview] = useState(false)
-  const place = usePlaceStaffOrder()
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState<unknown>(null)
   const currency = menu.restaurant.currency
 
   const top = menu.categories.filter((c) => !c.parent_id)
@@ -57,33 +100,33 @@ export function OrderComposer({
     return { title: `${p?.name ?? '—'}${v ? ` (${v.name})` : ''}`, mods }
   }
 
-  const send = () =>
-    place.mutate(
-      {
-        tableId: table.id,
-        items: lines.map((l) => ({
+  const send = async () => {
+    setPending(true)
+    setError(null)
+    try {
+      await onSubmit(
+        lines.map((l) => ({
           product_id: l.product_id,
           variant_id: l.variant_id,
           quantity: l.quantity,
           modifier_ids: l.modifier_ids,
           notes: l.notes,
         })),
-        notes: notes.trim(),
-      },
-      {
-        onSuccess: (r) => {
-          toast.success(`Order #${r.order_number} sent to the kitchen`)
-          onClose()
-        },
-      },
-    )
+        notes.trim(),
+      )
+    } catch (e) {
+      setError(e)
+    } finally {
+      setPending(false)
+    }
+  }
 
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="bottom" className="h-[92dvh] max-w-lg bg-background">
         <header className="flex items-center justify-between border-b px-4 py-3">
           <SheetTitle className="text-base font-semibold">
-            {review ? 'Review order' : 'Add order'} · Table {table.label}
+            {review ? 'Review order' : 'Add order'} · {title}
           </SheetTitle>
           <Button variant="ghost" size="icon" aria-label="Close" onClick={onClose}>
             <X />
@@ -160,9 +203,9 @@ export function OrderComposer({
           </>
         ) : (
           <div className="flex-1 overflow-y-auto">
-            {place.error && (
+            {!!error && (
               <div className="px-4 pt-3">
-                <Alert variant="destructive">{errorMessage(place.error)}</Alert>
+                <Alert variant="destructive">{errorMessage(error)}</Alert>
               </div>
             )}
             <ul className="divide-y">
@@ -226,6 +269,7 @@ export function OrderComposer({
                 onChange={(e) => setNotes(e.target.value)}
               />
             </div>
+            {extra && <div className="border-t px-4 py-3">{extra}</div>}
           </div>
         )}
 
@@ -238,14 +282,14 @@ export function OrderComposer({
           <Button
             size="lg"
             className="flex-1 justify-between"
-            disabled={count === 0 || place.isPending}
+            disabled={count === 0 || pending}
             onClick={() => (review ? send() : setReview(true))}
           >
             <span>
               {review
-                ? place.isPending
+                ? pending
                   ? 'Sending…'
-                  : 'Send to kitchen'
+                  : submitLabel
                 : `Review · ${count} item${count === 1 ? '' : 's'}`}
             </span>
             <span className="tabular-nums">{formatMoney(total, currency)}</span>
