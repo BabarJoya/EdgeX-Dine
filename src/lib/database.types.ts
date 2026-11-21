@@ -515,6 +515,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"platform_settings": {
+                  Row: {
+                    "grace_days": number,"id": boolean,"require_approval": boolean,"support_email": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "grace_days"?: number,"id"?: boolean,"require_approval"?: boolean,"support_email"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "grace_days"?: number,"id"?: boolean,"require_approval"?: boolean,"support_email"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"pos_operator_sessions": {
                   Row: {
                     "branch_id": string,"created_at": string,"device_user_id": string,"expires_at": string,"operator_id": string,"revoked_at": string | null,"tenant_id": string,"token": string
@@ -785,6 +799,32 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"subscription_invoices": {
+                  Row: {
+                    "amount_minor": number,"billing_cycle": Database["public"]['Enums']["billing_cycle"],"created_at": string,"currency": string,"id": string,"method": string,"period_end": string,"period_start": string,"plan_id": string,"recorded_by": string | null,"reference": string | null,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"billing_cycle": Database["public"]['Enums']["billing_cycle"],"created_at"?: string,"currency": string,"id"?: string,"method": string,"period_end": string,"period_start": string,"plan_id": string,"recorded_by"?: string | null,"reference"?: string | null,"tenant_id": string
+                  }
+                  Update: {
+                    "amount_minor"?: number,"billing_cycle"?: Database["public"]['Enums']["billing_cycle"],"created_at"?: string,"currency"?: string,"id"?: string,"method"?: string,"period_end"?: string,"period_start"?: string,"plan_id"?: string,"recorded_by"?: string | null,"reference"?: string | null,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "subscription_invoices_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "subscription_plans"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "subscription_invoices_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"subscription_plans": {
                   Row: {
                     "code": string,"created_at": string,"currency": string,"description": string,"features": (string)[],"id": string,"is_active": boolean,"is_default_trial": boolean,"limits": NonNullable<Json>,"name": string,"price_monthly_minor": number,"price_yearly_minor": number,"sort_order": number,"trial_days": number,"updated_at": string
@@ -821,6 +861,46 @@ isOneToOne: false
       foreignKeyName: "subscriptions_tenant_id_fkey"
       columns: ["tenant_id"]
 isOneToOne: true
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"support_messages": {
+                  Row: {
+                    "author_id": string,"body": string,"created_at": string,"from_platform": boolean,"id": string,"ticket_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id": string,"body": string,"created_at"?: string,"from_platform"?: boolean,"id"?: string,"ticket_id": string
+                  }
+                  Update: {
+                    "author_id"?: string,"body"?: string,"created_at"?: string,"from_platform"?: boolean,"id"?: string,"ticket_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "support_messages_ticket_id_fkey"
+      columns: ["ticket_id"]
+isOneToOne: false
+      referencedRelation: "support_tickets"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"support_tickets": {
+                  Row: {
+                    "category": string,"created_at": string,"created_by": string,"id": string,"state": Database["public"]['Enums']["ticket_state"],"subject": string,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category"?: string,"created_at"?: string,"created_by": string,"id"?: string,"state"?: Database["public"]['Enums']["ticket_state"],"subject": string,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "category"?: string,"created_at"?: string,"created_by"?: string,"id"?: string,"state"?: Database["public"]['Enums']["ticket_state"],"subject"?: string,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "support_tickets_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
     }
@@ -952,6 +1032,27 @@ isOneToOne: false
             "accept_invite":
 { Args: { "p_token": string }; Returns: string
                            },
+"admin_list_tenants":
+{ Args: { "p_search"?: string }; Returns: Json
+                           },
+"admin_overview":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"admin_record_payment":
+{ Args: { "p_amount_minor": number,"p_cycle": Database["public"]['Enums']["billing_cycle"],"p_method": string,"p_plan_id": string,"p_reference"?: string,"p_tenant_id": string }; Returns: string
+                           },
+"admin_set_subscription":
+{ Args: { "p_cycle": Database["public"]['Enums']["billing_cycle"],"p_ends_at": string,"p_plan_id": string,"p_status": Database["public"]['Enums']["subscription_status"],"p_tenant_id": string }; Returns: undefined
+                           },
+"admin_set_tenant_status":
+{ Args: { "p_reason": string,"p_status": Database["public"]['Enums']["tenant_status"],"p_tenant_id": string }; Returns: undefined
+                           },
+"admin_tenant_detail":
+{ Args: { "p_tenant_id": string }; Returns: Json
+                           },
+"admin_update_settings":
+{ Args: { "p_grace_days": number,"p_require_approval": boolean,"p_support_email": string }; Returns: undefined
+                           },
 "apply_bill_discount":
 { Args: { "p_amount_minor": number,"p_bill_id": string,"p_note": string,"p_operator_token"?: string }; Returns: undefined
                            },
@@ -969,6 +1070,9 @@ isOneToOne: false
                            },
 "create_guest_request":
 { Args: { "p_note"?: string,"p_table_token": string,"p_type": Database["public"]['Enums']["guest_request_type"] }; Returns: Json
+                           },
+"create_support_ticket":
+{ Args: { "p_body": string,"p_category": string,"p_subject": string,"p_tenant_id": string }; Returns: string
                            },
 "create_tenant":
 { Args: { "p_branch_name": string,"p_city"?: string,"p_country"?: string,"p_currency"?: string,"p_name": string,"p_slug": string,"p_timezone"?: string }; Returns: string
@@ -998,6 +1102,9 @@ isOneToOne: false
                            },
 "my_permissions":
 { Args: { "p_tenant_id": string }; Returns: (string)[]
+                           },
+"my_tenant_access":
+{ Args: { "p_tenant_id": string }; Returns: Json
                            },
 "open_shift":
 { Args: { "p_branch_id": string,"p_opening_float_minor": number,"p_operator_token"?: string }; Returns: string
@@ -1031,6 +1138,12 @@ isOneToOne: false
                            },
 "reorder_menu":
 { Args: { "p_ids": (string)[],"p_kind": string }; Returns: undefined
+                           },
+"reply_support_ticket":
+{ Args: { "p_body": string,"p_state"?: Database["public"]['Enums']["ticket_state"],"p_ticket_id": string }; Returns: undefined
+                           },
+"request_plan_change":
+{ Args: { "p_cycle": Database["public"]['Enums']["billing_cycle"],"p_plan_id": string,"p_tenant_id": string }; Returns: string
                            },
 "respond_guest_request":
 { Args: { "p_request_id": string,"p_status": Database["public"]['Enums']["guest_request_status"] }; Returns: undefined
@@ -1073,7 +1186,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "bill_status": "open"|"paid"|"refunded"|"void","billing_cycle": "monthly"|"yearly","cash_movement_type": "in"|"out","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","payment_method": "cash"|"card"|"wallet"|"bank_transfer","payment_status": "completed"|"refunded","session_status": "open"|"closed","shift_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "active"|"suspended","ticket_status": "new"|"accepted"|"preparing"|"ready"|"served"|"cancelled"
+            "bill_status": "open"|"paid"|"refunded"|"void","billing_cycle": "monthly"|"yearly","cash_movement_type": "in"|"out","guest_request_status": "open"|"acknowledged"|"resolved","guest_request_type": "assistance"|"water"|"napkins"|"bill"|"other","member_status": "active"|"disabled","order_source": "qr"|"waiter"|"pos"|"online","order_status": "new"|"accepted"|"preparing"|"ready"|"served"|"completed"|"cancelled","order_type": "dine_in"|"takeaway"|"delivery","payment_method": "cash"|"card"|"wallet"|"bank_transfer","payment_status": "completed"|"refunded","session_status": "open"|"closed","shift_status": "open"|"closed","subscription_status": "trialing"|"active"|"past_due"|"canceled"|"expired","table_shape": "square"|"round"|"rect","table_status": "available"|"occupied"|"reserved"|"cleaning","tenant_status": "pending"|"active"|"suspended","ticket_state": "open"|"waiting"|"closed","ticket_status": "new"|"accepted"|"preparing"|"ready"|"served"|"cancelled"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1193,7 +1306,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "bill_status": ["open", "paid", "refunded", "void"],"billing_cycle": ["monthly", "yearly"],"cash_movement_type": ["in", "out"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"payment_method": ["cash", "card", "wallet", "bank_transfer"],"payment_status": ["completed", "refunded"],"session_status": ["open", "closed"],"shift_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["active", "suspended"],"ticket_status": ["new", "accepted", "preparing", "ready", "served", "cancelled"]
+            "bill_status": ["open", "paid", "refunded", "void"],"billing_cycle": ["monthly", "yearly"],"cash_movement_type": ["in", "out"],"guest_request_status": ["open", "acknowledged", "resolved"],"guest_request_type": ["assistance", "water", "napkins", "bill", "other"],"member_status": ["active", "disabled"],"order_source": ["qr", "waiter", "pos", "online"],"order_status": ["new", "accepted", "preparing", "ready", "served", "completed", "cancelled"],"order_type": ["dine_in", "takeaway", "delivery"],"payment_method": ["cash", "card", "wallet", "bank_transfer"],"payment_status": ["completed", "refunded"],"session_status": ["open", "closed"],"shift_status": ["open", "closed"],"subscription_status": ["trialing", "active", "past_due", "canceled", "expired"],"table_shape": ["square", "round", "rect"],"table_status": ["available", "occupied", "reserved", "cleaning"],"tenant_status": ["pending", "active", "suspended"],"ticket_state": ["open", "waiting", "closed"],"ticket_status": ["new", "accepted", "preparing", "ready", "served", "cancelled"]
           }
         }
 } as const
