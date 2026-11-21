@@ -1,10 +1,12 @@
-import { ChevronsUpDown, PanelLeft, Store } from 'lucide-react'
+import { PanelLeft } from 'lucide-react'
 import { useState } from 'react'
 import { Outlet } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
+import { BranchSwitcher, TenantSwitcher } from './context-switcher'
 import { SidebarContent } from './sidebar'
 import { ThemeToggle } from './theme-toggle'
+import { UserMenu } from './user-menu'
 
 /** Layout for the owner / manager back office (`/app/*`). */
 export function AppShell() {
@@ -35,22 +37,22 @@ export function AppShell() {
             <PanelLeft />
           </Button>
 
-          {/* Branch switcher: becomes functional in Phase 1 (tenant membership). */}
-          <button
-            type="button"
-            disabled
-            className="flex h-8 items-center gap-2 rounded-md border px-2.5 text-[13px] hover:bg-accent disabled:cursor-not-allowed"
-            title="Available after you create a restaurant"
-          >
-            <Store className="size-4 text-muted-foreground" strokeWidth={1.75} />
-            <span className="text-muted-foreground">No branch selected</span>
-            <ChevronsUpDown className="size-3.5 text-muted-foreground" />
-          </button>
+          <div className="flex min-w-0 items-center gap-2">
+            <TenantSwitcher />
+            <div className="hidden sm:block">
+              <BranchSwitcher />
+            </div>
+          </div>
 
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
+            <UserMenu />
           </div>
         </header>
+
+        <div className="flex border-b px-4 py-2 sm:hidden">
+          <BranchSwitcher />
+        </div>
 
         <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />

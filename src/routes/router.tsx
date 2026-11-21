@@ -1,43 +1,50 @@
 import {
+  Armchair,
   ChartColumn,
   ChefHat,
   HandPlatter,
   MonitorPlay,
   Package,
   ReceiptText,
-  Settings,
   ShieldCheck,
-  UserCog,
   Users,
   UtensilsCrossed,
-  Armchair,
 } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
+import { RedirectIfAuthed, RequireAuth, RequireTenant } from '@/features/auth/guards'
+import { isSupabaseConfigured } from '@/lib/supabase'
 import { NotFoundPage } from '@/pages/not-found'
+import { SetupRequiredPage } from '@/pages/setup-required'
 
 // Route groups are split into separate chunks: guests scanning a QR code
 // never download the back-office or POS code.
-const AppShell = lazy(() =>
-  import('@/components/layout/app-shell').then((m) => ({ default: m.AppShell })),
-)
-const OverviewPage = lazy(() =>
-  import('@/pages/app/overview').then((m) => ({ default: m.OverviewPage })),
-)
+const named = <K extends string, M extends Record<K, React.ComponentType>>(p: Promise<M>, key: K) =>
+  p.then((m) => ({ default: m[key] }))
+
+const AppShell = lazy(() => named(import('@/components/layout/app-shell'), 'AppShell'))
+const OverviewPage = lazy(() => named(import('@/pages/app/overview'), 'OverviewPage'))
 const UpcomingPage = lazy(() =>
   import('@/pages/app/upcoming').then((m) => ({ default: m.UpcomingPage })),
 )
-const DesignSystemPage = lazy(() =>
-  import('@/pages/design-system').then((m) => ({ default: m.DesignSystemPage })),
+const StaffPage = lazy(() => named(import('@/pages/app/staff'), 'StaffPage'))
+const SettingsPage = lazy(() => named(import('@/pages/app/settings'), 'SettingsPage'))
+const DesignSystemPage = lazy(() => named(import('@/pages/design-system'), 'DesignSystemPage'))
+const LoginPage = lazy(() => named(import('@/pages/auth/login'), 'LoginPage'))
+const SignupPage = lazy(() => named(import('@/pages/auth/signup'), 'SignupPage'))
+const ForgotPasswordPage = lazy(() =>
+  named(import('@/pages/auth/forgot-password'), 'ForgotPasswordPage'),
 )
-const LoginPage = lazy(() => import('@/pages/login').then((m) => ({ default: m.LoginPage })))
+const ResetPasswordPage = lazy(() =>
+  named(import('@/pages/auth/reset-password'), 'ResetPasswordPage'),
+)
+const AcceptInvitePage = lazy(() => named(import('@/pages/auth/accept-invite'), 'AcceptInvitePage'))
+const OnboardingPage = lazy(() => named(import('@/pages/onboarding'), 'OnboardingPage'))
 const StationPlaceholder = lazy(() =>
   import('@/pages/ops/station-placeholder').then((m) => ({ default: m.StationPlaceholder })),
 )
-const GuestMenuPage = lazy(() =>
-  import('@/pages/guest/guest-menu').then((m) => ({ default: m.GuestMenuPage })),
-)
+const GuestMenuPage = lazy(() => named(import('@/pages/guest/guest-menu'), 'GuestMenuPage'))
 
 function PageFallback() {
   return (
@@ -76,14 +83,6 @@ const upcoming = [
     summary: 'Build your menu once and use it on the QR menu, POS and online ordering.',
   },
   {
-    path: 'staff',
-    title: 'Staff',
-    icon: UserCog,
-    phase: 'Phase 1',
-    description: 'Team members, roles and permissions.',
-    summary: 'Invite cashiers, waiters and kitchen staff and control what each role can do.',
-  },
-  {
     path: 'customers',
     title: 'Customers',
     icon: Users,
@@ -107,76 +106,77 @@ const upcoming = [
     description: 'Sales, items, staff and branch performance.',
     summary: 'Daily, weekly and monthly reports with Excel and PDF export.',
   },
-  {
-    path: 'settings',
-    title: 'Settings',
-    icon: Settings,
-    phase: 'Phase 1',
-    description: 'Restaurant profile, branches, taxes and billing.',
-    summary: 'Manage branding, branches, tax rules and your subscription.',
-  },
 ]
 
-export const router = createBrowserRouter([
-  { path: '/', element: <Navigate to="/app" replace /> },
-  { path: '/login', element: s(<LoginPage />) },
-  {
-    path: '/app',
-    element: s(<AppShell />),
-    children: [
-      { index: true, element: s(<OverviewPage />) },
-      ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
-    ],
-  },
-  {
-    path: '/design',
-    element: s(<AppShell />),
-    children: [{ index: true, element: s(<DesignSystemPage />) }],
-  },
-  {
-    path: '/pos',
-    element: s(
-      <StationPlaceholder
-        name="POS"
-        icon={MonitorPlay}
-        phase="Phase 5"
-        summary="Touch-friendly billing with split payments, discounts and thermal receipts."
-      />,
-    ),
-  },
-  {
-    path: '/kds',
-    element: s(
-      <StationPlaceholder
-        name="Kitchen display"
-        icon={ChefHat}
-        phase="Phase 4"
-        summary="Live order tickets per kitchen station, with timers and sound alerts."
-      />,
-    ),
-  },
-  {
-    path: '/waiter',
-    element: s(
-      <StationPlaceholder
-        name="Waiter app"
-        icon={HandPlatter}
-        phase="Phase 4"
-        summary="Assigned tables, order taking and guest requests on the waiter's phone."
-      />,
-    ),
-  },
-  {
-    path: '/admin',
-    element: s(
-      <StationPlaceholder
-        name="Platform admin"
-        icon={ShieldCheck}
-        phase="Phase 6"
-        summary="Manage restaurants, subscription plans and platform billing."
-      />,
-    ),
-  },
-  { path: '/m/:slug', element: s(<GuestMenuPage />) },
-  { path: '*', element: <NotFoundPage /> },
-])
+const station = (name: string, icon: typeof ChefHat, phase: string, summary: string) => (
+  <RequireAuth>
+    {s(<StationPlaceholder name={name} icon={icon} phase={phase} summary={summary} />)}
+  </RequireAuth>
+)
+
+export const router = createBrowserRouter(
+  isSupabaseConfigured
+    ? [
+        { path: '/', element: <Navigate to="/app" replace /> },
+        { path: '/login', element: <RedirectIfAuthed>{s(<LoginPage />)}</RedirectIfAuthed> },
+        { path: '/signup', element: <RedirectIfAuthed>{s(<SignupPage />)}</RedirectIfAuthed> },
+        { path: '/forgot-password', element: s(<ForgotPasswordPage />) },
+        { path: '/reset-password', element: <RequireAuth>{s(<ResetPasswordPage />)}</RequireAuth> },
+        { path: '/invite/:token', element: s(<AcceptInvitePage />) },
+        { path: '/onboarding', element: <RequireAuth>{s(<OnboardingPage />)}</RequireAuth> },
+        {
+          path: '/app',
+          element: (
+            <RequireAuth>
+              <RequireTenant>{s(<AppShell />)}</RequireTenant>
+            </RequireAuth>
+          ),
+          children: [
+            { index: true, element: s(<OverviewPage />) },
+            { path: 'staff', element: s(<StaffPage />) },
+            { path: 'settings', element: s(<SettingsPage />) },
+            { path: 'design', element: s(<DesignSystemPage />) },
+            ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
+          ],
+        },
+        {
+          path: '/pos',
+          element: station(
+            'POS',
+            MonitorPlay,
+            'Phase 5',
+            'Touch-friendly billing with split payments, discounts and thermal receipts.',
+          ),
+        },
+        {
+          path: '/kds',
+          element: station(
+            'Kitchen display',
+            ChefHat,
+            'Phase 4',
+            'Live order tickets per kitchen station, with timers and sound alerts.',
+          ),
+        },
+        {
+          path: '/waiter',
+          element: station(
+            'Waiter app',
+            HandPlatter,
+            'Phase 4',
+            "Assigned tables, order taking and guest requests on the waiter's phone.",
+          ),
+        },
+        {
+          path: '/admin',
+          element: station(
+            'Platform admin',
+            ShieldCheck,
+            'Phase 6',
+            'Manage restaurants, subscription plans and platform billing.',
+          ),
+        },
+        { path: '/m/:slug', element: s(<GuestMenuPage />) },
+        { path: '*', element: <NotFoundPage /> },
+      ]
+    : [{ path: '*', element: <SetupRequiredPage /> }],
+)

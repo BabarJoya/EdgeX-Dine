@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  web:
-    name: Lint, typecheck, test, build
+  checks:
+    name: Lint, typecheck, unit tests, build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,11 +25,9 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
 
   database:
-    name: Database (migrations + pgTAP)
+    name: Database (migrations, lint, RLS tests)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,5 +35,28 @@ jobs:
         with:
           version: latest
       - run: supabase db start
-      - run: supabase db lint --level error
+      - run: supabase db lint --level warning --fail-on warning
       - run: supabase test db
+
+  e2e:
+    name: End-to-end (real Supabase)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase (database, auth, API)
+        run: supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,mailpit,storage-api,realtime
+      - name: Point the app at local Supabase
+        run: |
+          eval "$(supabase status -o env | grep -E '^(API_URL|ANON_KEY)=')"
+          echo "VITE_SUPABASE_URL=$API_URL" > .env.local
+          echo "VITE_SUPABASE_ANON_KEY=$ANON_KEY" >> .env.local
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

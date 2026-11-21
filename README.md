@@ -4,7 +4,8 @@ Multi-tenant restaurant management SaaS: QR ordering, kitchen display, waiter ap
 POS with split payments, and multi-branch management.
 
 - **Plan:** [docs/ROADMAP.md](docs/ROADMAP.md)
-- **Status:** Phase 0 (foundation) complete. Phase 1 (database, auth, tenancy) next.
+- **Status:** Phases 0–1 complete (foundation; database, auth, multi-tenancy, roles). Phase 2 (menu) next.
+- **Going live:** [docs/SETUP.md](docs/SETUP.md) — connect Supabase and deploy to Vercel.
 
 ## Stack
 

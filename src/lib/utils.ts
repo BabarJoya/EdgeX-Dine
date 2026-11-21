@@ -17,3 +17,8 @@ export function formatMoney(minor: number, currency = 'PKR', locale = 'en-PK') {
     maximumFractionDigits: currency === 'PKR' ? 0 : 2,
   }).format(minor / 100)
 }
+
+/** Whole days from now until `iso` (0 if already past). */
+export function daysUntil(iso: string, now: Date = new Date()) {
+  return Math.max(0, Math.ceil((new Date(iso).getTime() - now.getTime()) / 86_400_000))
+}

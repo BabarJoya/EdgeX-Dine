@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router'
 import { cn } from '@/lib/utils'
 import { Logo } from './logo'
-import { ownerNav, settingsNav, type NavItem } from './nav'
+import { useTenant } from '@/features/tenant/tenant-provider'
+import { ownerNav, settingsNav, visible, type NavItem } from './nav'
 
 function SidebarLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const Icon = item.icon
@@ -36,6 +37,10 @@ function SidebarLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => v
 }
 
 export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { can } = useTenant()
+  const groups = ownerNav
+    .map((g) => ({ ...g, items: g.items.filter((i) => visible(i, can)) }))
+    .filter((g) => g.items.length > 0)
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-14 items-center px-5 text-white">
@@ -43,7 +48,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 pt-2 pb-4" aria-label="Main">
-        {ownerNav.map((group) => (
+        {groups.map((group) => (
           <div key={group.label} className="mb-5">
             <div className="mb-1.5 px-2.5 text-[11px] font-medium tracking-[0.06em] text-sidebar-muted uppercase">
               {group.label}
@@ -57,9 +62,11 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="border-t border-sidebar-border px-3 py-3">
-        <SidebarLink item={settingsNav} onNavigate={onNavigate} />
-      </div>
+      {visible(settingsNav, can) && (
+        <div className="border-t border-sidebar-border px-3 py-3">
+          <SidebarLink item={settingsNav} onNavigate={onNavigate} />
+        </div>
+      )}
     </div>
   )
 }

@@ -1,29 +1,43 @@
 import { ArrowUpRight, Check, Circle } from 'lucide-react'
 import { Link } from 'react-router'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageHeader } from '@/components/ui/page-header'
-import { isSupabaseConfigured } from '@/lib/supabase'
+import { useMembers } from '@/features/staff/api'
+import { useTenant } from '@/features/tenant/tenant-provider'
 import { cn } from '@/lib/utils'
 
 const kpis = ['Sales today', 'Orders today', 'Open tables', 'Avg. ticket time']
 
-const setupSteps = [
-  { label: 'Connect the database', done: isSupabaseConfigured, phase: 'Phase 0' },
-  { label: 'Create your restaurant and first branch', done: false, phase: 'Phase 1' },
-  { label: 'Add your menu', done: false, phase: 'Phase 2' },
-  { label: 'Add tables and print QR codes', done: false, phase: 'Phase 3' },
-  { label: 'Set up kitchen stations', done: false, phase: 'Phase 4' },
-  { label: 'Take your first payment', done: false, phase: 'Phase 5' },
-]
-
 export function OverviewPage() {
+  const { membership, tenantId, branches, can } = useTenant()
+  const members = useMembers(can('staff.view') ? tenantId : undefined)
+  const setupSteps = [
+    {
+      label: 'Create your restaurant and first branch',
+      done: branches.length > 0,
+      phase: 'Phase 1',
+      to: '/app/settings',
+    },
+    {
+      label: 'Invite your team',
+      done: (members.data?.length ?? 0) > 1,
+      phase: 'Phase 1',
+      to: '/app/staff',
+    },
+    { label: 'Add your menu', done: false, phase: 'Phase 2' },
+    { label: 'Add tables and print QR codes', done: false, phase: 'Phase 3' },
+    { label: 'Set up kitchen stations', done: false, phase: 'Phase 4' },
+    { label: 'Take your first payment', done: false, phase: 'Phase 5' },
+  ]
   const doneCount = setupSteps.filter((s) => s.done).length
 
   return (
     <>
-      <PageHeader title="Overview" description="Today across your branches." />
+      <PageHeader
+        title="Overview"
+        description={`${membership?.tenants.name} · today across your branches.`}
+      />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map((label) => (
@@ -43,11 +57,6 @@ export function OverviewPage() {
               {doneCount} of {setupSteps.length} steps complete
             </CardDescription>
           </div>
-          <Button variant="secondary" size="sm" asChild>
-            <Link to="/design">
-              Design system <ArrowUpRight />
-            </Link>
-          </Button>
         </CardHeader>
         <CardContent className="pb-2">
           <ol className="divide-y">
@@ -66,7 +75,16 @@ export function OverviewPage() {
                   )}
                 </span>
                 <span className={cn('flex-1', step.done && 'text-muted-foreground line-through')}>
-                  {step.label}
+                  {step.to && !step.done ? (
+                    <Link
+                      to={step.to}
+                      className="inline-flex items-center gap-1 hover:text-link hover:underline"
+                    >
+                      {step.label} <ArrowUpRight className="size-3.5" />
+                    </Link>
+                  ) : (
+                    step.label
+                  )}
                 </span>
                 <Badge variant={step.done ? 'success' : 'neutral'}>
                   {step.done ? 'Done' : step.phase}

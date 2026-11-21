@@ -45,7 +45,7 @@ in every phase, not saved for the end.
 
 ---
 
-## Phase 1 — Database core, auth, tenancy, RBAC (≈2 weeks)
+## Phase 1 — Database core, auth, tenancy, RBAC (≈2 weeks) ✅ Done
 
 **Tables:** `tenants`, `branches`, `profiles`, `tenant_members`, `member_branches`,
 `roles`, `permissions`, `role_permissions`, `subscription_plans`, `subscriptions`
@@ -59,6 +59,13 @@ in every phase, not saved for the end.
 - **pgTAP tests:** user A cannot read or write tenant B's data on any table. A waiter cannot perform manager actions.
 
 **Done when:** two test tenants are fully isolated (proved by tests), and a role change takes effect without logging out.
+
+**Delivered:** 55 pgTAP isolation/permission tests and a full browser journey
+(sign up → create restaurant → add branch → invite waiter → waiter sees only
+their branch and allowed screens). Invites are shared as a link (copy or
+WhatsApp). **Moved:** automatic invite _emails_ (needs your SMTP provider) to
+Phase 6, and staff PIN login for shared tablets to Phase 4–5, where the POS
+and kitchen screens that need it are built.
 
 ---
 
