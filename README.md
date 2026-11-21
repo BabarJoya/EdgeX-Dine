@@ -41,13 +41,13 @@ npm run db:types   # regenerate src/lib/database.types.ts
 
 ## App areas
 
-| Path                      | Who                  | Notes                          |
-| ------------------------- | -------------------- | ------------------------------ |
-| `/app/*`                  | Owner, managers      | Back office with sidebar       |
-| `/pos`, `/kds`, `/waiter` | Station devices      | Full-screen, touch-first       |
-| `/m/:slug`                | Guests (QR)          | Mobile-first, kept lightweight |
-| `/admin`                  | Platform super admin |                                |
-| `/design`                 | Developers           | Live design-system reference   |
+| Path                      | Who                          | Notes                                 |
+| ------------------------- | ---------------------------- | ------------------------------------- |
+| `/app/*`                  | Owner, managers              | Back office with sidebar              |
+| `/pos`, `/kds`, `/waiter` | Station devices              | Full-screen, touch-first              |
+| `/m/:slug`                | Guests (QR)                  | Mobile-first, kept lightweight        |
+| `/admin`                  | EdgeX team (platform admins) | Restaurants, plans, payments, support |
+| `/design`                 | Developers                   | Live design-system reference          |
 
 ## Design system
 
