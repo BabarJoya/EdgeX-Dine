@@ -1,3 +1,4 @@
+import { pokeOutbox } from '@/features/payments/notify'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase, type Enums, type Tables } from '@/lib/supabase'
@@ -121,6 +122,7 @@ export function useUpdateOrderStatus() {
         p_reason: v.reason,
       })
       if (error) throw error
+      if (v.status === 'ready') pokeOutbox()
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['orders'] }),
   })

@@ -293,6 +293,26 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"message_outbox": {
+                  Row: {
+                    "attempts": number,"branch_id": string | null,"channel": string,"created_at": string,"error": string | null,"id": string,"kind": string,"params": NonNullable<Json>,"provider_message_id": string | null,"ref_id": string,"sent_at": string | null,"status": string,"tenant_id": string,"to_phone": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind": string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id": string,"sent_at"?: string | null,"status"?: string,"tenant_id": string,"to_phone": string
+                  }
+                  Update: {
+                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind"?: string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id"?: string,"sent_at"?: string | null,"status"?: string,"tenant_id"?: string,"to_phone"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "message_outbox_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"modifier_groups": {
                   Row: {
                     "created_at": string,"id": string,"max_select": number,"min_select": number,"name": string,"sort_order": number,"tenant_id": string,"translations": NonNullable<Json>,"updated_at": string
@@ -1218,8 +1238,14 @@ isOneToOne: false
 "save_product":
 { Args: { "p_group_ids"?: (string)[],"p_product": Json,"p_variants"?: Json }; Returns: string
                            },
+"server_claim_messages":
+{ Args: { "p_limit"?: number }; Returns: Json
+                           },
 "server_finish_online_payment":
 { Args: { "p_amount_minor": number,"p_code"?: string,"p_message"?: string,"p_provider_ref"?: string,"p_success": boolean,"p_txn_ref": string }; Returns: Json
+                           },
+"server_message_result":
+{ Args: { "p_error"?: string,"p_final"?: boolean,"p_id": string,"p_ok": boolean,"p_provider_id"?: string }; Returns: undefined
                            },
 "server_online_payment":
 { Args: { "p_txn_ref": string }; Returns: Json

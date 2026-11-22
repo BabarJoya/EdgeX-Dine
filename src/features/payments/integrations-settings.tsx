@@ -25,6 +25,8 @@ type FieldSpec = {
   hint?: string
   secret?: boolean
   placeholder?: string
+  /** On/off setting stored as 'true' / 'false' (default on). */
+  toggle?: boolean
 }
 export type ProviderSpec = {
   provider: string
@@ -77,6 +79,34 @@ export const PROVIDERS: ProviderSpec[] = [
         hint: 'For the transaction status check.',
       },
       { key: 'password', label: 'API password', secret: true },
+    ],
+  },
+  {
+    provider: 'whatsapp',
+    title: 'WhatsApp',
+    description:
+      'Sends receipts and “order ready” messages from your WhatsApp Business number (Meta Cloud API).',
+    fields: [
+      {
+        key: 'phone_number_id',
+        label: 'Phone number ID',
+        hint: 'From Meta → WhatsApp → API setup.',
+      },
+      {
+        key: 'access_token',
+        label: 'Access token',
+        secret: true,
+        hint: 'A permanent system-user token.',
+      },
+      { key: 'receipt_template', label: 'Receipt template', placeholder: 'edgex_receipt' },
+      { key: 'ready_template', label: 'Order-ready template', placeholder: 'edgex_order_ready' },
+      { key: 'language', label: 'Template language', placeholder: 'en' },
+      { key: 'send_receipts', label: 'Send receipts when a bill is paid', toggle: true },
+      {
+        key: 'send_ready',
+        label: 'Tell takeaway / delivery guests when food is ready',
+        toggle: true,
+      },
     ],
   },
   {
@@ -190,27 +220,44 @@ function ProviderCard({ spec, row }: { spec: ProviderSpec; row: Row | undefined 
             </NativeSelect>
           </Field>
         )}
-        {spec.fields.map((f) => (
-          <Field key={f.key} id={id(f.key)} label={f.label} hint={f.hint}>
-            {f.secret ? (
-              <Input
-                id={id(f.key)}
-                type="password"
-                autoComplete="off"
-                placeholder={saved.has(f.key) ? 'Saved · leave blank to keep' : 'Not set'}
-                value={secrets[f.key] ?? ''}
-                onChange={(e) => setSecrets({ ...secrets, [f.key]: e.target.value })}
+        {spec.fields
+          .filter((f) => f.toggle)
+          .map((f) => (
+            <label
+              key={f.key}
+              className="flex items-center justify-between gap-3 text-sm sm:col-span-2"
+            >
+              {f.label}
+              <Switch
+                checked={values[f.key] !== 'false'}
+                onCheckedChange={(v) => setValues({ ...values, [f.key]: String(v) })}
+                aria-label={f.label}
               />
-            ) : (
-              <Input
-                id={id(f.key)}
-                placeholder={f.placeholder}
-                value={values[f.key] ?? ''}
-                onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-              />
-            )}
-          </Field>
-        ))}
+            </label>
+          ))}
+        {spec.fields
+          .filter((f) => !f.toggle)
+          .map((f) => (
+            <Field key={f.key} id={id(f.key)} label={f.label} hint={f.hint}>
+              {f.secret ? (
+                <Input
+                  id={id(f.key)}
+                  type="password"
+                  autoComplete="off"
+                  placeholder={saved.has(f.key) ? 'Saved · leave blank to keep' : 'Not set'}
+                  value={secrets[f.key] ?? ''}
+                  onChange={(e) => setSecrets({ ...secrets, [f.key]: e.target.value })}
+                />
+              ) : (
+                <Input
+                  id={id(f.key)}
+                  placeholder={f.placeholder}
+                  value={values[f.key] ?? ''}
+                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+                />
+              )}
+            </Field>
+          ))}
       </CardContent>
       <CardFooter className="justify-between gap-3">
         <p className="text-xs text-muted-foreground">

@@ -17,7 +17,7 @@ function apiFunctions(): Plugin {
     async (req: IncomingMessage, res: ServerResponse, next: (err?: unknown) => void) => {
       if (!req.url?.startsWith('/api/')) return next()
       try {
-        const { route } = await import('./api/_lib/payments.ts')
+        const { route } = await import('./api/_lib/router.ts')
         const chunks: Buffer[] = []
         for await (const c of req) chunks.push(c as Buffer)
         const request = new Request(`http://${req.headers.host}${req.url}`, {
@@ -45,6 +45,7 @@ function apiFunctions(): Plugin {
         'ENABLE_TEST_GATEWAY',
         'TEST_GATEWAY_SECRET',
         'APP_URL',
+        'WHATSAPP_API_BASE',
       ]) {
         if (env[key] && !process.env[key]) process.env[key] = env[key]
       }

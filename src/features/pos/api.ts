@@ -1,3 +1,4 @@
+import { pokeOutbox } from '@/features/payments/notify'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useState } from 'react'
 import type { Json } from '@/lib/database.types'
@@ -312,6 +313,9 @@ export function useTakePayment(op: Operator | null) {
         p_reference: v.reference || null,
         p_note: v.note,
         p_operator_token: op?.token,
+      }).then((r) => {
+        if (r.bill_status === 'paid') pokeOutbox()
+        return r
       }),
   )
 }

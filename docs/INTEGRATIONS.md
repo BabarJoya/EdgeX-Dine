@@ -48,6 +48,38 @@ integration is added, the bill link shows the restaurant's **Raast ID / IBAN**;
 the guest transfers the amount in their banking app and the cashier records
 it in the POS as **Bank / Raast** with the transaction ID as reference.
 
+## WhatsApp (Meta Cloud API)
+
+When a bill with a customer phone number is paid, or a takeaway / delivery
+order is marked ready, the database queues a message (`message_outbox`, once
+per event). The POS and kitchen screens then nudge `POST /api/notify/flush`,
+which sends the queue with the restaurant's WhatsApp Business number. Failed
+sends are retried up to 5 times; permanent errors (bad token, template not
+approved, invalid number) stop immediately and are shown in the message log.
+
+Setup per restaurant:
+
+1. In Meta Business Manager, create a WhatsApp Business account and phone
+   number (business verification is needed for higher sending limits; start
+   early). Note the **Phone number ID** and create a **permanent access token**
+   for a system user with `whatsapp_business_messaging` permission.
+2. In WhatsApp Manager → Message templates, create and get approved (category
+   **Utility**, language English, or set another language code in EdgeX):
+
+   | Template name       | Body                                                                          |
+   | ------------------- | ----------------------------------------------------------------------------- |
+   | `edgex_receipt`     | `Thank you for visiting {{1}}! Bill #{{2}}, total {{3}}. Your receipt: {{4}}` |
+   | `edgex_order_ready` | `{{1}}: your order #{{2}} is ready.`                                          |
+
+   Other names can be used; enter them in Settings. The placeholders must stay
+   in this order.
+
+3. In EdgeX → Settings → Integrations → WhatsApp, enter the phone number ID
+   and token, choose what to send, and turn it on.
+
+Optional: call `GET /api/notify/flush` from a scheduler (e.g. a Vercel cron
+on a paid plan) to send anything queued while no screen was open.
+
 ## Thermal printers
 
 Printers are set up **per device** (the POS tablet, the kitchen screen) with
