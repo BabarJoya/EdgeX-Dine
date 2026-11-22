@@ -7,7 +7,9 @@ import { PayPanel, PaymentResult } from '@/features/payments/pay-panel'
 import { providerName } from '@/features/payments/providers'
 import { supabase } from '@/lib/supabase'
 import { formatMoney } from '@/lib/utils'
+import { QrSvg } from '@/features/floor/qr'
 import {
+  authorityName,
   paymentMethodName as methodName,
   type ReceiptData as Receipt,
 } from '@/features/pos/receipt-types'
@@ -119,13 +121,15 @@ export function ReceiptPage() {
           {r.service_minor > 0 && (
             <Row label={`Service ${r.service_bps / 100}%`} value={money(r.service_minor)} />
           )}
-          {taxLines.map((t) => (
-            <Row
-              key={t.bps}
-              label={`${r.tax_label} ${t.bps / 100}% (${[...t.methods].join(', ')})`}
-              value={money(t.tax)}
-            />
-          ))}
+          {taxLines
+            .filter((t) => t.tax > 0)
+            .map((t) => (
+              <Row
+                key={t.bps}
+                label={`${r.tax_label} ${t.bps / 100}% (${[...t.methods].join(', ')})`}
+                value={money(t.tax)}
+              />
+            ))}
           <div className="mt-1 flex justify-between font-sans text-[15px] font-semibold">
             <dt>Total</dt>
             <dd>{money(r.paid_total_minor || r.base_minor)}</dd>
@@ -151,6 +155,27 @@ export function ReceiptPage() {
               {change > 0 && <Row label="Change" value={money(change)} />}
             </dl>
           </>
+        )}
+        {r.fiscal_invoice_number ? (
+          <div className="mt-2 grid justify-items-center gap-1 text-center" data-testid="fiscal">
+            <hr className="w-full border-dashed border-black" />
+            <div>
+              {authorityName[r.fiscal_authority ?? 'fbr']} Invoice No.
+              <div className="font-semibold break-all">{r.fiscal_invoice_number}</div>
+            </div>
+            <QrSvg
+              value={r.fiscal_invoice_number}
+              label={`${authorityName[r.fiscal_authority ?? 'fbr']} invoice QR code`}
+              className="size-24"
+            />
+            <div className="text-[10px]">
+              Verify this invoice with {authorityName[r.fiscal_authority ?? 'fbr']}.
+            </div>
+          </div>
+        ) : (
+          r.fiscal_status === 'pending' && (
+            <p className="mt-2 text-center text-[11px]">Tax invoice number pending…</p>
+          )
         )}
         {r.status === 'refunded' && <p className="mt-2 text-center font-semibold">REFUNDED</p>}
         {r.status === 'open' && <p className="mt-2 text-center font-semibold">NOT PAID</p>}

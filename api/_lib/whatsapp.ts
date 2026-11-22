@@ -1,4 +1,5 @@
 import { rpc } from './db.js'
+import { imsInvoice, postInvoice, type FiscalPayload } from './fiscal.js'
 import { env } from './env.js'
 import { json } from './http.js'
 
@@ -9,7 +10,9 @@ import { json } from './http.js'
  */
 export type Message = {
   id: string
-  kind: 'receipt' | 'order_ready'
+  channel: 'whatsapp' | 'fiscal'
+  mode: 'sandbox' | 'live'
+  kind: 'receipt' | 'order_ready' | 'fiscal'
   to: string
   params: Record<string, string | number>
   settings: Record<string, string>
@@ -58,7 +61,16 @@ export function templateBody(m: Message, appUrl: string) {
   }
 }
 
+async function sendFiscal(m: Message) {
+  const token = m.secrets.token
+  if (!m.enabled || !token)
+    return { ok: false, final: true, error: 'Tax authority integration is not set up' }
+  const invoice = imsInvoice(m.params as unknown as FiscalPayload, m.settings)
+  return postInvoice(m.settings.authority || 'fbr', m.mode, token, invoice, m.settings.endpoint)
+}
+
 async function send(m: Message, appUrl: string) {
+  if (m.channel === 'fiscal') return sendFiscal(m)
   const phoneId = m.settings.phone_number_id
   const token = m.secrets.access_token
   if (!m.enabled || !phoneId || !token)
@@ -81,7 +93,8 @@ async function send(m: Message, appUrl: string) {
   }
 }
 
-/** POST|GET /api/notify/flush — send whatever the database has queued. */
+/** POST|GET /api/notify/flush — send whatever the database has queued
+ * (WhatsApp messages and tax-authority invoices). */
 export async function flushMessages(req: Request) {
   const appUrl = env.appUrl(req)
   const batch = await rpc<Message[]>('server_claim_messages', { p_limit: 20 })
@@ -106,7 +119,25 @@ export async function flushMessages(req: Request) {
   return json({ sent, failed })
 }
 
-// --- Test double of the Cloud API (ENABLE_TEST_GATEWAY only) ---------------------
+// --- Test doubles (ENABLE_TEST_GATEWAY only) ---------------------------------------
+let invoices = 0
+export async function testFiscal(req: Request) {
+  if (!env.testGateway()) return json({ error: 'Not found' }, 404)
+  const body = (await req.json()) as { USIN?: string; Items?: unknown[] }
+  if (req.headers.get('authorization') !== 'Bearer test-fiscal') {
+    return json({ Code: '401', Response: 'Unauthorized' }, 401)
+  }
+  if (!body.Items?.length)
+    return json({ Code: '101', Response: 'Items are required', Errors: ['Items'] })
+  invoices++
+  return json({
+    InvoiceNumber: `TEST${String(invoices).padStart(6, '0')}${body.USIN?.replace(/\W/g, '').slice(-6)}`,
+    Code: '100',
+    Response: 'Fiscal Invoice Number generated successfully.',
+    Errors: null,
+  })
+}
+
 const outbox: unknown[] = []
 export async function testWhatsApp(req: Request) {
   if (!env.testGateway()) return json({ error: 'Not found' }, 404)

@@ -236,12 +236,31 @@ of SheetJS (SheetJS is no longer published to npm).
 
 ---
 
-## Phase 8 — Pakistan integrations (≈2–3 weeks)
+## Phase 8 — Pakistan integrations (≈2–3 weeks) ✅ Done (gateways need sandbox verification)
 
 - **Digital payments:** JazzCash, Easypaisa, Raast QR, and a card gateway, with payments **verified by webhook in Edge Functions** (an order is never marked paid because the browser says so). An integration settings screen per tenant, with credentials stored server-side only.
 - **WhatsApp:** Meta WhatsApp Cloud API for receipts, order-ready alerts and review links (needs Meta business verification and approved message templates — start that process early). Email receipts through Resend or a similar service.
 - **Thermal printers:** ESC/POS through WebUSB / Web Serial where supported, plus an optional small local "print bridge" for LAN printers and automatic kitchen-ticket printing.
 - **Tax authority integration:** FBR POS integration and provincial e-invoicing (PRA / SRB / KPRA) — many restaurant customers will need this to stay compliant, so treat it as a selling point.
+
+**Delivered** (details in [INTEGRATIONS.md](INTEGRATIONS.md)): Settings →
+Integrations with secrets stored server-side only; guests pay the bill link
+(`/r/:token`, shared from the POS as QR / WhatsApp) through JazzCash or
+Easypaisa, settled only by the server after verifying the gateway (signature
+or status API), with idempotent callbacks, amount checks and late-payment
+refund flags; Raast ID / IBAN shown on the bill link and confirmed at the
+till; WhatsApp Cloud API receipts and order-ready messages through a
+database outbox; direct ESC/POS printing over WebUSB / Web Serial (receipts
+with QR, cash drawer, auto-printed kitchen tickets); FBR / PRA invoices in
+the IMS format with the fiscal number and QR on the receipt and "send
+again" in the POS. Server code runs as Vercel functions in `api/`.
+**To verify before going live:** the JazzCash, Easypaisa, FBR and PRA
+adapters were written from their published integration formats but not yet
+run against the real sandboxes (they need merchant / POS registrations).
+**Moved:** card gateway, review links and email receipts → Phase 10;
+SRB / KPRA e-invoicing and credit notes for refunds → when a customer needs
+them; the LAN print bridge → on demand (browser printing covers USB,
+serial and Bluetooth).
 
 ---
 

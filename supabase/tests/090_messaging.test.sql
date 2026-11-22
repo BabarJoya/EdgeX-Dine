@@ -4,6 +4,9 @@
 begin;
 select plan(16);
 
+-- Start from an empty queue (rolled back at the end).
+delete from public.message_outbox;
+
 insert into auth.users (id, email, raw_user_meta_data, aud, role) values
   ('00000000-0000-0000-0000-00000000a111', 'ali@karachigrill.pk', '{"full_name":"Ali"}', 'authenticated', 'authenticated');
 

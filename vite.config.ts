@@ -46,6 +46,7 @@ function apiFunctions(): Plugin {
         'TEST_GATEWAY_SECRET',
         'APP_URL',
         'WHATSAPP_API_BASE',
+        'FISCAL_API_BASE',
       ]) {
         if (env[key] && !process.env[key]) process.env[key] = env[key]
       }

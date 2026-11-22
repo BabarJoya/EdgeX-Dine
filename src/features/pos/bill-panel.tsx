@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCloseSession } from '@/features/floor/api'
+import { FiscalStatus } from '@/features/payments/fiscal-status'
 import { PayLinkButton } from '@/features/payments/pay-link-dialog'
 import { providerName } from '@/features/payments/providers'
 import { usePrintReceipt, usePrinterSettings } from '@/features/printing/use-printer'
@@ -275,6 +276,7 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
             {bill.discount_minor ? 'Change discount' : 'Add discount'}
           </Button>
         )}
+        <FiscalStatus bill={bill} />
         {bill.status === 'open' && remaining > 0 && (
           <PayLinkButton
             token={bill.receipt_token}

@@ -8,6 +8,9 @@ export type ReceiptData = {
   tax_registration: string | null
   footer: string | null
   bill_number: number
+  fiscal_authority: 'fbr' | 'pra' | null
+  fiscal_invoice_number: string | null
+  fiscal_status: 'pending' | 'done' | 'failed' | null
   date: string
   paid_at: string | null
   type: 'dine_in' | 'takeaway' | 'delivery'
@@ -48,3 +51,5 @@ export const paymentMethodName: Record<string, string> = {
   wallet: 'Wallet',
   bank_transfer: 'Bank / Raast',
 }
+
+export const authorityName: Record<string, string> = { fbr: 'FBR', pra: 'PRA' }

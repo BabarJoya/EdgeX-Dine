@@ -27,6 +27,7 @@ type FieldSpec = {
   placeholder?: string
   /** On/off setting stored as 'true' / 'false' (default on). */
   toggle?: boolean
+  options?: { value: string; label: string }[]
 }
 export type ProviderSpec = {
   provider: string
@@ -106,6 +107,41 @@ export const PROVIDERS: ProviderSpec[] = [
         key: 'send_ready',
         label: 'Tell takeaway / delivery guests when food is ready',
         toggle: true,
+      },
+    ],
+  },
+  {
+    provider: 'fbr',
+    title: 'Tax authority (FBR / PRA)',
+    description:
+      'Reports every paid bill to the tax authority and prints the fiscal invoice number and QR code on the receipt.',
+    modes: true,
+    beta: true,
+    fields: [
+      {
+        key: 'authority',
+        label: 'Authority',
+        options: [
+          { value: 'fbr', label: 'FBR (federal / Islamabad)' },
+          { value: 'pra', label: 'PRA (Punjab)' },
+        ],
+      },
+      {
+        key: 'pos_id',
+        label: 'POS ID',
+        hint: 'Issued when you register this POS with the authority.',
+      },
+      { key: 'token', label: 'Access token', secret: true },
+      {
+        key: 'pct_code',
+        label: 'PCT code',
+        hint: 'From your registration (applied to every line).',
+      },
+      {
+        key: 'endpoint',
+        label: 'Endpoint (optional)',
+        hint: 'Only if the authority gave you a different URL.',
+        placeholder: 'https://…/api/Live/PostData',
       },
     ],
   },
@@ -239,7 +275,19 @@ function ProviderCard({ spec, row }: { spec: ProviderSpec; row: Row | undefined 
           .filter((f) => !f.toggle)
           .map((f) => (
             <Field key={f.key} id={id(f.key)} label={f.label} hint={f.hint}>
-              {f.secret ? (
+              {f.options ? (
+                <NativeSelect
+                  id={id(f.key)}
+                  value={values[f.key]}
+                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+                >
+                  {f.options.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </NativeSelect>
+              ) : f.secret ? (
                 <Input
                   id={id(f.key)}
                   type="password"

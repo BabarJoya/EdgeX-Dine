@@ -59,14 +59,14 @@ isOneToOne: false
                   ]
                 },"bills": {
                   Row: {
-                    "base_minor": number,"bill_number": number,"branch_id": string,"business_date": string,"created_at": string,"created_by": string | null,"currency": string,"customer_name": string | null,"customer_phone": string | null,"discount_minor": number,"discount_note": string,"id": string,"paid_at": string | null,"paid_base_minor": number,"paid_total_minor": number,"receipt_token": string,"service_bps": number,"service_minor": number,"session_id": string | null,"status": Database["public"]['Enums']["bill_status"],"subtotal_minor": number,"tax_minor": number,"tenant_id": string,"type": Database["public"]['Enums']["order_type"],"updated_at": string
+                    "base_minor": number,"bill_number": number,"branch_id": string,"business_date": string,"created_at": string,"created_by": string | null,"currency": string,"customer_name": string | null,"customer_phone": string | null,"discount_minor": number,"discount_note": string,"fiscal_authority": string | null,"fiscal_error": string | null,"fiscal_invoice_number": string | null,"fiscal_status": string | null,"id": string,"paid_at": string | null,"paid_base_minor": number,"paid_total_minor": number,"receipt_token": string,"service_bps": number,"service_minor": number,"session_id": string | null,"status": Database["public"]['Enums']["bill_status"],"subtotal_minor": number,"tax_minor": number,"tenant_id": string,"type": Database["public"]['Enums']["order_type"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "base_minor"?: number,"bill_number": number,"branch_id": string,"business_date": string,"created_at"?: string,"created_by"?: string | null,"currency": string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id": string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "base_minor"?: number,"bill_number": number,"branch_id": string,"business_date": string,"created_at"?: string,"created_by"?: string | null,"currency": string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id": string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Update: {
-                    "base_minor"?: number,"bill_number"?: number,"branch_id"?: string,"business_date"?: string,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id"?: string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "base_minor"?: number,"bill_number"?: number,"branch_id"?: string,"business_date"?: string,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id"?: string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -295,14 +295,14 @@ isOneToOne: false
                   ]
                 },"message_outbox": {
                   Row: {
-                    "attempts": number,"branch_id": string | null,"channel": string,"created_at": string,"error": string | null,"id": string,"kind": string,"params": NonNullable<Json>,"provider_message_id": string | null,"ref_id": string,"sent_at": string | null,"status": string,"tenant_id": string,"to_phone": string
+                    "attempts": number,"branch_id": string | null,"channel": string,"created_at": string,"error": string | null,"id": string,"kind": string,"params": NonNullable<Json>,"provider_message_id": string | null,"ref_id": string,"sent_at": string | null,"status": string,"tenant_id": string,"to_phone": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind": string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id": string,"sent_at"?: string | null,"status"?: string,"tenant_id": string,"to_phone": string
+                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind": string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id": string,"sent_at"?: string | null,"status"?: string,"tenant_id": string,"to_phone"?: string | null
                   }
                   Update: {
-                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind"?: string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id"?: string,"sent_at"?: string | null,"status"?: string,"tenant_id"?: string,"to_phone"?: string
+                    "attempts"?: number,"branch_id"?: string | null,"channel"?: string,"created_at"?: string,"error"?: string | null,"id"?: string,"kind"?: string,"params"?: NonNullable<Json>,"provider_message_id"?: string | null,"ref_id"?: string,"sent_at"?: string | null,"status"?: string,"tenant_id"?: string,"to_phone"?: string | null
                   }
                   Relationships: [
                     {
@@ -1225,6 +1225,9 @@ isOneToOne: false
                            },
 "respond_guest_request":
 { Args: { "p_request_id": string,"p_status": Database["public"]['Enums']["guest_request_status"] }; Returns: undefined
+                           },
+"retry_fiscal_invoice":
+{ Args: { "p_bill_id": string }; Returns: undefined
                            },
 "sales_report":
 { Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json

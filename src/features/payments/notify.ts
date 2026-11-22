@@ -11,3 +11,16 @@ export function pokeOutbox() {
     void fetch('/api/notify/flush', { method: 'POST', keepalive: true }).catch(() => undefined)
   }, 800)
 }
+
+/** Send the queue now and wait (briefly) — e.g. to get the fiscal number before printing. */
+export async function flushOutboxNow(timeoutMs = 4000) {
+  const ctrl = new AbortController()
+  const t = setTimeout(() => ctrl.abort(), timeoutMs)
+  try {
+    await fetch('/api/notify/flush', { method: 'POST', signal: ctrl.signal })
+  } catch {
+    /* printing goes ahead without it */
+  } finally {
+    clearTimeout(t)
+  }
+}

@@ -80,6 +80,28 @@ Setup per restaurant:
 Optional: call `GET /api/notify/flush` from a scheduler (e.g. a Vercel cron
 on a paid plan) to send anything queued while no screen was open.
 
+## Tax authority invoices (FBR / PRA)
+
+With **Settings → Integrations → Tax authority** on, every bill is reported
+when it is paid (queued in `message_outbox`, sent by `/api/notify/flush` in
+the IMS `PostData` JSON format with the POS ID and access token). The fiscal
+invoice number returned is stored on the bill and printed on the receipt
+(web and thermal) with a QR code. The POS waits up to 4 seconds for it
+before printing; if the authority rejects the invoice, the bill shows the
+error and **Send again**.
+
+How the invoice is built (`api/_lib/fiscal.ts`): one line per item plus the
+service charge; the bill discount and the tax are spread over the lines to
+the paisa, so the lines add up exactly to the totals; payment mode 1 = cash,
+2 = card / wallet / bank, 5 = mixed. `USIN` is `<branch>-<date>-<bill no.>`.
+
+Before going live: register the POS with FBR (IRIS) or PRA, get the POS ID
+and token, enter the PCT code from your registration, test in **Sandbox**,
+and check the endpoints and fields against the authority's current guide
+(the defaults are at the top of `fiscal.ts`; a different URL can be entered
+in Settings). Not covered yet: credit notes for refunds (InvoiceType 3),
+SRB / KPRA.
+
 ## Thermal printers
 
 Printers are set up **per device** (the POS tablet, the kitchen screen) with
@@ -112,6 +134,9 @@ English item names (Urdu names are not sent to the printer).
 SUPABASE_SERVICE_ROLE_KEY=<service_role key from `npx supabase status -o env`>
 ENABLE_TEST_GATEWAY=1   # server: enables the fake gateway
 VITE_TEST_GATEWAY=1     # browser: shows "Pay with Test gateway"
+# Stand-ins served by the app itself (ENABLE_TEST_GATEWAY only):
+WHATSAPP_API_BASE=http://localhost:4173/api/test/whatsapp
+FISCAL_API_BASE=http://localhost:4173/api/test/fiscal
 ```
 
 The test gateway shows Approve / Decline buttons and signs its callback, so the

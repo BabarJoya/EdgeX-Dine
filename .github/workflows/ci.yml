@@ -63,5 +63,6 @@ jobs:
           echo "ENABLE_TEST_GATEWAY=1" >> .env.local
           echo "VITE_TEST_GATEWAY=1" >> .env.local
           echo "WHATSAPP_API_BASE=http://localhost:4173/api/test/whatsapp" >> .env.local
+          echo "FISCAL_API_BASE=http://localhost:4173/api/test/fiscal" >> .env.local
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

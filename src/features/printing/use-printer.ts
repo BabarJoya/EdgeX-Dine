@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { flushOutboxNow } from '@/features/payments/notify'
 import { supabase } from '@/lib/supabase'
 import type { ReceiptData } from '@/features/pos/receipt-types'
 import { receiptUrl } from '@/features/pos/receipt-url'
@@ -29,6 +30,8 @@ export function usePrintReceipt() {
         return
       }
       try {
+        // Give the tax authority a moment, so the fiscal number is on the slip.
+        await flushOutboxNow()
         const { data, error } = await supabase.rpc('get_receipt', { p_receipt_token: token })
         if (error || !data) throw error ?? new Error('Receipt not found')
         await print(

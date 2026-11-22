@@ -1,6 +1,6 @@
 import type { Ticket } from '@/features/kitchen/api'
 import { providerName } from '@/features/payments/providers'
-import { paymentMethodName, type ReceiptData } from '@/features/pos/receipt-types'
+import { authorityName, paymentMethodName, type ReceiptData } from '@/features/pos/receipt-types'
 import { formatMoney } from '@/lib/utils'
 import { EscPos } from './escpos'
 
@@ -47,7 +47,7 @@ export function receiptBytes(
   const live = r.payments.filter((x) => x.status === 'completed')
   const byRate = new Map<number, number>()
   for (const x of live) byRate.set(x.tax_bps, (byRate.get(x.tax_bps) ?? 0) + x.tax_minor)
-  for (const [bps, tax] of byRate) p.row(`${r.tax_label} ${bps / 100}%`, money(tax))
+  for (const [bps, tax] of byRate) if (tax > 0) p.row(`${r.tax_label} ${bps / 100}%`, money(tax))
   p.bold()
     .row('TOTAL', money(r.paid_total_minor || r.base_minor))
     .bold(false)
@@ -63,6 +63,18 @@ export function receiptBytes(
     const change = live.reduce((n, x) => n + x.change_minor, 0)
     if (tendered) p.row('Cash received', money(tendered))
     if (change) p.row('Change', money(change))
+  }
+  if (r.fiscal_invoice_number) {
+    const who = authorityName[r.fiscal_authority ?? 'fbr']
+    p.align('center')
+      .rule()
+      .line(`${who} Invoice No.`)
+      .bold()
+      .line(r.fiscal_invoice_number)
+      .bold(false)
+    p.qr(r.fiscal_invoice_number, opts.columns === 32 ? 4 : 5).line(
+      `Verify this invoice with ${who}.`,
+    )
   }
   if (r.status === 'open') p.align('center').bold().line('NOT PAID').bold(false)
   if (r.status === 'refunded') p.align('center').bold().line('REFUNDED').bold(false)
