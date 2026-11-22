@@ -3,6 +3,8 @@ import { Printer } from 'lucide-react'
 import { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { PayPanel, PaymentResult } from '@/features/payments/pay-panel'
+import { providerName } from '@/features/payments/providers'
 import { supabase } from '@/lib/supabase'
 import { formatMoney } from '@/lib/utils'
 
@@ -39,6 +41,7 @@ type Receipt = {
   }[]
   payments: {
     method: string
+    provider: string | null
     amount_minor: number
     tax_minor: number
     tax_bps: number
@@ -97,6 +100,8 @@ export function ReceiptPage() {
   return (
     <div className="min-h-dvh bg-muted py-6 print:bg-white print:py-0">
       <style>{`@page { size: 80mm auto; margin: 3mm; } @media print { .no-print { display: none !important; } }`}</style>
+      <PaymentResult result={params.get('payment')} />
+      {r.status === 'open' && <PayPanel token={token} />}
       <div className="no-print mx-auto mb-4 flex max-w-[80mm] justify-end">
         <Button size="sm" onClick={() => window.print()}>
           <Printer /> Print
@@ -179,7 +184,7 @@ export function ReceiptPage() {
               {live.map((p, idx) => (
                 <Row
                   key={idx}
-                  label={`Paid · ${methodName[p.method] ?? p.method}`}
+                  label={`Paid · ${(p.provider && providerName[p.provider]) || methodName[p.method] || p.method}`}
                   value={money(p.amount_minor)}
                 />
               ))}

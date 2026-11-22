@@ -353,6 +353,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"online_payments": {
+                  Row: {
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"completed_at": string | null,"created_at": string,"expires_at": string,"id": string,"needs_review": boolean,"payment_id": string | null,"provider": string,"provider_ref": string | null,"response_code": string | null,"response_message": string | null,"status": string,"tax_bps": number,"tax_minor": number,"tenant_id": string,"txn_ref": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"completed_at"?: string | null,"created_at"?: string,"expires_at"?: string,"id"?: string,"needs_review"?: boolean,"payment_id"?: string | null,"provider": string,"provider_ref"?: string | null,"response_code"?: string | null,"response_message"?: string | null,"status"?: string,"tax_bps": number,"tax_minor": number,"tenant_id": string,"txn_ref"?: string
+                  }
+                  Update: {
+                    "amount_minor"?: number,"base_minor"?: number,"bill_id"?: string,"branch_id"?: string,"completed_at"?: string | null,"created_at"?: string,"expires_at"?: string,"id"?: string,"needs_review"?: boolean,"payment_id"?: string | null,"provider"?: string,"provider_ref"?: string | null,"response_code"?: string | null,"response_message"?: string | null,"status"?: string,"tax_bps"?: number,"tax_minor"?: number,"tenant_id"?: string,"txn_ref"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "online_payments_bill_id_tenant_id_fkey"
+      columns: ["bill_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "bills"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "online_payments_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "online_payments_payment_id_tenant_id_fkey"
+      columns: ["payment_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"order_counters": {
                   Row: {
                     "branch_id": string,"business_date": string,"last_number": number
@@ -477,14 +509,14 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"note": string,"received_by": string,"reference": string | null,"shift_id": string,"status": Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor": number | null
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"note": string,"provider": string | null,"received_by": string | null,"reference": string | null,"shift_id": string | null,"status": Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"note"?: string,"received_by": string,"reference"?: string | null,"shift_id": string,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor"?: number | null
+                    "amount_minor": number,"base_minor": number,"bill_id": string,"branch_id": string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"note"?: string,"provider"?: string | null,"received_by"?: string | null,"reference"?: string | null,"shift_id"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps": number,"tax_minor": number,"tenant_id": string,"tendered_minor"?: number | null
                   }
                   Update: {
-                    "amount_minor"?: number,"base_minor"?: number,"bill_id"?: string,"branch_id"?: string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"note"?: string,"received_by"?: string,"reference"?: string | null,"shift_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps"?: number,"tax_minor"?: number,"tenant_id"?: string,"tendered_minor"?: number | null
+                    "amount_minor"?: number,"base_minor"?: number,"bill_id"?: string,"branch_id"?: string,"change_minor"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"note"?: string,"provider"?: string | null,"received_by"?: string | null,"reference"?: string | null,"shift_id"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tax_bps"?: number,"tax_minor"?: number,"tenant_id"?: string,"tendered_minor"?: number | null
                   }
                   Relationships: [
                     {
@@ -957,6 +989,26 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"tenant_integrations": {
+                  Row: {
+                    "enabled": boolean,"mode": string,"provider": string,"secret_keys": (string)[],"settings": NonNullable<Json>,"tenant_id": string,"updated_at": string,"updated_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "enabled"?: boolean,"mode"?: string,"provider": string,"secret_keys"?: (string)[],"settings"?: NonNullable<Json>,"tenant_id": string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Update: {
+                    "enabled"?: boolean,"mode"?: string,"provider"?: string,"secret_keys"?: (string)[],"settings"?: NonNullable<Json>,"tenant_id"?: string,"updated_at"?: string,"updated_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "tenant_integrations_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"tenant_invites": {
                   Row: {
                     "accepted_at": string | null,"all_branches": boolean,"branch_ids": (string)[],"created_at": string,"email": string,"expires_at": string,"id": string,"invited_by": string | null,"role_id": string,"tenant_id": string,"token": string
@@ -1094,6 +1146,9 @@ isOneToOne: false
 "get_receipt":
 { Args: { "p_receipt_token": string }; Returns: Json
                            },
+"get_receipt_payment_options":
+{ Args: { "p_receipt_token": string }; Returns: Json
+                           },
 "invite_member":
 { Args: { "p_all_branches"?: boolean,"p_branch_ids"?: (string)[],"p_email": string,"p_role_id": string,"p_tenant_id": string }; Returns: string
                            },
@@ -1154,11 +1209,23 @@ isOneToOne: false
 "sales_report":
 { Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
                            },
+"save_integration":
+{ Args: { "p_enabled": boolean,"p_mode": string,"p_provider": string,"p_secrets"?: Json,"p_settings": Json,"p_tenant_id": string }; Returns: undefined
+                           },
 "save_modifier_group":
 { Args: { "p_group": Json,"p_modifiers": Json }; Returns: string
                            },
 "save_product":
 { Args: { "p_group_ids"?: (string)[],"p_product": Json,"p_variants"?: Json }; Returns: string
+                           },
+"server_finish_online_payment":
+{ Args: { "p_amount_minor": number,"p_code"?: string,"p_message"?: string,"p_provider_ref"?: string,"p_success": boolean,"p_txn_ref": string }; Returns: Json
+                           },
+"server_online_payment":
+{ Args: { "p_txn_ref": string }; Returns: Json
+                           },
+"server_start_online_payment":
+{ Args: { "p_provider": string,"p_receipt_token": string }; Returns: Json
                            },
 "set_my_pin":
 { Args: { "p_pin": string,"p_tenant_id": string }; Returns: undefined

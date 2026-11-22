@@ -3,7 +3,7 @@
 -- future phases, so a forgotten policy or grant fails CI instead of shipping.
 -- =============================================================================
 begin;
-select plan(4);
+select plan(5);
 
 select is(
   (select array_agg(c.relname::text order by c.relname)
@@ -35,6 +35,15 @@ select is(
      and privilege_type = 'UPDATE' and column_name in ('id', 'tenant_id')),
   null,
   'id and tenant_id columns are never updatable by clients');
+
+select is(
+  (select array_agg(p.proname::text order by p.proname)
+   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+   where n.nspname = 'public' and p.proname like 'server\_%'
+     and (has_function_privilege('anon', p.oid, 'execute')
+          or has_function_privilege('authenticated', p.oid, 'execute'))),
+  null,
+  'server_* functions (gateway callbacks, secrets) are callable by the server only');
 
 select * from finish();
 rollback;

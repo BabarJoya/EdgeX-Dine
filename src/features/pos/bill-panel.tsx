@@ -19,6 +19,9 @@ import { Input } from '@/components/ui/input'
 import { MoneyInput } from '@/components/ui/money-input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCloseSession } from '@/features/floor/api'
+import { PayLinkButton } from '@/features/payments/pay-link-dialog'
+import { providerName } from '@/features/payments/providers'
+import { whatsappLink } from '@/features/payments/whatsapp'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { errorMessage } from '@/lib/errors'
 import { toMajorInput, toMinor } from '@/lib/money'
@@ -64,7 +67,7 @@ export function BillPanel({ billId, op }: { billId: string | null; op: Operator 
 }
 
 function BillView({ bill, op }: { bill: Bill; op: Operator }) {
-  const { branch, branches, can, branchId } = useTenant()
+  const { branch, branches, can, branchId, membership } = useTenant()
   const br = branch ?? branches.find((b) => b.id === bill.branch_id) ?? null
   const currency = bill.currency
   const money = (m: number) => formatMoney(m, currency)
@@ -155,10 +158,6 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
     refunded: 'destructive',
     void: 'neutral',
   } as const
-  const waText = encodeURIComponent(
-    `Thank you for visiting! Your receipt: ${receiptUrl(bill.receipt_token)}`,
-  )
-  const waPhone = (bill.customer_phone ?? '').replace(/\D/g, '').replace(/^0/, '92')
 
   return (
     <div
@@ -230,7 +229,13 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
               )}
             >
               <dt>
-                Paid · {methodLabel[p.method]} (incl. {p.tax_bps / 100}% tax)
+                Paid · {(p.provider && providerName[p.provider]) || methodLabel[p.method]} (incl.{' '}
+                {p.tax_bps / 100}% tax)
+                {p.provider && p.note.includes('refund') && (
+                  <Badge variant="destructive" className="ml-1.5">
+                    Paid after settling · refund
+                  </Badge>
+                )}
               </dt>
               <dd className="flex items-center gap-1 tabular-nums">
                 {money(p.amount_minor)}
@@ -261,6 +266,14 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
           >
             {bill.discount_minor ? 'Change discount' : 'Add discount'}
           </Button>
+        )}
+        {bill.status === 'open' && remaining > 0 && (
+          <PayLinkButton
+            token={bill.receipt_token}
+            phone={bill.customer_phone}
+            restaurant={membership?.tenants.name ?? ''}
+            amount={money(withTax(remaining, br?.tax_wallet_bps ?? 0))}
+          />
         )}
       </section>
 
@@ -454,7 +467,10 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
               </Button>
               <Button variant="secondary" size="sm" asChild>
                 <a
-                  href={`https://wa.me/${waPhone}?text=${waText}`}
+                  href={whatsappLink(
+                    bill.customer_phone,
+                    `Thank you for visiting! Your receipt: ${receiptUrl(bill.receipt_token)}`,
+                  )}
                   target="_blank"
                   rel="noreferrer"
                 >

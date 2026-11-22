@@ -11,8 +11,10 @@ account and a [Vercel](https://vercel.com) account connected to GitHub.
 2. When it's ready, open **Project Settings → API** and copy:
    - **Project URL** (looks like `https://abcd1234.supabase.co`)
    - **anon / publishable key**
+   - **service_role key** — only for the Vercel server functions (step 4).
 
-   Do **not** copy the `service_role` / secret key anywhere in this project.
+   Never put the `service_role` key in a `VITE_…` variable or in any file in
+   this repository: `VITE_` values are shipped to every browser.
 
 ## 2. Create the database tables
 
@@ -45,6 +47,13 @@ plan. Run it again whenever new migrations are added in later phases.
 3. **Environment Variables** (Production):
    - `VITE_SUPABASE_URL` = Project URL
    - `VITE_SUPABASE_ANON_KEY` = anon key
+   - `SUPABASE_SERVICE_ROLE_KEY` = service_role key (server functions only:
+     online payments, WhatsApp, FBR; see [INTEGRATIONS.md](INTEGRATIONS.md))
+   - `APP_URL` = `https://<your-domain>` (where payment gateways send guests back)
+
+   Never set `ENABLE_TEST_GATEWAY` or `VITE_TEST_GATEWAY` in Production: they
+   turn on a fake gateway for automated tests.
+
 4. Deploy. Open the site → **Create an account** → set up your restaurant.
 
 Use a second Supabase project (e.g. `edgex-staging`) for the Vercel **Preview**

@@ -43,6 +43,7 @@ import {
   useUpdateTenant,
   type BranchInput,
 } from '@/features/settings/api'
+import { IntegrationsSettings } from '@/features/payments/integrations-settings'
 import { PlanTab } from '@/features/platform/plan-tab'
 import { BillingSettings } from '@/features/pos/billing-settings'
 import { useBranches } from '@/features/tenant/api'
@@ -58,12 +59,16 @@ export function SettingsPage() {
     can('settings.manage') && { value: 'restaurant', label: 'Restaurant' },
     can('branches.manage') && { value: 'branches', label: 'Branches' },
     can('branches.manage') && { value: 'billing', label: 'Billing & tax' },
+    can('settings.manage') && { value: 'integrations', label: 'Integrations' },
     { value: 'plan', label: 'Plan' },
   ].filter(Boolean) as { value: string; label: string }[]
 
   return (
     <RequirePerm any={['settings.manage', 'branches.manage', 'billing.manage']}>
-      <PageHeader title="Settings" description="Restaurant profile, branches and subscription." />
+      <PageHeader
+        title="Settings"
+        description="Restaurant profile, branches, payments and subscription."
+      />
       <Tabs defaultValue={tabs.find((t) => t.value === params.get('tab'))?.value ?? tabs[0].value}>
         <TabsList>
           {tabs.map((t) => (
@@ -85,6 +90,11 @@ export function SettingsPage() {
         {can('branches.manage') && (
           <TabsContent value="billing">
             <BillingSettings />
+          </TabsContent>
+        )}
+        {can('settings.manage') && (
+          <TabsContent value="integrations">
+            <IntegrationsSettings />
           </TabsContent>
         )}
         <TabsContent value="plan">
