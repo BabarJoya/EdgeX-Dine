@@ -211,12 +211,28 @@ Automatic card billing comes with the Phase 8 payment gateway.
 
 ---
 
-## Phase 7 — Reports & analytics (≈1–2 weeks)
+## Phase 7 — Reports & analytics (≈1–2 weeks) ✅ Done
 
 - SQL views / materialized views (refreshed with `pg_cron`) for daily, weekly and monthly sales, best-selling items, category revenue, branch comparison, waiter and staff performance, kitchen preparation times, waiter response times, payment-method breakdown, and feedback analytics.
 - Recharts dashboards with date-range and branch filters.
 - Export to Excel (SheetJS) and PDF.
 - Profit & loss comes in Phase 9, once costs exist.
+
+**Delivered:** one `sales_report` RPC computes the whole report in the
+database (net sales, orders, average bill, tax, discounts, refunds,
+cancellations, comparison with the previous period, every day in the range,
+busiest hours, best sellers, categories, payment methods, order sources,
+branch comparison, staff and kitchen speed, guest-request response times).
+It is scoped to the branches the user may report on, needs the `reports`
+plan feature, and is capped at a year per request. Business dates and hours
+use the restaurant's time zone (also in the date presets). `dashboard_today`
+feeds the Overview tiles. Reports page with presets and custom range, a
+chart and table view for every chart, light/dark and phone layouts, Excel
+(exceljs) and PDF (jsPDF) export loaded only when clicked.
+**Moved:** materialized views and `pg_cron` are deferred until real data
+volumes need them (the report runs on indexed tables today); feedback
+analytics waits for feedback collection; Excel export uses exceljs instead
+of SheetJS (SheetJS is no longer published to npm).
 
 ---
 

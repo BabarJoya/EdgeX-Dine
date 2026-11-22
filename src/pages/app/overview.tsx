@@ -3,14 +3,43 @@ import { Link } from 'react-router'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageHeader } from '@/components/ui/page-header'
+import { useDashboardToday } from '@/features/reports/api'
+import { change } from '@/features/reports/dates'
 import { useMembers } from '@/features/staff/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
-import { cn } from '@/lib/utils'
-
-const kpis = ['Sales today', 'Orders today', 'Open tables', 'Avg. ticket time']
+import { cn, formatMoney } from '@/lib/utils'
 
 export function OverviewPage() {
-  const { membership, tenantId, branches, can } = useTenant()
+  const { membership, tenantId, branches, branchId, can } = useTenant()
+  const today = useDashboardToday(tenantId, branchId, can('dashboard.view'))
+  const currency = membership?.tenants.currency ?? 'PKR'
+  const d = today.data
+  const salesChange = d ? change(d.net_sales_minor, d.yesterday_net_sales_minor) : null
+  const kpis = [
+    {
+      label: 'Net sales today',
+      value: d ? formatMoney(d.net_sales_minor, currency) : '—',
+      hint:
+        salesChange === null
+          ? 'Before tax'
+          : `${salesChange >= 0 ? '+' : ''}${salesChange}% vs yesterday`,
+    },
+    {
+      label: 'Orders today',
+      value: d ? d.orders.toLocaleString() : '—',
+      hint: 'Not counting cancelled',
+    },
+    {
+      label: 'Open tables',
+      value: d ? String(d.open_tables) : '—',
+      hint: 'Tables with guests now',
+    },
+    {
+      label: 'Avg. ticket time',
+      value: d?.avg_ticket_minutes != null ? `${d.avg_ticket_minutes} min` : '—',
+      hint: 'Order to ready, today',
+    },
+  ]
   const members = useMembers(can('staff.view') ? tenantId : undefined)
   const setupSteps = [
     {
@@ -40,13 +69,14 @@ export function OverviewPage() {
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {kpis.map((label) => (
-          <Card key={label} className="px-4 py-3.5">
-            <div className="text-xs font-medium text-muted-foreground">{label}</div>
-            <div className="mt-1.5 text-2xl font-semibold tabular-nums">—</div>
-            <div className="mt-1 text-xs text-muted-foreground">No data yet</div>
-          </Card>
-        ))}
+        {can('dashboard.view') &&
+          kpis.map((k) => (
+            <Card key={k.label} className="px-4 py-3.5" data-testid={`today-${k.label}`}>
+              <div className="text-xs font-medium text-muted-foreground">{k.label}</div>
+              <div className="mt-1.5 text-2xl font-semibold tabular-nums">{k.value}</div>
+              <div className="mt-1 text-xs text-muted-foreground">{k.hint}</div>
+            </Card>
+          ))}
       </div>
 
       <Card className="mt-6">

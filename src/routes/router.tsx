@@ -1,4 +1,4 @@
-import { ChartColumn, Package, Users } from 'lucide-react'
+import { Package, Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -46,6 +46,7 @@ const AdminRestaurantsPage = lazy(() =>
 const AdminPlansPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminPlansPage'))
 const AdminSupportPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSupportPage'))
 const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSettingsPage'))
+const ReportsPage = lazy(() => named(import('@/pages/app/reports'), 'ReportsPage'))
 const SupportPage = lazy(() => named(import('@/pages/app/support'), 'SupportPage'))
 const GuestMenuPage = lazy(() => named(import('@/pages/guest/guest-menu'), 'GuestMenuPage'))
 
@@ -77,14 +78,6 @@ const upcoming = [
     description: 'Stock, recipes, suppliers and purchases.',
     summary: 'Track ingredients, cost each dish and get low-stock alerts.',
   },
-  {
-    path: 'reports',
-    title: 'Reports',
-    icon: ChartColumn,
-    phase: 'Phase 7',
-    description: 'Sales, items, staff and branch performance.',
-    summary: 'Daily, weekly and monthly reports with Excel and PDF export.',
-  },
 ]
 
 export const router = createBrowserRouter(
@@ -112,6 +105,7 @@ export const router = createBrowserRouter(
             { path: 'tables', element: s(<TablesPage />) },
             { path: 'orders', element: s(<OrdersPage />) },
             { path: 'support', element: s(<SupportPage />) },
+            { path: 'reports', element: s(<ReportsPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
             ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],

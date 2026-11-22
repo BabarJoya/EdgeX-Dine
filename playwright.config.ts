@@ -17,8 +17,24 @@ export default defineConfig({
     launchOptions: { executablePath },
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } } },
-    { name: 'mobile', use: { ...devices['Pixel 7'], launchOptions: { executablePath } } },
+    {
+      name: 'desktop',
+      testIgnore: /platform\.spec/,
+      use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } },
+    },
+    {
+      name: 'mobile',
+      testIgnore: /platform\.spec/,
+      use: { ...devices['Pixel 7'], launchOptions: { executablePath } },
+    },
+    // The platform test flips global settings (e.g. "approve new restaurants"),
+    // so it runs alone after everything else instead of racing other sign-ups.
+    {
+      name: 'platform',
+      testMatch: /platform\.spec/,
+      dependencies: ['desktop', 'mobile'],
+      use: { ...devices['Desktop Chrome'], launchOptions: { executablePath } },
+    },
   ],
   webServer: {
     command: 'npm run build && npm run preview -- --port 4173 --strictPort',

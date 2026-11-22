@@ -66,12 +66,13 @@
   --guest-accent: var(--primary);
   --guest-accent-fg: var(--primary-foreground);
 
-  /* Charts: ordered for distinguishability, not rainbow */
-  --chart-1: #13233f;
-  --chart-2: #2454b8;
-  --chart-3: #c48a2c;
-  --chart-4: #6b8fb8;
-  --chart-5: #8a8278;
+  /* Charts. Validated with the data-viz palette checker (lightness band,
+     chroma, colour-blind separation, contrast vs card surface).
+     chart-1 = single-series brand blue; 2–3 extra series when needed. */
+  --chart-1: #2454b8;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-muted: #d6d2c9;
 }
 
 .dark {
@@ -114,11 +115,10 @@
   --sidebar-border: #1a2331;
   --sidebar-highlight: #d9a441;
 
-  --chart-1: #9fb7e6;
-  --chart-2: #5f8ae0;
-  --chart-3: #d9a441;
-  --chart-4: #4f6a91;
-  --chart-5: #8a8278;
+  --chart-1: #5f8ae0;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-muted: #323c4b;
 }
 
 @theme inline {
@@ -168,8 +168,7 @@
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  --color-chart-muted: var(--chart-muted);
 }
 
 @layer base {
