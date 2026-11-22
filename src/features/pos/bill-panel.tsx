@@ -21,6 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useCloseSession } from '@/features/floor/api'
 import { PayLinkButton } from '@/features/payments/pay-link-dialog'
 import { providerName } from '@/features/payments/providers'
+import { usePrintReceipt, usePrinterSettings } from '@/features/printing/use-printer'
 import { whatsappLink } from '@/features/payments/whatsapp'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { errorMessage } from '@/lib/errors'
@@ -73,6 +74,8 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
   const money = (m: number) => formatMoney(m, currency)
   const remaining = Math.max(0, bill.base_minor - bill.paid_base_minor)
   const take = useTakePayment(op)
+  const printReceipt = usePrintReceipt()
+  const printer = usePrinterSettings()
   const refund = useRefund(op)
   const closeTable = useCloseSession(branchId)
   const [mode, setMode] = useState<SplitMode>('full')
@@ -143,6 +146,11 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
             r.bill_status === 'paid' ? 'Bill paid' : `${money(r.amount_minor)} received`,
           )
           if (r.bill_status === 'paid') setMode('full')
+          if (r.bill_status === 'paid' && printer.transport) {
+            void printReceipt(bill.receipt_token, {
+              drawer: method === 'cash' && printer.drawerOnCash,
+            })
+          }
         },
       },
     )
@@ -445,14 +453,8 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
                 Give change: {money(lastChange)}
               </div>
             )}
-            <Button variant="secondary" asChild>
-              <a
-                href={`${receiptUrl(bill.receipt_token)}?print=1`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Printer /> Print receipt
-              </a>
+            <Button variant="secondary" onClick={() => printReceipt(bill.receipt_token)}>
+              <Printer /> {printer.transport ? 'Reprint receipt' : 'Print receipt'}
             </Button>
             <div className="grid grid-cols-2 gap-2">
               <Button

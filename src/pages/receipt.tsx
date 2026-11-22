@@ -7,56 +7,10 @@ import { PayPanel, PaymentResult } from '@/features/payments/pay-panel'
 import { providerName } from '@/features/payments/providers'
 import { supabase } from '@/lib/supabase'
 import { formatMoney } from '@/lib/utils'
-
-type Receipt = {
-  restaurant: string
-  branch: string
-  address: string | null
-  phone: string | null
-  tax_label: string
-  tax_registration: string | null
-  footer: string | null
-  bill_number: number
-  date: string
-  paid_at: string | null
-  type: 'dine_in' | 'takeaway' | 'delivery'
-  status: 'open' | 'paid' | 'refunded' | 'void'
-  table: string | null
-  currency: string
-  customer_name: string | null
-  subtotal_minor: number
-  discount_minor: number
-  discount_note: string
-  service_bps: number
-  service_minor: number
-  base_minor: number
-  tax_minor: number
-  paid_total_minor: number
-  items: {
-    name: string
-    variant: string | null
-    quantity: number
-    line_total_minor: number
-    modifiers: string[]
-  }[]
-  payments: {
-    method: string
-    provider: string | null
-    amount_minor: number
-    tax_minor: number
-    tax_bps: number
-    tendered_minor: number | null
-    change_minor: number
-    status: string
-  }[]
-}
-
-const methodName: Record<string, string> = {
-  cash: 'Cash',
-  card: 'Card',
-  wallet: 'Wallet',
-  bank_transfer: 'Bank / Raast',
-}
+import {
+  paymentMethodName as methodName,
+  type ReceiptData as Receipt,
+} from '@/features/pos/receipt-types'
 
 /**
  * Receipt for thermal printers (80 mm) and for sharing as a link. Public by

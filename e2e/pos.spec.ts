@@ -97,9 +97,15 @@ test('cashier bills a table with a cash/card split, a takeaway, and closes the s
   await expect(bill).toContainText('Paid Rs 2,407')
 
   // Receipt shows both tax rates
-  const receiptLink = await bill.getByRole('link', { name: 'Print receipt' }).getAttribute('href')
+  // No thermal printer on this device → the receipt page opens for the print dialog.
+  const [popup] = await Promise.all([
+    context.waitForEvent('page'),
+    bill.getByRole('button', { name: 'Print receipt' }).click(),
+  ])
+  const receiptLink = popup.url()
+  await popup.close()
   const receipt = await context.newPage()
-  await receipt.goto(receiptLink!.replace('?print=1', ''))
+  await receipt.goto(receiptLink.replace('?print=1', ''))
   await expect(receipt.getByText('PRA Sales Tax 16% (Cash)')).toBeVisible()
   await expect(receipt.getByText('PRA Sales Tax 5% (Card)')).toBeVisible()
   await expect(receipt.getByText('Discount (Regular guest)')).toBeVisible()

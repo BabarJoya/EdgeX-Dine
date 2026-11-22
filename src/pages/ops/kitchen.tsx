@@ -3,6 +3,10 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { StationLayout } from '@/components/layout/station-layout'
+import { kitchenTicketBytes } from '@/features/printing/documents'
+import { print } from '@/features/printing/printer'
+import { PrinterSetupButton } from '@/features/printing/printer-setup'
+import { usePrinterSettings } from '@/features/printing/use-printer'
 import { RequirePerm } from '@/components/require-perm'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -70,6 +74,7 @@ function KitchenScreen() {
   useLiveTickets(tenantId)
   const now = useNow(15_000)
   const sound = useSound('kds')
+  const printer = usePrinterSettings()
   const [station, setStation] = useState<string>(readStation)
   const [showDone, setShowDone] = useState(false)
 
@@ -104,6 +109,19 @@ function KitchenScreen() {
     all.filter((t) => t.status === 'new'),
     (fresh) => {
       if (fresh.some(matches)) sound.play('newTicket')
+      if (printer.transport && printer.autoKitchen) {
+        void (async () => {
+          for (const t of fresh.filter(matches)) {
+            await print(
+              kitchenTicketBytes(t, {
+                columns: printer.columns,
+                station: t.station_id ? stationName(t.station_id) : undefined,
+              }),
+              printer,
+            ).catch(() => toast.error(`Could not print ticket #${t.orders.order_number}`))
+          }
+        })()
+      }
     },
   )
 
@@ -118,15 +136,18 @@ function KitchenScreen() {
       subtitle={branch?.name}
       fullscreen
       actions={
-        <Button
-          variant={sound.enabled ? 'secondary' : 'ghost'}
-          size="sm"
-          onClick={() => sound.enable(!sound.enabled)}
-          aria-pressed={sound.enabled}
-        >
-          {sound.enabled ? <Volume2 /> : <VolumeX />}
-          <span className="hidden sm:inline">{sound.enabled ? 'Sound on' : 'Sound off'}</span>
-        </Button>
+        <>
+          <PrinterSetupButton kitchen />
+          <Button
+            variant={sound.enabled ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => sound.enable(!sound.enabled)}
+            aria-pressed={sound.enabled}
+          >
+            {sound.enabled ? <Volume2 /> : <VolumeX />}
+            <span className="hidden sm:inline">{sound.enabled ? 'Sound on' : 'Sound off'}</span>
+          </Button>
+        </>
       }
     >
       {!branchId ? (

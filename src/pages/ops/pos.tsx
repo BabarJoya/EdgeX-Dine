@@ -1,6 +1,7 @@
 import { Lock, Plus, ShoppingBag, Truck, Wallet } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { PrinterSetupButton } from '@/features/printing/printer-setup'
 import { StationLayout } from '@/components/layout/station-layout'
 import { RequirePerm } from '@/components/require-perm'
 import { Alert } from '@/components/ui/alert'
@@ -60,6 +61,7 @@ function Pos() {
       actions={
         operator && (
           <>
+            <PrinterSetupButton />
             {shift.data && (
               <Button
                 variant="secondary"

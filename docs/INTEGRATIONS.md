@@ -48,6 +48,29 @@ integration is added, the bill link shows the restaurant's **Raast ID / IBAN**;
 the guest transfers the amount in their banking app and the cashier records
 it in the POS as **Bank / Raast** with the transaction ID as reference.
 
+## Thermal printers
+
+Printers are set up **per device** (the POS tablet, the kitchen screen) with
+the printer button in the POS and kitchen display headers. Printing goes
+straight to the printer as ESC/POS commands, so there is no print dialog:
+
+- **Connect USB** (WebUSB) for USB printers that expose a printer interface.
+  On Windows the installed printer driver usually holds the device; use the
+  serial option (with the printer's USB-serial/virtual COM driver) instead.
+- **Connect serial / Bluetooth** (Web Serial) for serial, USB-serial and
+  Bluetooth (SPP) printers; pick the speed the printer uses (often 9600).
+- Paper width 80 mm (48 columns) or 58 mm (32 columns).
+- POS: receipts print automatically when a bill is paid, and **Open the cash
+  drawer after cash payments** pulses a drawer connected to the printer.
+  Receipts carry a QR code of the bill link (pay online / digital receipt).
+- Kitchen display: **Print new kitchen tickets automatically** prints every
+  new ticket for the station shown on that screen.
+
+Works in Chrome and Edge (desktop and Android). Safari and Firefox don't
+support these APIs; there, receipts fall back to the browser print dialog.
+Text is printed in the printer's built-in character set, so tickets use the
+English item names (Urdu names are not sent to the printer).
+
 ## Local development and tests
 
 `npm run dev` and `npm run preview` serve the `api/` functions too. Add to
