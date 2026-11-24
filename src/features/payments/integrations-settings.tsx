@@ -101,6 +101,11 @@ export const PROVIDERS: ProviderSpec[] = [
       },
       { key: 'receipt_template', label: 'Receipt template', placeholder: 'edgex_receipt' },
       { key: 'ready_template', label: 'Order-ready template', placeholder: 'edgex_order_ready' },
+      {
+        key: 'reservation_template',
+        label: 'Booking template',
+        placeholder: 'edgex_reservation',
+      },
       { key: 'language', label: 'Template language', placeholder: 'en' },
       { key: 'send_receipts', label: 'Send receipts when a bill is paid', toggle: true },
       {
@@ -108,6 +113,7 @@ export const PROVIDERS: ProviderSpec[] = [
         label: 'Tell takeaway / delivery guests when food is ready',
         toggle: true,
       },
+      { key: 'send_reservations', label: 'Confirm bookings', toggle: true },
     ],
   },
   {

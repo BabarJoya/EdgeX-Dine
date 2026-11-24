@@ -60,6 +60,7 @@ import {
 import { MoveTableDialog } from '@/features/floor/move-dialog'
 import { QrSvg } from '@/features/floor/qr'
 import { tableStatusMeta } from '@/features/floor/status'
+import { time12, useTableReservations } from '@/features/reservations/api'
 import { useActiveOrders, useLiveOrders } from '@/features/orders/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
 import { errorMessage } from '@/lib/errors'
@@ -319,6 +320,7 @@ function FloorPlan({
   const move = useMoveTable(branchId)
   const drag = useRef<{ id: string; dx: number; dy: number; moved: boolean } | null>(null)
   const [ghost, setGhost] = useState<{ id: string; x: number; y: number } | null>(null)
+  const booked = useTableReservations(branchId).data
   const TILE = 120 // grid units
 
   const toGrid = (clientX: number, clientY: number) => {
@@ -358,6 +360,7 @@ function FloorPlan({
         const pos = ghost?.id === t.id ? ghost : { x: t.pos_x, y: t.pos_y }
         const meta = tableStatusMeta[t.status]
         const open = ordersFor(t.id).length
+        const res = booked?.get(t.id)
         return (
           <button
             key={t.id}
@@ -392,6 +395,14 @@ function FloorPlan({
                 <Users className="size-3" /> {t.seats}
               </span>
               {open > 0 && <span className="block text-[11px] font-medium">{open} open</span>}
+              {res && !open && (
+                <span
+                  className="mt-0.5 block rounded-sm bg-info-soft px-1 text-[10px] leading-4 font-medium text-info"
+                  title={`${res.name} · ${res.party_size} guests`}
+                >
+                  {res.status === 'seated' ? 'Seated' : `Res ${time12(res.time)}`}
+                </span>
+              )}
             </span>
           </button>
         )

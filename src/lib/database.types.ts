@@ -85,14 +85,14 @@ isOneToOne: false
                   ]
                 },"branches": {
                   Row: {
-                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"google_review_url": string | null,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
+                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"google_review_url": string | null,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"res_auto_confirm": boolean,"res_close": string,"res_covers_per_slot": number,"res_days_ahead": number,"res_duration_minutes": number,"res_max_party": number,"res_open": string,"res_slot_minutes": number,"reservations_enabled": boolean,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -921,6 +921,32 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"reservations": {
+                  Row: {
+                    "branch_id": string,"cancel_reason": string | null,"created_at": string,"created_by": string | null,"duration_minutes": number,"id": string,"name": string,"notes": string,"party_size": number,"phone": string | null,"source": string,"starts_at": string,"status": string,"table_id": string | null,"tenant_id": string,"token": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"duration_minutes"?: number,"id"?: string,"name": string,"notes"?: string,"party_size": number,"phone"?: string | null,"source"?: string,"starts_at": string,"status"?: string,"table_id"?: string | null,"tenant_id": string,"token"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "branch_id"?: string,"cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"duration_minutes"?: number,"id"?: string,"name"?: string,"notes"?: string,"party_size"?: number,"phone"?: string | null,"source"?: string,"starts_at"?: string,"status"?: string,"table_id"?: string | null,"tenant_id"?: string,"token"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reservations_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "reservations_table_id_tenant_id_fkey"
+      columns: ["table_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "tables"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"reviews": {
                   Row: {
                     "bill_id": string,"branch_id": string,"comment": string,"created_at": string,"customer_name": string | null,"customer_phone": string | null,"id": string,"rating": number,"tenant_id": string,"updated_at": string
@@ -1359,6 +1385,9 @@ isOneToOne: false
 "assign_table_waiter":
 { Args: { "p_table_id": string,"p_user_id": string }; Returns: undefined
                            },
+"cancel_my_reservation":
+{ Args: { "p_token": string }; Returns: undefined
+                           },
 "cancel_purchase":
 { Args: { "p_purchase_id": string }; Returns: undefined
                            },
@@ -1398,6 +1427,9 @@ isOneToOne: false
 "delete_expense":
 { Args: { "p_expense_id": string }; Returns: undefined
                            },
+"get_booking_info":
+{ Args: { "p_slug": string }; Returns: Json
+                           },
 "get_guest_menu":
 { Args: { "p_slug": string,"p_table_token"?: string }; Returns: Json
                            },
@@ -1414,6 +1446,9 @@ isOneToOne: false
                            },
 "get_receipt_payment_options":
 { Args: { "p_receipt_token": string }; Returns: Json
+                           },
+"get_reservation":
+{ Args: { "p_token": string }; Returns: Json
                            },
 "get_review":
 { Args: { "p_receipt_token": string }; Returns: Json
@@ -1490,6 +1525,12 @@ isOneToOne: false
 "request_plan_change":
 { Args: { "p_cycle": Database["public"]['Enums']["billing_cycle"],"p_plan_id": string,"p_tenant_id": string }; Returns: string
                            },
+"request_reservation":
+{ Args: { "p_branch_id": string,"p_date": string,"p_name": string,"p_notes"?: string,"p_party": number,"p_phone": string,"p_time": string }; Returns: Json
+                           },
+"reservation_slots":
+{ Args: { "p_branch_id": string,"p_date": string,"p_party": number }; Returns: Json
+                           },
 "respond_guest_request":
 { Args: { "p_request_id": string,"p_status": Database["public"]['Enums']["guest_request_status"] }; Returns: undefined
                            },
@@ -1520,6 +1561,9 @@ isOneToOne: false
 "save_recipe":
 { Args: { "p_lines": Json,"p_target": Json,"p_tenant_id": string }; Returns: undefined
                            },
+"save_reservation":
+{ Args: { "p": Json }; Returns: string
+                           },
 "save_supplier":
 { Args: { "p": Json }; Returns: string
                            },
@@ -1541,6 +1585,9 @@ isOneToOne: false
 "set_my_pin":
 { Args: { "p_pin": string,"p_tenant_id": string }; Returns: undefined
                            },
+"set_reservation_status":
+{ Args: { "p_id": string,"p_reason"?: string,"p_status": string }; Returns: undefined
+                           },
 "set_role_permissions":
 { Args: { "p_permissions": (string)[],"p_role_id": string }; Returns: undefined
                            },
@@ -1555,6 +1602,9 @@ isOneToOne: false
                            },
 "submit_review":
 { Args: { "p_comment"?: string,"p_rating": number,"p_receipt_token": string }; Returns: Json
+                           },
+"table_reservations":
+{ Args: { "p_branch_id": string }; Returns: Json
                            },
 "take_payment":
 { Args: { "p_base_minor": number,"p_bill_id": string,"p_method": Database["public"]['Enums']["payment_method"],"p_note"?: string,"p_operator_token"?: string,"p_reference"?: string,"p_tendered_minor"?: number }; Returns: Json

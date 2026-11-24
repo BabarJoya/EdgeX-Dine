@@ -12,7 +12,7 @@ export type Message = {
   id: string
   channel: 'whatsapp' | 'fiscal'
   mode: 'sandbox' | 'live'
-  kind: 'receipt' | 'order_ready' | 'fiscal'
+  kind: 'receipt' | 'order_ready' | 'fiscal' | 'reservation'
   to: string
   params: Record<string, string | number>
   settings: Record<string, string>
@@ -37,18 +37,26 @@ const text = (v: string | number) => ({ type: 'text', text: String(v).slice(0, 2
 /** The Cloud API request body for one queued message. */
 export function templateBody(m: Message, appUrl: string) {
   const p = m.params
-  const isReceipt = m.kind === 'receipt'
-  const name = isReceipt
-    ? m.settings.receipt_template || 'edgex_receipt'
-    : m.settings.ready_template || 'edgex_order_ready'
-  const parameters = isReceipt
-    ? [
+  const templates = {
+    receipt: [
+      m.settings.receipt_template || 'edgex_receipt',
+      [
         text(p.restaurant),
         text(p.bill_number),
         text(money(Number(p.total_minor), String(p.currency || 'PKR'))),
         text(`${appUrl}/r/${p.receipt_token}`),
-      ]
-    : [text(p.restaurant), text(p.order_number)]
+      ],
+    ],
+    order_ready: [
+      m.settings.ready_template || 'edgex_order_ready',
+      [text(p.restaurant), text(p.order_number)],
+    ],
+    reservation: [
+      m.settings.reservation_template || 'edgex_reservation',
+      [text(p.restaurant), text(p.when), text(p.party_size), text(`${appUrl}/res/${p.token}`)],
+    ],
+  } as Record<string, [string, ReturnType<typeof text>[]]>
+  const [name, parameters] = templates[m.kind]
   return {
     messaging_product: 'whatsapp',
     to: m.to,

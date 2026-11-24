@@ -42,6 +42,9 @@ const AdminRestaurantsPage = lazy(() =>
 const AdminPlansPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminPlansPage'))
 const AdminSupportPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSupportPage'))
 const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSettingsPage'))
+const ReservationsPage = lazy(() => named(import('@/pages/app/reservations'), 'ReservationsPage'))
+const BookPage = lazy(() => named(import('@/pages/guest/book'), 'BookPage'))
+const ReservationPage = lazy(() => named(import('@/pages/guest/book'), 'ReservationPage'))
 const CustomersPage = lazy(() => named(import('@/pages/app/customers'), 'CustomersPage'))
 const InventoryPage = lazy(() => named(import('@/pages/app/inventory'), 'InventoryPage'))
 const ReportsPage = lazy(() => named(import('@/pages/app/reports'), 'ReportsPage'))
@@ -87,6 +90,7 @@ export const router = createBrowserRouter(
             { path: 'reports', element: s(<ReportsPage />) },
             { path: 'inventory', element: s(<InventoryPage />) },
             { path: 'customers', element: s(<CustomersPage />) },
+            { path: 'reservations', element: s(<ReservationsPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
           ],
         },
@@ -135,6 +139,8 @@ export const router = createBrowserRouter(
           ],
         },
         { path: '/m/:slug', element: s(<GuestMenuPage />) },
+        { path: '/book/:slug', element: s(<BookPage />) },
+        { path: '/res/:token', element: s(<ReservationPage />) },
         { path: '*', element: <NotFoundPage /> },
       ]
     : [{ path: '*', element: <SetupRequiredPage /> }],

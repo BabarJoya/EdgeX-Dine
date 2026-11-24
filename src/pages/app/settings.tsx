@@ -45,6 +45,7 @@ import {
 } from '@/features/settings/api'
 import { IntegrationsSettings } from '@/features/payments/integrations-settings'
 import { PlanTab } from '@/features/platform/plan-tab'
+import { ReservationSettings } from '@/features/reservations/reservation-settings'
 import { BillingSettings } from '@/features/pos/billing-settings'
 import { useBranches } from '@/features/tenant/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
@@ -59,6 +60,7 @@ export function SettingsPage() {
     can('settings.manage') && { value: 'restaurant', label: 'Restaurant' },
     can('branches.manage') && { value: 'branches', label: 'Branches' },
     can('branches.manage') && { value: 'billing', label: 'Billing & tax' },
+    can('branches.manage') && { value: 'reservations', label: 'Reservations' },
     can('settings.manage') && { value: 'integrations', label: 'Integrations' },
     { value: 'plan', label: 'Plan' },
   ].filter(Boolean) as { value: string; label: string }[]
@@ -90,6 +92,11 @@ export function SettingsPage() {
         {can('branches.manage') && (
           <TabsContent value="billing">
             <BillingSettings />
+          </TabsContent>
+        )}
+        {can('branches.manage') && (
+          <TabsContent value="reservations">
+            <ReservationSettings />
           </TabsContent>
         )}
         {can('settings.manage') && (

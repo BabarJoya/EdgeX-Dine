@@ -1,5 +1,6 @@
 import {
   Armchair,
+  CalendarDays,
   ChartColumn,
   ChefHat,
   HandPlatter,
@@ -32,6 +33,12 @@ export const ownerNav: NavGroup[] = [
       { label: 'Overview', to: '/app', icon: LayoutGrid, end: true },
       { label: 'Orders', to: '/app/orders', icon: ReceiptText, perms: ['orders.view'] },
       { label: 'Tables', to: '/app/tables', icon: Armchair, perms: ['tables.view'] },
+      {
+        label: 'Reservations',
+        to: '/app/reservations',
+        icon: CalendarDays,
+        perms: ['tables.view', 'reservations.manage'],
+      },
     ],
   },
   {
