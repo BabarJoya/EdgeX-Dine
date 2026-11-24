@@ -1,4 +1,4 @@
-import { Package, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -46,6 +46,7 @@ const AdminRestaurantsPage = lazy(() =>
 const AdminPlansPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminPlansPage'))
 const AdminSupportPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSupportPage'))
 const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSettingsPage'))
+const InventoryPage = lazy(() => named(import('@/pages/app/inventory'), 'InventoryPage'))
 const ReportsPage = lazy(() => named(import('@/pages/app/reports'), 'ReportsPage'))
 const SupportPage = lazy(() => named(import('@/pages/app/support'), 'SupportPage'))
 const GuestMenuPage = lazy(() => named(import('@/pages/guest/guest-menu'), 'GuestMenuPage'))
@@ -69,14 +70,6 @@ const upcoming = [
     phase: 'Phase 5',
     description: 'Guest profiles and visit history.',
     summary: 'Customers are saved from orders, reservations and receipts sent by WhatsApp.',
-  },
-  {
-    path: 'inventory',
-    title: 'Inventory',
-    icon: Package,
-    phase: 'Phase 9',
-    description: 'Stock, recipes, suppliers and purchases.',
-    summary: 'Track ingredients, cost each dish and get low-stock alerts.',
   },
 ]
 
@@ -106,6 +99,7 @@ export const router = createBrowserRouter(
             { path: 'orders', element: s(<OrdersPage />) },
             { path: 'support', element: s(<SupportPage />) },
             { path: 'reports', element: s(<ReportsPage />) },
+            { path: 'inventory', element: s(<InventoryPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
             ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],

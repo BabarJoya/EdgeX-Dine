@@ -264,7 +264,7 @@ serial and Bluetooth).
 
 ---
 
-## Phase 9 — Inventory, suppliers & costing (≈2–3 weeks)
+## Phase 9 — Inventory, suppliers & costing (≈2–3 weeks) ✅ Done
 
 **Tables:** `inventory_items`, `units`, `suppliers`, `purchases`,
 `purchase_items`, `stock_movements`, `recipes`, `recipe_items`, `wastage`,
@@ -274,6 +274,22 @@ serial and Bluetooth).
 - Recipes per product or variant; stock is deducted automatically when an order is served (one `stock_movements` row per item).
 - Food costing and margin per item, low-stock alerts, wastage, stock adjustments and counts.
 - Inventory reports, expenses → **profit & loss** report.
+
+**Delivered:** Inventory page (Stock, Purchases, Recipes & costing,
+Suppliers, Expenses). Stock is per branch and every change goes through a
+`stock_movements` ledger that records its cost. Purchases are saved as
+purchase orders and received later, or received at once; receiving updates
+a moving-average cost per item. Recipes per dish, per size (overrides the
+dish) and per add-on; ordering deducts the ingredients and cancelling puts
+them back. Wastage with a reason, stock counts that record only the
+differences, low-stock alerts on the Overview. Food cost and margin per dish
+and size. Profit & loss on the Reports page: net sales − food cost −
+wastage − count differences − expenses by category. All behind the plan's
+`inventory` feature and the `inventory.view` / `inventory.manage`
+permissions. The Overview setup checklist now ticks steps off from real data.
+**Moved:** stock transfers between branches and supplier payments / ledgers
+→ on demand; unit conversion (buy in kg, use in g) is handled by picking one
+unit per item.
 
 ---
 

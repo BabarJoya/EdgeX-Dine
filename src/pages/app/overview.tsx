@@ -1,13 +1,42 @@
-import { ArrowUpRight, Check, Circle } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { AlertTriangle, ArrowUpRight, Check, Circle } from 'lucide-react'
 import { Link } from 'react-router'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageHeader } from '@/components/ui/page-header'
+import { fmtQty, useLowStock } from '@/features/inventory/api'
+import { useTenantAccess } from '@/features/platform/api'
+import { hasFeature } from '@/features/platform/features'
 import { useDashboardToday } from '@/features/reports/api'
 import { change } from '@/features/reports/dates'
 import { useMembers } from '@/features/staff/api'
 import { useTenant } from '@/features/tenant/tenant-provider'
+import { supabase } from '@/lib/supabase'
 import { cn, formatMoney } from '@/lib/utils'
+
+/** Which setup steps have real data behind them (head-only counts). */
+function useSetupProgress(tenantId: string | undefined) {
+  return useQuery({
+    queryKey: ['setup-progress', tenantId],
+    enabled: !!tenantId,
+    queryFn: async () => {
+      const count = async (table: 'products' | 'tables' | 'kitchen_stations' | 'payments') => {
+        const { count: n } = await supabase
+          .from(table)
+          .select('id', { count: 'exact', head: true })
+          .eq('tenant_id', tenantId!)
+        return (n ?? 0) > 0
+      }
+      const [menu, tables, stations, payments] = await Promise.all([
+        count('products'),
+        count('tables'),
+        count('kitchen_stations'),
+        count('payments'),
+      ])
+      return { menu, tables, stations, payments }
+    },
+  })
+}
 
 export function OverviewPage() {
   const { membership, tenantId, branches, branchId, can } = useTenant()
@@ -41,6 +70,13 @@ export function OverviewPage() {
     },
   ]
   const members = useMembers(can('staff.view') ? tenantId : undefined)
+  const progress = useSetupProgress(tenantId).data
+  const access = useTenantAccess(tenantId)
+  const low = useLowStock(
+    tenantId,
+    branchId,
+    can('inventory.view') && hasFeature(access.data?.features, 'inventory'),
+  ).data
   const setupSteps = [
     {
       label: 'Create your restaurant and first branch',
@@ -54,10 +90,20 @@ export function OverviewPage() {
       phase: 'Phase 1',
       to: '/app/staff',
     },
-    { label: 'Add your menu', done: false, phase: 'Phase 2' },
-    { label: 'Add tables and print QR codes', done: false, phase: 'Phase 3' },
-    { label: 'Set up kitchen stations', done: false, phase: 'Phase 4' },
-    { label: 'Take your first payment', done: false, phase: 'Phase 5' },
+    { label: 'Add your menu', done: !!progress?.menu, phase: 'Menu', to: '/app/menu' },
+    {
+      label: 'Add tables and print QR codes',
+      done: !!progress?.tables,
+      phase: 'Tables',
+      to: '/app/tables',
+    },
+    {
+      label: 'Set up kitchen stations',
+      done: !!progress?.stations,
+      phase: 'Menu',
+      to: '/app/menu',
+    },
+    { label: 'Take your first payment', done: !!progress?.payments, phase: 'POS' },
   ]
   const doneCount = setupSteps.filter((s) => s.done).length
 
@@ -78,6 +124,41 @@ export function OverviewPage() {
             </Card>
           ))}
       </div>
+
+      {low && low.length > 0 && (
+        <Card className="mt-6 border-warning/40" data-testid="low-stock">
+          <CardHeader className="flex-row items-center justify-between gap-4">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="size-4 text-warning" /> Low on stock
+              </CardTitle>
+              <CardDescription>
+                {low.length} {low.length === 1 ? 'item is' : 'items are'} at or below the reorder
+                level.
+              </CardDescription>
+            </div>
+            <Link to="/app/inventory" className="text-sm text-link hover:underline">
+              Open inventory
+            </Link>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <ul className="grid gap-1 text-sm sm:grid-cols-2">
+              {low.slice(0, 8).map((i) => (
+                <li key={`${i.branch_id}-${i.item_id}`} className="flex justify-between gap-3">
+                  <span>
+                    {i.name}
+                    {!branchId && <span className="text-muted-foreground"> · {i.branch}</span>}
+                  </span>
+                  <span className="text-warning tabular-nums">
+                    {fmtQty(i.quantity, i.unit)}
+                    <span className="text-muted-foreground"> / {fmtQty(i.reorder_level)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="mt-6">
         <CardHeader className="flex-row items-start justify-between gap-4">

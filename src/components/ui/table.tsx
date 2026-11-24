@@ -36,3 +36,7 @@ export function TableHead({ className, ...props }: ComponentProps<'th'>) {
 export function TableCell({ className, ...props }: ComponentProps<'td'>) {
   return <td className={cn('h-11 px-3 align-middle whitespace-nowrap', className)} {...props} />
 }
+
+export function TableFooter({ className, ...props }: ComponentProps<'tfoot'>) {
+  return <tfoot className={cn('border-t bg-muted/40', className)} {...props} />
+}

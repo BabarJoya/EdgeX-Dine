@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { useTenantAccess } from '@/features/platform/api'
+import { ProfitLossCard } from '@/features/inventory/profit-loss'
 import { hasFeature } from '@/features/platform/features'
 import { useSalesReport, type SalesReport } from '@/features/reports/api'
 import { ChartCard, ColumnChart, RankChart } from '@/features/reports/charts'
@@ -69,6 +70,7 @@ const sourceName: Record<string, string> = {
 
 function Reports() {
   const { tenantId, branchId, branch, membership, can } = useTenant()
+  const access = useTenantAccess(tenantId)
   const [preset, setPreset] = useState<PresetKey | 'custom'>('7d')
   const tz = membership?.tenants.timezone
   const [range, setRange] = useState(() => presetRange('7d', new Date(), tz))
@@ -180,7 +182,20 @@ function Reports() {
           </div>
         )
       ) : (
-        <ReportBody r={r} money={money} compact={compact} />
+        <>
+          <ReportBody r={r} money={money} compact={compact} />
+          {hasFeature(access.data?.features, 'inventory') && (
+            <div className="mt-4">
+              <ProfitLossCard
+                tenantId={tenantId}
+                branchId={branchId}
+                from={range.from}
+                to={range.to}
+                currency={currency}
+              />
+            </div>
+          )}
+        </>
       )}
     </>
   )
