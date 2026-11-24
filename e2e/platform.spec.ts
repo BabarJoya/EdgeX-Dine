@@ -126,4 +126,18 @@ test('EdgeX admin manages restaurants, plans, support and approvals', async ({
 
   // Leave the platform setting as it was for other tests.
   sql(`update public.platform_settings set require_approval = false`)
+
+  // --- Account closure: suspend, then delete permanently ---------------------------
+  await admin.getByRole('cell', { name: new RegExp(`Fresh Cafe ${run}`) }).click()
+  await admin.getByRole('button', { name: 'Suspend' }).click()
+  await admin.getByLabel('Reason (kept in the history)').fill('Owner closed the account')
+  await admin.getByRole('dialog').getByRole('button', { name: 'Suspend' }).last().click()
+  await admin.getByRole('cell', { name: new RegExp(`Fresh Cafe ${run}`) }).click()
+  await admin.getByRole('button', { name: 'Delete restaurant…' }).click()
+  const confirm = admin.getByRole('button', { name: 'Delete permanently' })
+  await expect(confirm).toBeDisabled()
+  await admin.getByLabel(`Type fresh-${run} to confirm`).fill(`fresh-${run}`)
+  await confirm.click()
+  await expect(admin.getByText(`Fresh Cafe ${run} deleted`)).toBeVisible()
+  expect(sql(`select count(*) from public.tenants where slug = 'fresh-${run}'`)).toBe('0')
 })

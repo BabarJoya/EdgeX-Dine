@@ -57,6 +57,7 @@ import {
   useRecordPayment,
   useSavePlan,
   useSetSubscription,
+  useDeleteTenant,
   useSetTenantStatus,
   useTickets,
   useUpdatePlatformSettings,
@@ -285,6 +286,9 @@ function TenantSheet({ tenant, onClose }: { tenant: AdminTenant; onClose: () => 
   const detail = useAdminTenantDetail(tenant.id)
   const plans = usePlans()
   const setStatus = useSetTenantStatus()
+  const del = useDeleteTenant()
+  const [deleting, setDeleting] = useState(false)
+  const [confirmSlug, setConfirmSlug] = useState('')
   const setSub = useSetSubscription()
   const pay = useRecordPayment()
   const [statusDialog, setStatusDialog] = useState<'active' | 'suspended' | null>(null)
@@ -351,6 +355,15 @@ function TenantSheet({ tenant, onClose }: { tenant: AdminTenant; onClose: () => 
                 onClick={() => setStatusDialog('suspended')}
               >
                 Suspend
+              </Button>
+            )}
+            {tenant.status === 'suspended' && (
+              <Button
+                variant="ghost"
+                className="text-destructive"
+                onClick={() => setDeleting(true)}
+              >
+                Delete restaurant…
               </Button>
             )}
           </section>
@@ -531,6 +544,49 @@ function TenantSheet({ tenant, onClose }: { tenant: AdminTenant; onClose: () => 
             </>
           )}
         </div>
+
+        {deleting && (
+          <Dialog open onOpenChange={(o) => !o && setDeleting(false)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete {tenant.name} permanently?</DialogTitle>
+                <DialogDescription>
+                  Every order, bill, payment, menu item, staff membership and setting is removed.
+                  This cannot be undone. Export anything the restaurant needs first.
+                </DialogDescription>
+              </DialogHeader>
+              {del.error && <Alert variant="destructive">{errorMessage(del.error)}</Alert>}
+              <Field id="confirm-slug" label={`Type ${tenant.slug} to confirm`}>
+                <Input
+                  id="confirm-slug"
+                  autoComplete="off"
+                  value={confirmSlug}
+                  onChange={(e) => setConfirmSlug(e.target.value)}
+                />
+              </Field>
+              <DialogFooter>
+                <Button
+                  variant="destructive"
+                  disabled={confirmSlug.trim().toLowerCase() !== tenant.slug || del.isPending}
+                  onClick={() =>
+                    del.mutate(
+                      { tenantId: tenant.id, slug: confirmSlug.trim() },
+                      {
+                        onSuccess: () => (
+                          toast.success(`${tenant.name} deleted`),
+                          setDeleting(false),
+                          onClose()
+                        ),
+                      },
+                    )
+                  }
+                >
+                  Delete permanently
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
 
         {statusDialog && (
           <Dialog open onOpenChange={(o) => !o && setStatusDialog(null)}>

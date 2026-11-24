@@ -280,6 +280,11 @@ export const useSetTenantStatus = () =>
     }),
   )
 
+export const useDeleteTenant = () =>
+  useAdminMutation((v: { tenantId: string; slug: string }) =>
+    rpc('admin_delete_tenant', { p_tenant_id: v.tenantId, p_confirm_slug: v.slug }),
+  )
+
 export const useSetSubscription = () =>
   useAdminMutation(
     (v: {
