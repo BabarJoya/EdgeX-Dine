@@ -85,14 +85,14 @@ isOneToOne: false
                   ]
                 },"branches": {
                   Row: {
-                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
+                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"google_review_url": string | null,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -921,6 +921,32 @@ isOneToOne: false
       referencedColumns: ["id","tenant_id"]
     }
                   ]
+                },"reviews": {
+                  Row: {
+                    "bill_id": string,"branch_id": string,"comment": string,"created_at": string,"customer_name": string | null,"customer_phone": string | null,"id": string,"rating": number,"tenant_id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bill_id": string,"branch_id": string,"comment"?: string,"created_at"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"id"?: string,"rating": number,"tenant_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "bill_id"?: string,"branch_id"?: string,"comment"?: string,"created_at"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"id"?: string,"rating"?: number,"tenant_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reviews_bill_id_tenant_id_fkey"
+      columns: ["bill_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "bills"
+      referencedColumns: ["id","tenant_id"]
+    },{
+      foreignKeyName: "reviews_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
+    }
+                  ]
                 },"role_permissions": {
                   Row: {
                     "permission_key": string,"role_id": string,"tenant_id": string
@@ -1357,6 +1383,15 @@ isOneToOne: false
 "create_tenant":
 { Args: { "p_branch_name": string,"p_city"?: string,"p_country"?: string,"p_currency"?: string,"p_name": string,"p_slug": string,"p_timezone"?: string }; Returns: string
                            },
+"customer_detail":
+{ Args: { "p_phone": string,"p_tenant_id": string }; Returns: Json
+                           },
+"customer_insights":
+{ Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
+                           },
+"customers_list":
+{ Args: { "p_branch_id"?: string,"p_search"?: string,"p_tenant_id": string }; Returns: Json
+                           },
 "dashboard_today":
 { Args: { "p_branch_id": string,"p_tenant_id": string }; Returns: Json
                            },
@@ -1378,6 +1413,9 @@ isOneToOne: false
 { Args: { "p_receipt_token": string }; Returns: Json
                            },
 "get_receipt_payment_options":
+{ Args: { "p_receipt_token": string }; Returns: Json
+                           },
+"get_review":
 { Args: { "p_receipt_token": string }; Returns: Json
                            },
 "inventory_report":
@@ -1514,6 +1552,9 @@ isOneToOne: false
                            },
 "shift_report":
 { Args: { "p_shift_id": string }; Returns: Json
+                           },
+"submit_review":
+{ Args: { "p_comment"?: string,"p_rating": number,"p_receipt_token": string }; Returns: Json
                            },
 "take_payment":
 { Args: { "p_base_minor": number,"p_bill_id": string,"p_method": Database["public"]['Enums']["payment_method"],"p_note"?: string,"p_operator_token"?: string,"p_reference"?: string,"p_tendered_minor"?: number }; Returns: Json

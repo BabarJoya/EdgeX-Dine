@@ -64,6 +64,7 @@ function BillingForm({ branch }: { branch: Tables<'branches'> }) {
     service: toPct(branch.service_charge_bps),
     tax_registration: branch.tax_registration ?? '',
     receipt_footer: branch.receipt_footer ?? '',
+    google_review_url: branch.google_review_url ?? '',
   })
   const save = useMutation({
     mutationFn: async () => {
@@ -77,6 +78,7 @@ function BillingForm({ branch }: { branch: Tables<'branches'> }) {
           service_charge_bps: toBps(f.service),
           tax_registration: f.tax_registration.trim() || null,
           receipt_footer: f.receipt_footer.trim() || null,
+          google_review_url: f.google_review_url.trim() || null,
         })
         .eq('id', branch.id)
       if (error) throw error
@@ -160,9 +162,33 @@ function BillingForm({ branch }: { branch: Tables<'branches'> }) {
               placeholder="Thank you! Follow us @karachigrill"
             />
           </Field>
+          <Field
+            id="bill-google"
+            label="Google review link"
+            hint="Guests who rate their meal 4 or 5 stars on the receipt are invited to post it here."
+            error={
+              f.google_review_url && !f.google_review_url.startsWith('https://')
+                ? 'Use the full https:// link from your Google Business profile'
+                : undefined
+            }
+          >
+            <Input
+              id="bill-google"
+              placeholder="https://g.page/r/…/review"
+              value={f.google_review_url}
+              onChange={(e) => setF({ ...f, google_review_url: e.target.value })}
+            />
+          </Field>
         </CardContent>
         <CardFooter className="justify-end">
-          <Button type="submit" disabled={save.isPending || !pctOk}>
+          <Button
+            type="submit"
+            disabled={
+              save.isPending ||
+              !pctOk ||
+              (!!f.google_review_url && !f.google_review_url.startsWith('https://'))
+            }
+          >
             {save.isPending ? 'Saving…' : 'Save billing settings'}
           </Button>
         </CardFooter>

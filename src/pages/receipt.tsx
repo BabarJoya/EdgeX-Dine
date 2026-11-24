@@ -3,6 +3,7 @@ import { Printer } from 'lucide-react'
 import { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { ReviewPanel } from '@/features/customers/review-panel'
 import { PayPanel, PaymentResult } from '@/features/payments/pay-panel'
 import { providerName } from '@/features/payments/providers'
 import { supabase } from '@/lib/supabase'
@@ -58,6 +59,7 @@ export function ReceiptPage() {
       <style>{`@page { size: 80mm auto; margin: 3mm; } @media print { .no-print { display: none !important; } }`}</style>
       <PaymentResult result={params.get('payment')} />
       {r.status === 'open' && <PayPanel token={token} />}
+      {r.status === 'paid' && <ReviewPanel token={token} />}
       <div className="no-print mx-auto mb-4 flex max-w-[80mm] justify-end">
         <Button size="sm" onClick={() => window.print()}>
           <Printer /> Print

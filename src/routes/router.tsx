@@ -1,4 +1,3 @@
-import { Users } from 'lucide-react'
 import { lazy, Suspense, type ReactNode } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,9 +13,6 @@ const named = <K extends string, M extends Record<K, React.ComponentType>>(p: Pr
 
 const AppShell = lazy(() => named(import('@/components/layout/app-shell'), 'AppShell'))
 const OverviewPage = lazy(() => named(import('@/pages/app/overview'), 'OverviewPage'))
-const UpcomingPage = lazy(() =>
-  import('@/pages/app/upcoming').then((m) => ({ default: m.UpcomingPage })),
-)
 const StaffPage = lazy(() => named(import('@/pages/app/staff'), 'StaffPage'))
 const MenuPage = lazy(() => named(import('@/pages/app/menu'), 'MenuPage'))
 const TablesPage = lazy(() => named(import('@/pages/app/tables'), 'TablesPage'))
@@ -46,6 +42,7 @@ const AdminRestaurantsPage = lazy(() =>
 const AdminPlansPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminPlansPage'))
 const AdminSupportPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSupportPage'))
 const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'AdminSettingsPage'))
+const CustomersPage = lazy(() => named(import('@/pages/app/customers'), 'CustomersPage'))
 const InventoryPage = lazy(() => named(import('@/pages/app/inventory'), 'InventoryPage'))
 const ReportsPage = lazy(() => named(import('@/pages/app/reports'), 'ReportsPage'))
 const SupportPage = lazy(() => named(import('@/pages/app/support'), 'SupportPage'))
@@ -61,17 +58,6 @@ function PageFallback() {
 }
 
 const s = (node: ReactNode) => <Suspense fallback={<PageFallback />}>{node}</Suspense>
-
-const upcoming = [
-  {
-    path: 'customers',
-    title: 'Customers',
-    icon: Users,
-    phase: 'Phase 5',
-    description: 'Guest profiles and visit history.',
-    summary: 'Customers are saved from orders, reservations and receipts sent by WhatsApp.',
-  },
-]
 
 export const router = createBrowserRouter(
   isSupabaseConfigured
@@ -100,8 +86,8 @@ export const router = createBrowserRouter(
             { path: 'support', element: s(<SupportPage />) },
             { path: 'reports', element: s(<ReportsPage />) },
             { path: 'inventory', element: s(<InventoryPage />) },
+            { path: 'customers', element: s(<CustomersPage />) },
             { path: 'design', element: s(<DesignSystemPage />) },
-            ...upcoming.map(({ path, ...p }) => ({ path, element: s(<UpcomingPage {...p} />) })),
           ],
         },
         {
