@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
-import { formatMoney } from '@/lib/utils'
+import { cn, formatMoney } from '@/lib/utils'
 import { providerName, startOnlinePayment, testGatewayEnabled } from './providers'
 
 type Options = {
@@ -37,7 +37,7 @@ export function usePaymentOptions(token: string) {
 }
 
 /** Guest-facing "pay this bill" options on the receipt link. */
-export function PayPanel({ token }: { token: string }) {
+export function PayPanel({ token, className }: { token: string; className?: string }) {
   const options = usePaymentOptions(token)
   const [busy, setBusy] = useState<string | null>(null)
   const o = options.data
@@ -62,7 +62,10 @@ export function PayPanel({ token }: { token: string }) {
 
   return (
     <section
-      className="no-print mx-auto mb-4 w-[80mm] max-w-full rounded-lg border bg-card p-4 font-sans shadow-sm"
+      className={cn(
+        'no-print mx-auto mb-4 w-[80mm] max-w-full rounded-lg border bg-card p-4 font-sans shadow-sm',
+        className,
+      )}
       aria-label="Pay this bill"
     >
       <div className="text-xs text-muted-foreground">Left to pay</div>
@@ -116,22 +119,29 @@ export function PayPanel({ token }: { token: string }) {
 }
 
 /** Banner after the gateway sends the guest back (?payment=paid|failed|error). */
-export function PaymentResult({ result }: { result: string | null }) {
+export function PaymentResult({
+  result,
+  className,
+}: {
+  result: string | null
+  className?: string
+}) {
+  const cls = cn('no-print mx-auto mb-4 w-[80mm] max-w-full', className)
   if (result === 'paid')
     return (
-      <Alert variant="success" className="no-print mx-auto mb-4 w-[80mm] max-w-full">
+      <Alert variant="success" className={cls}>
         Payment received. Thank you!
       </Alert>
     )
   if (result === 'failed')
     return (
-      <Alert variant="destructive" className="no-print mx-auto mb-4 w-[80mm] max-w-full">
+      <Alert variant="destructive" className={cls}>
         The payment did not go through. You have not been charged; you can try again.
       </Alert>
     )
   if (result === 'error')
     return (
-      <Alert variant="warning" className="no-print mx-auto mb-4 w-[80mm] max-w-full">
+      <Alert variant="warning" className={cls}>
         We couldn't confirm the payment. If money left your account, show this page to the cashier.
       </Alert>
     )

@@ -293,12 +293,29 @@ unit per item.
 
 ---
 
-## Phase 10 — Online ordering, reservations & reviews (≈2 weeks)
+## Phase 10 — Online ordering, reservations & reviews (≈2 weeks) ✅ Done
 
 - Ordering website per restaurant (`/o/:slug`, custom domain later): delivery or pickup, delivery zones and charges, guest checkout using phone number + OTP, order tracking, order history.
 - Reservations: calendar, time slots, guest count, confirmation and cancellation (WhatsApp/SMS), reserved tables appear on the floor plan.
 - Reviews: post-meal rating, Google review link, feedback dashboard.
 - Customer CRM: visit history, retention metrics, basic loyalty (later).
+
+**Delivered:** ordering website `/o/:slug` (branch, pickup or delivery,
+delivery areas with fee / minimum / ETA, cart with sizes and add-ons, checkout
+with name + mobile, notes) → orders arrive in Orders and the KDS marked
+_Online_ with the customer and address; tracking page `/o/:slug/track/:token`
+with progress and ETA, pay online from it when a gateway is on, recent orders
+remembered on the device; delivery fee on the bill, receipt and POS.
+Reservations: per-branch rules, public `/book/:slug` with live slot
+availability by covers, `/res/:token` to view or cancel, staff day view with
+confirm / seat / no-show / cancel and table assignment, bookings shown on the
+floor plan, WhatsApp confirmation, new `reservations.manage` permission.
+Reviews from the receipt link with the branch's Google review link for 4–5★,
+and a Customers page (directory by phone with visits, spend and ratings,
+new vs returning, feedback summary).
+**Moved:** phone OTP at checkout needs an SMS / WhatsApp OTP sender — abuse
+limits (orders in progress per number, orders per hour, bookings per number)
+cover it until then; loyalty points and custom domains → later.
 
 ---
 

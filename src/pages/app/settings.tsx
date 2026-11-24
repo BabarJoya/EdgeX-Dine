@@ -44,6 +44,7 @@ import {
   type BranchInput,
 } from '@/features/settings/api'
 import { IntegrationsSettings } from '@/features/payments/integrations-settings'
+import { OnlineSettings } from '@/features/online/online-settings'
 import { PlanTab } from '@/features/platform/plan-tab'
 import { ReservationSettings } from '@/features/reservations/reservation-settings'
 import { BillingSettings } from '@/features/pos/billing-settings'
@@ -60,6 +61,7 @@ export function SettingsPage() {
     can('settings.manage') && { value: 'restaurant', label: 'Restaurant' },
     can('branches.manage') && { value: 'branches', label: 'Branches' },
     can('branches.manage') && { value: 'billing', label: 'Billing & tax' },
+    can('branches.manage') && { value: 'online', label: 'Online ordering' },
     can('branches.manage') && { value: 'reservations', label: 'Reservations' },
     can('settings.manage') && { value: 'integrations', label: 'Integrations' },
     { value: 'plan', label: 'Plan' },
@@ -92,6 +94,11 @@ export function SettingsPage() {
         {can('branches.manage') && (
           <TabsContent value="billing">
             <BillingSettings />
+          </TabsContent>
+        )}
+        {can('branches.manage') && (
+          <TabsContent value="online">
+            <OnlineSettings />
           </TabsContent>
         )}
         {can('branches.manage') && (

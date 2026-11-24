@@ -45,6 +45,8 @@ const AdminSettingsPage = lazy(() => named(import('@/pages/admin/admin'), 'Admin
 const ReservationsPage = lazy(() => named(import('@/pages/app/reservations'), 'ReservationsPage'))
 const BookPage = lazy(() => named(import('@/pages/guest/book'), 'BookPage'))
 const ReservationPage = lazy(() => named(import('@/pages/guest/book'), 'ReservationPage'))
+const OrderOnlinePage = lazy(() => named(import('@/pages/guest/order-online'), 'OrderOnlinePage'))
+const TrackOrderPage = lazy(() => named(import('@/pages/guest/order-online'), 'TrackOrderPage'))
 const CustomersPage = lazy(() => named(import('@/pages/app/customers'), 'CustomersPage'))
 const InventoryPage = lazy(() => named(import('@/pages/app/inventory'), 'InventoryPage'))
 const ReportsPage = lazy(() => named(import('@/pages/app/reports'), 'ReportsPage'))
@@ -140,6 +142,8 @@ export const router = createBrowserRouter(
         },
         { path: '/m/:slug', element: s(<GuestMenuPage />) },
         { path: '/book/:slug', element: s(<BookPage />) },
+        { path: '/o/:slug', element: s(<OrderOnlinePage />) },
+        { path: '/o/:slug/track/:token', element: s(<TrackOrderPage />) },
         { path: '/res/:token', element: s(<ReservationPage />) },
         { path: '*', element: <NotFoundPage /> },
       ]

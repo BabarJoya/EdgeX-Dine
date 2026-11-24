@@ -228,6 +228,12 @@ function BillView({ bill, op }: { bill: Bill; op: Operator }) {
               value={money(bill.service_minor)}
             />
           )}
+          {bill.delivery_fee_minor > 0 && (
+            <Row
+              label={`Delivery${bill.delivery_zone ? ` · ${bill.delivery_zone}` : ''}`}
+              value={money(bill.delivery_fee_minor)}
+            />
+          )}
           <Row label="Before tax" value={money(bill.base_minor)} strong />
           {bill.payments.map((p) => (
             <div

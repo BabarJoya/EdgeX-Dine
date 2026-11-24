@@ -28,6 +28,7 @@ export function receiptBytes(
         ? 'Takeaway'
         : 'Delivery'
   p.line(kind + (r.customer_name ? ` - ${r.customer_name}` : ''))
+  if (r.delivery_address) p.line(`Deliver to: ${r.delivery_address}`)
   p.rule()
   for (const i of r.items) {
     p.row(
@@ -44,6 +45,7 @@ export function receiptBytes(
       `-${money(r.discount_minor)}`,
     )
   if (r.service_minor > 0) p.row(`Service ${r.service_bps / 100}%`, money(r.service_minor))
+  if (r.delivery_fee_minor > 0) p.row('Delivery', money(r.delivery_fee_minor))
   const live = r.payments.filter((x) => x.status === 'completed')
   const byRate = new Map<number, number>()
   for (const x of live) byRate.set(x.tax_bps, (byRate.get(x.tax_bps) ?? 0) + x.tax_minor)

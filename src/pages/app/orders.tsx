@@ -1,4 +1,4 @@
-import { Bell, Check, QrCode, ReceiptText } from 'lucide-react'
+import { Bell, Check, Globe, QrCode, ReceiptText } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { RequirePerm } from '@/components/require-perm'
@@ -219,6 +219,14 @@ function OrderCard({
                   ? 'Takeaway'
                   : 'Delivery'}
             </span>
+            {o.source === 'online' && (
+              <span
+                title="Ordered from your website"
+                className="inline-flex items-center gap-0.5 text-xs font-medium text-info"
+              >
+                <Globe className="size-3" /> Online
+              </span>
+            )}
             {o.source === 'qr' && (
               <span
                 title="Ordered by the guest from the QR menu"
@@ -237,6 +245,20 @@ function OrderCard({
             {ageLabel(o.created_at, now)}
             {branchName && ` · ${branchName}`}
           </div>
+          {o.bills?.customer_phone && (
+            <div className="mt-0.5 text-xs" data-testid="order-customer">
+              {o.bills.customer_name} ·{' '}
+              <a className="text-link hover:underline" href={`tel:${o.bills.customer_phone}`}>
+                {o.bills.customer_phone}
+              </a>
+              {o.bills.delivery_address && (
+                <div className="text-muted-foreground">
+                  {o.bills.delivery_zone && `${o.bills.delivery_zone} · `}
+                  {o.bills.delivery_address}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <Badge variant={meta.badge}>{meta.label}</Badge>
       </header>

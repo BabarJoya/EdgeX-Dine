@@ -9,10 +9,17 @@ export type OrderItem = Tables<'order_items'> & {
 export type Order = Tables<'orders'> & {
   order_items: OrderItem[]
   tables: { label: string } | null
+  bills: {
+    customer_name: string | null
+    customer_phone: string | null
+    delivery_address: string | null
+    delivery_zone: string | null
+  } | null
 }
 export type GuestRequest = Tables<'guest_requests'> & { tables: { label: string } | null }
 
-const ORDER_SELECT = '*, order_items(*, order_item_modifiers(*)), tables(label)'
+const ORDER_SELECT =
+  '*, order_items(*, order_item_modifiers(*)), tables(label), bills(customer_name, customer_phone, delivery_address, delivery_zone)'
 export const ACTIVE: Enums<'order_status'>[] = ['new', 'accepted', 'preparing', 'ready', 'served']
 
 /** Open orders for a branch (or all accessible branches when branchId is null). */

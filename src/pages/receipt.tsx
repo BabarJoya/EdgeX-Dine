@@ -94,6 +94,7 @@ export function ReceiptPage() {
               : 'Delivery'}
           {r.customer_name && ` · ${r.customer_name}`}
         </div>
+        {r.delivery_address && <div>Deliver to: {r.delivery_address}</div>}
         <hr className="my-2 border-dashed border-black" />
         <ul className="grid gap-1">
           {r.items.map((i, idx) => (
@@ -123,6 +124,7 @@ export function ReceiptPage() {
           {r.service_minor > 0 && (
             <Row label={`Service ${r.service_bps / 100}%`} value={money(r.service_minor)} />
           )}
+          {r.delivery_fee_minor > 0 && <Row label="Delivery" value={money(r.delivery_fee_minor)} />}
           {taxLines
             .filter((t) => t.tax > 0)
             .map((t) => (

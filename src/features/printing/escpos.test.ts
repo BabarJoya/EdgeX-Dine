@@ -76,6 +76,8 @@ describe('receiptBytes', () => {
     discount_note: '',
     service_bps: 0,
     service_minor: 0,
+    delivery_fee_minor: 0,
+    delivery_address: null,
     base_minor: 220000,
     tax_minor: 35200,
     paid_total_minor: 255200,

@@ -23,6 +23,8 @@ export type ReceiptData = {
   discount_note: string
   service_bps: number
   service_minor: number
+  delivery_fee_minor: number
+  delivery_address: string | null
   base_minor: number
   tax_minor: number
   paid_total_minor: number

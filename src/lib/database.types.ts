@@ -59,14 +59,14 @@ isOneToOne: false
                   ]
                 },"bills": {
                   Row: {
-                    "base_minor": number,"bill_number": number,"branch_id": string,"business_date": string,"created_at": string,"created_by": string | null,"currency": string,"customer_name": string | null,"customer_phone": string | null,"discount_minor": number,"discount_note": string,"fiscal_authority": string | null,"fiscal_error": string | null,"fiscal_invoice_number": string | null,"fiscal_status": string | null,"id": string,"paid_at": string | null,"paid_base_minor": number,"paid_total_minor": number,"receipt_token": string,"service_bps": number,"service_minor": number,"session_id": string | null,"status": Database["public"]['Enums']["bill_status"],"subtotal_minor": number,"tax_minor": number,"tenant_id": string,"type": Database["public"]['Enums']["order_type"],"updated_at": string
+                    "base_minor": number,"bill_number": number,"branch_id": string,"business_date": string,"created_at": string,"created_by": string | null,"currency": string,"customer_name": string | null,"customer_phone": string | null,"delivery_address": string | null,"delivery_fee_minor": number,"delivery_zone": string | null,"discount_minor": number,"discount_note": string,"fiscal_authority": string | null,"fiscal_error": string | null,"fiscal_invoice_number": string | null,"fiscal_status": string | null,"id": string,"paid_at": string | null,"paid_base_minor": number,"paid_total_minor": number,"receipt_token": string,"service_bps": number,"service_minor": number,"session_id": string | null,"status": Database["public"]['Enums']["bill_status"],"subtotal_minor": number,"tax_minor": number,"tenant_id": string,"type": Database["public"]['Enums']["order_type"],"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "base_minor"?: number,"bill_number": number,"branch_id": string,"business_date": string,"created_at"?: string,"created_by"?: string | null,"currency": string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id": string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "base_minor"?: number,"bill_number": number,"branch_id": string,"business_date": string,"created_at"?: string,"created_by"?: string | null,"currency": string,"customer_name"?: string | null,"customer_phone"?: string | null,"delivery_address"?: string | null,"delivery_fee_minor"?: number,"delivery_zone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id": string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Update: {
-                    "base_minor"?: number,"bill_number"?: number,"branch_id"?: string,"business_date"?: string,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id"?: string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
+                    "base_minor"?: number,"bill_number"?: number,"branch_id"?: string,"business_date"?: string,"created_at"?: string,"created_by"?: string | null,"currency"?: string,"customer_name"?: string | null,"customer_phone"?: string | null,"delivery_address"?: string | null,"delivery_fee_minor"?: number,"delivery_zone"?: string | null,"discount_minor"?: number,"discount_note"?: string,"fiscal_authority"?: string | null,"fiscal_error"?: string | null,"fiscal_invoice_number"?: string | null,"fiscal_status"?: string | null,"id"?: string,"paid_at"?: string | null,"paid_base_minor"?: number,"paid_total_minor"?: number,"receipt_token"?: string,"service_bps"?: number,"service_minor"?: number,"session_id"?: string | null,"status"?: Database["public"]['Enums']["bill_status"],"subtotal_minor"?: number,"tax_minor"?: number,"tenant_id"?: string,"type"?: Database["public"]['Enums']["order_type"],"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -85,14 +85,14 @@ isOneToOne: false
                   ]
                 },"branches": {
                   Row: {
-                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"google_review_url": string | null,"id": string,"is_active": boolean,"name": string,"phone": string | null,"receipt_footer": string | null,"res_auto_confirm": boolean,"res_close": string,"res_covers_per_slot": number,"res_days_ahead": number,"res_duration_minutes": number,"res_max_party": number,"res_open": string,"res_slot_minutes": number,"reservations_enabled": boolean,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
+                    "address": string | null,"city": string | null,"code": string | null,"created_at": string,"google_review_url": string | null,"id": string,"is_active": boolean,"name": string,"online_delivery": boolean,"online_enabled": boolean,"online_min_order_minor": number,"online_pickup": boolean,"online_prep_minutes": number,"phone": string | null,"receipt_footer": string | null,"res_auto_confirm": boolean,"res_close": string,"res_covers_per_slot": number,"res_days_ahead": number,"res_duration_minutes": number,"res_max_party": number,"res_open": string,"res_slot_minutes": number,"reservations_enabled": boolean,"service_charge_bps": number,"tax_card_bps": number,"tax_cash_bps": number,"tax_label": string,"tax_registration": string | null,"tax_wallet_bps": number,"tenant_id": string,"timezone": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"online_delivery"?: boolean,"online_enabled"?: boolean,"online_min_order_minor"?: number,"online_pickup"?: boolean,"online_prep_minutes"?: number,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id": string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"city"?: string | null,"code"?: string | null,"created_at"?: string,"google_review_url"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"online_delivery"?: boolean,"online_enabled"?: boolean,"online_min_order_minor"?: number,"online_pickup"?: boolean,"online_prep_minutes"?: number,"phone"?: string | null,"receipt_footer"?: string | null,"res_auto_confirm"?: boolean,"res_close"?: string,"res_covers_per_slot"?: number,"res_days_ahead"?: number,"res_duration_minutes"?: number,"res_max_party"?: number,"res_open"?: string,"res_slot_minutes"?: number,"reservations_enabled"?: boolean,"service_charge_bps"?: number,"tax_card_bps"?: number,"tax_cash_bps"?: number,"tax_label"?: string,"tax_registration"?: string | null,"tax_wallet_bps"?: number,"tenant_id"?: string,"timezone"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -167,6 +167,26 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "tenants"
       referencedColumns: ["id"]
+    }
+                  ]
+                },"delivery_zones": {
+                  Row: {
+                    "branch_id": string,"eta_minutes": number,"fee_minor": number,"id": string,"min_order_minor": number,"name": string,"sort_order": number,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "branch_id": string,"eta_minutes"?: number,"fee_minor"?: number,"id"?: string,"min_order_minor"?: number,"name": string,"sort_order"?: number,"tenant_id": string
+                  }
+                  Update: {
+                    "branch_id"?: string,"eta_minutes"?: number,"fee_minor"?: number,"id"?: string,"min_order_minor"?: number,"name"?: string,"sort_order"?: number,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "delivery_zones_branch_id_tenant_id_fkey"
+      columns: ["branch_id","tenant_id"]
+isOneToOne: false
+      referencedRelation: "branches"
+      referencedColumns: ["id","tenant_id"]
     }
                   ]
                 },"expenses": {
@@ -1431,7 +1451,7 @@ isOneToOne: false
 { Args: { "p_slug": string }; Returns: Json
                            },
 "get_guest_menu":
-{ Args: { "p_slug": string,"p_table_token"?: string }; Returns: Json
+{ Args: { "p_branch_id"?: string,"p_slug": string,"p_table_token"?: string }; Returns: Json
                            },
 "get_guest_session":
 { Args: { "p_guest_token": string }; Returns: Json
@@ -1440,6 +1460,9 @@ isOneToOne: false
 { Args: { "p_token": string }; Returns: {
               "email": string,"is_valid": boolean,"role_name": string,"tenant_name": string
             }[]
+                           },
+"get_online_info":
+{ Args: { "p_slug": string }; Returns: Json
                            },
 "get_receipt":
 { Args: { "p_receipt_token": string }; Returns: Json
@@ -1485,6 +1508,9 @@ isOneToOne: false
                            },
 "place_guest_order":
 { Args: { "p_items": Json,"p_notes"?: string,"p_table_token": string }; Returns: Json
+                           },
+"place_online_order":
+{ Args: { "p_address"?: string,"p_branch_id": string,"p_items": Json,"p_name": string,"p_notes"?: string,"p_phone": string,"p_type": Database["public"]['Enums']["order_type"],"p_zone_id"?: string }; Returns: Json
                            },
 "place_staff_order":
 { Args: { "p_items": Json,"p_notes"?: string,"p_table_id": string }; Returns: Json
@@ -1539,6 +1565,9 @@ isOneToOne: false
                            },
 "sales_report":
 { Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
+                           },
+"save_delivery_zones":
+{ Args: { "p_branch_id": string,"p_zones": Json }; Returns: undefined
                            },
 "save_expense":
 { Args: { "p": Json }; Returns: string
@@ -1608,6 +1637,9 @@ isOneToOne: false
                            },
 "take_payment":
 { Args: { "p_base_minor": number,"p_bill_id": string,"p_method": Database["public"]['Enums']["payment_method"],"p_note"?: string,"p_operator_token"?: string,"p_reference"?: string,"p_tendered_minor"?: number }; Returns: Json
+                           },
+"track_online_order":
+{ Args: { "p_token": string }; Returns: Json
                            },
 "transfer_table_session":
 { Args: { "p_session_id": string,"p_to_table_id": string }; Returns: undefined
