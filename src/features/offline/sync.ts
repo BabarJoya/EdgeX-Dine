@@ -64,11 +64,11 @@ export function useOfflineSync() {
   const [syncing, setSyncing] = useState(false)
   const timer = useRef<ReturnType<typeof setInterval>>(undefined)
 
-  const refresh = useCallback(() => void queuedSales().then(setSales), [])
   useEffect(() => {
-    refresh()
-    return onQueueChange(refresh)
-  }, [refresh])
+    const load = () => void queuedSales().then(setSales)
+    load()
+    return onQueueChange(load)
+  }, [])
 
   const sync = useCallback(async () => {
     if (running || !navigator.onLine) return
@@ -102,10 +102,10 @@ export function useOfflineSync() {
   }, [])
 
   useEffect(() => {
-    if (online) void sync()
+    const first = online ? setTimeout(() => void sync(), 0) : undefined
     clearInterval(timer.current)
     if (online) timer.current = setInterval(() => void sync(), 30_000)
-    return () => clearInterval(timer.current)
+    return () => (clearTimeout(first), clearInterval(timer.current))
   }, [online, sync])
 
   return { online, sales, syncing, sync }

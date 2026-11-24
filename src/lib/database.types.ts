@@ -23,7 +23,27 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_logs": {
+            "api_keys": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"id": string,"key_hash": string,"last_used_at": string | null,"name": string,"prefix": string,"revoked_at": string | null,"tenant_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"id"?: string,"key_hash": string,"last_used_at"?: string | null,"name": string,"prefix": string,"revoked_at"?: string | null,"tenant_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"id"?: string,"key_hash"?: string,"last_used_at"?: string | null,"name"?: string,"prefix"?: string,"revoked_at"?: string | null,"tenant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "api_keys_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"audit_logs": {
                   Row: {
                     "action": string,"actor_id": string | null,"created_at": string,"data": NonNullable<Json>,"entity": string,"entity_id": string | null,"id": number,"tenant_id": string | null
                   }
@@ -1369,6 +1389,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"webhook_endpoints": {
+                  Row: {
+                    "created_at": string,"created_by": string | null,"events": (string)[],"id": string,"is_active": boolean,"tenant_id": string,"url": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by"?: string | null,"events": (string)[],"id"?: string,"is_active"?: boolean,"tenant_id": string,"url": string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string | null,"events"?: (string)[],"id"?: string,"is_active"?: boolean,"tenant_id"?: string,"url"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "webhook_endpoints_tenant_id_fkey"
+      columns: ["tenant_id"]
+isOneToOne: false
+      referencedRelation: "tenants"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -1423,6 +1463,9 @@ isOneToOne: false
 "count_stock":
 { Args: { "p_branch_id": string,"p_counts": Json,"p_note"?: string }; Returns: number
                            },
+"create_api_key":
+{ Args: { "p_name": string,"p_tenant_id": string }; Returns: Json
+                           },
 "create_counter_order":
 { Args: { "p_branch_id": string,"p_customer_name"?: string,"p_customer_phone"?: string,"p_items": Json,"p_notes"?: string,"p_operator_token"?: string,"p_type": Database["public"]['Enums']["order_type"] }; Returns: Json
                            },
@@ -1434,6 +1477,9 @@ isOneToOne: false
                            },
 "create_tenant":
 { Args: { "p_branch_name": string,"p_city"?: string,"p_country"?: string,"p_currency"?: string,"p_name": string,"p_slug": string,"p_timezone"?: string }; Returns: string
+                           },
+"create_webhook":
+{ Args: { "p_events": (string)[],"p_tenant_id": string,"p_url": string }; Returns: Json
                            },
 "customer_detail":
 { Args: { "p_phone": string,"p_tenant_id": string }; Returns: Json
@@ -1449,6 +1495,9 @@ isOneToOne: false
                            },
 "delete_expense":
 { Args: { "p_expense_id": string }; Returns: undefined
+                           },
+"delete_webhook":
+{ Args: { "p_endpoint_id": string }; Returns: undefined
                            },
 "get_booking_info":
 { Args: { "p_slug": string }; Returns: Json
@@ -1566,6 +1615,9 @@ isOneToOne: false
 "retry_fiscal_invoice":
 { Args: { "p_bill_id": string }; Returns: undefined
                            },
+"revoke_api_key":
+{ Args: { "p_key_id": string }; Returns: undefined
+                           },
 "sales_report":
 { Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
                            },
@@ -1599,11 +1651,35 @@ isOneToOne: false
 "save_supplier":
 { Args: { "p": Json }; Returns: string
                            },
+"send_test_webhook":
+{ Args: { "p_endpoint_id": string }; Returns: undefined
+                           },
+"server_api_auth":
+{ Args: { "p_key_hash": string }; Returns: Json
+                           },
+"server_api_branches":
+{ Args: { "p_tenant_id": string }; Returns: Json
+                           },
+"server_api_menu":
+{ Args: { "p_tenant_id": string }; Returns: Json
+                           },
+"server_api_order":
+{ Args: { "p_order_id": string,"p_tenant_id": string }; Returns: Json
+                           },
+"server_api_orders":
+{ Args: { "p_after": string,"p_branch_id": string,"p_from": string,"p_limit": number,"p_status": string,"p_tenant_id": string,"p_to": string }; Returns: Json
+                           },
+"server_api_sales":
+{ Args: { "p_branch_id": string,"p_from": string,"p_tenant_id": string,"p_to": string }; Returns: Json
+                           },
 "server_claim_messages":
 { Args: { "p_limit"?: number }; Returns: Json
                            },
 "server_finish_online_payment":
 { Args: { "p_amount_minor": number,"p_code"?: string,"p_message"?: string,"p_provider_ref"?: string,"p_success": boolean,"p_txn_ref": string }; Returns: Json
+                           },
+"server_health":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "server_message_result":
 { Args: { "p_error"?: string,"p_final"?: boolean,"p_id": string,"p_ok": boolean,"p_provider_id"?: string }; Returns: undefined
@@ -1613,6 +1689,9 @@ isOneToOne: false
                            },
 "server_start_online_payment":
 { Args: { "p_provider": string,"p_receipt_token": string }; Returns: Json
+                           },
+"server_webhook_target":
+{ Args: { "p_endpoint_id": string,"p_order_id"?: string }; Returns: Json
                            },
 "set_my_pin":
 { Args: { "p_pin": string,"p_tenant_id": string }; Returns: undefined
@@ -1628,6 +1707,9 @@ isOneToOne: false
                            },
 "set_ticket_priority":
 { Args: { "p_priority": boolean,"p_ticket_id": string }; Returns: undefined
+                           },
+"set_webhook_active":
+{ Args: { "p_active": boolean,"p_endpoint_id": string }; Returns: undefined
                            },
 "shift_report":
 { Args: { "p_shift_id": string }; Returns: Json
@@ -1658,6 +1740,9 @@ isOneToOne: false
                            },
 "update_ticket_status":
 { Args: { "p_status": Database["public"]['Enums']["ticket_status"],"p_ticket_id": string }; Returns: undefined
+                           },
+"webhook_deliveries":
+{ Args: { "p_tenant_id": string }; Returns: Json
                            }
           }
           Enums: {

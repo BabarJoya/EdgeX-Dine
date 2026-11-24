@@ -54,20 +54,21 @@ export function BookPage() {
   const [phone, setPhone] = useState('')
   const [notes, setNotes] = useState('')
   const branch = i?.branches.find((b) => b.id === branchId) ?? i?.branches[0]
+  // Today (restaurant time) until the guest picks a date.
+  const day = date || i?.today || ''
 
   useEffect(() => {
-    if (i && !date) setDate(i.today)
     if (i?.restaurant.brand_color)
       document.documentElement.style.setProperty('--guest-accent', i.restaurant.brand_color)
-  }, [i, date])
+  }, [i])
 
   const slots = useQuery({
-    queryKey: ['slots', branch?.id, date, party],
-    enabled: !!branch && !!date,
+    queryKey: ['slots', branch?.id, day, party],
+    enabled: !!branch && !!day,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('reservation_slots', {
         p_branch_id: branch!.id,
-        p_date: date,
+        p_date: day,
         p_party: Number(party),
       })
       if (error) throw error
@@ -78,7 +79,7 @@ export function BookPage() {
     mutationFn: async () => {
       const { data, error } = await supabase.rpc('request_reservation', {
         p_branch_id: branch!.id,
-        p_date: date,
+        p_date: day,
         p_time: time,
         p_party: Number(party),
         p_name: name,
@@ -143,7 +144,7 @@ export function BookPage() {
                   type="date"
                   min={i.today}
                   max={addDaysIso(i.today, branch?.days_ahead ?? 30)}
-                  value={date}
+                  value={day}
                   onChange={(e) => (setDate(e.target.value), setTime(''))}
                 />
               </Field>

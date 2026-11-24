@@ -43,6 +43,7 @@ import {
   useUpdateTenant,
   type BranchInput,
 } from '@/features/settings/api'
+import { ApiSettings } from '@/features/developer/api-settings'
 import { IntegrationsSettings } from '@/features/payments/integrations-settings'
 import { OnlineSettings } from '@/features/online/online-settings'
 import { PlanTab } from '@/features/platform/plan-tab'
@@ -64,6 +65,7 @@ export function SettingsPage() {
     can('branches.manage') && { value: 'online', label: 'Online ordering' },
     can('branches.manage') && { value: 'reservations', label: 'Reservations' },
     can('settings.manage') && { value: 'integrations', label: 'Integrations' },
+    can('settings.manage') && { value: 'api', label: 'API & webhooks' },
     { value: 'plan', label: 'Plan' },
   ].filter(Boolean) as { value: string; label: string }[]
 
@@ -109,6 +111,11 @@ export function SettingsPage() {
         {can('settings.manage') && (
           <TabsContent value="integrations">
             <IntegrationsSettings />
+          </TabsContent>
+        )}
+        {can('settings.manage') && (
+          <TabsContent value="api">
+            <ApiSettings />
           </TabsContent>
         )}
         <TabsContent value="plan">

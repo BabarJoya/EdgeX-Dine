@@ -1,3 +1,4 @@
+import { pokeOutbox } from '@/features/payments/notify'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { Json } from '@/lib/database.types'
 import { supabase } from '@/lib/supabase'
@@ -130,6 +131,7 @@ export type CartPayload = {
 
 export function usePlaceOrder(tableToken: string | null) {
   return useMutation({
+    onSettled: () => pokeOutbox(),
     mutationFn: async (v: { items: CartPayload; notes: string }) => {
       const { data, error } = await supabase.rpc('place_guest_order', {
         p_table_token: tableToken!,

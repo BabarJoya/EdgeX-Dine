@@ -319,13 +319,36 @@ cover it until then; loyalty points and custom domains → later.
 
 ---
 
-## Phase 11 — Hardening & scale (ongoing, focused 1–2 weeks before wider launch)
+## Phase 11 — Hardening & scale (ongoing, focused 1–2 weeks before wider launch) ✅ Done
 
 - Full RLS audit (pgTAP coverage on every table), Supabase security advisor, penetration test of public endpoints.
 - Performance: indexes on `(tenant_id, branch_id, created_at)`, query plans, load test of `place_order` and realtime during a peak dinner rush.
 - **Offline-capable POS:** queue orders and payments in IndexedDB during internet or power outages and sync them on reconnect (common in Pakistan — a major selling point).
 - Backups: Supabase PITR, tested restore runbook. Monitoring with Sentry, uptime checks, log drains.
 - Public API + webhooks for Enterprise customers. Documentation and onboarding videos.
+
+**Delivered:**
+
+- **Security** ([SECURITY.md](SECURITY.md)): advisors clean and enforced in
+  CI; schema-wide pgTAP audit (exact anonymous function list, pinned
+  search_path, closed tables, one policy per action, FK indexes) and a
+  cross-tenant sweep over every tenant table; a black-box API probe in the
+  e2e suite; two over-exposed functions fixed.
+- **Performance** ([PERFORMANCE.md](PERFORMANCE.md)): a year of data (330k
+  orders); RLS evaluated once per query (open orders 57 s → <1 ms), the
+  sales report and customer screens rewritten (50 s → 4–5 s, 5 s → 0.3 s);
+  a dinner-rush load test with realtime kitchen screens (no failures or
+  duplicate numbers).
+- **Offline POS** ([OFFLINE.md](OFFLINE.md)): the POS reloads and sells
+  takeaway / delivery without internet; sales queue in IndexedDB and sync
+  exactly once.
+- **Operations** ([OPERATIONS.md](OPERATIONS.md)): `/api/health`, optional
+  Sentry, a friendly error page, a tested backup / restore drill, runbooks;
+  account deletion for platform admins.
+- **API & webhooks** ([API.md](API.md)): hashed, rate-limited keys; v1
+  read endpoints; signed webhooks through the message queue.
+  **Moved:** onboarding videos (need recording); Broadcast-based kitchen feed
+  and daily summary tables only if a large chain needs them.
 
 ---
 

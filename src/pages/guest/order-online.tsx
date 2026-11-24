@@ -20,6 +20,7 @@ import {
   useOnlineInfo,
   useTracking,
 } from '@/features/online/api'
+import { pokeOutbox } from '@/features/payments/notify'
 import { PayPanel, PaymentResult } from '@/features/payments/pay-panel'
 import { errorMessage } from '@/lib/errors'
 import { menuImageUrl } from '@/lib/images'
@@ -352,7 +353,7 @@ function Checkout({
       if (error) throw error
       return data as unknown as { token: string; order_number: number }
     },
-    onSuccess: (d) => onPlaced(d.token, `#${d.order_number}`),
+    onSuccess: (d) => (pokeOutbox(), onPlaced(d.token, `#${d.order_number}`)),
   })
   const short = cart.total < minOrder
   const ok =

@@ -41,38 +41,24 @@ export function useProfitLoss(
   })
 }
 
-/** Profit & loss statement for the Reports page's date range. */
-export function ProfitLossCard({
-  tenantId,
-  branchId,
-  from,
-  to,
-  currency,
+function Line({
+  money,
+  label,
+  value,
+  minus,
+  total,
+  hint,
+  indent,
 }: {
-  tenantId: string | undefined
-  branchId: string | null
-  from: string
-  to: string
-  currency: string
+  money: (m: number) => string
+  label: string
+  value: number
+  minus?: boolean
+  total?: boolean
+  hint?: string
+  indent?: boolean
 }) {
-  const pl = useProfitLoss(tenantId, branchId, from, to)
-  const money = (m: number) => formatMoney(m, currency)
-  const p = pl.data
-  const Line = ({
-    label,
-    value,
-    minus,
-    total,
-    hint,
-    indent,
-  }: {
-    label: string
-    value: number
-    minus?: boolean
-    total?: boolean
-    hint?: string
-    indent?: boolean
-  }) => (
+  return (
     <div
       className={cn(
         'flex items-baseline justify-between gap-4 py-1.5',
@@ -95,6 +81,25 @@ export function ProfitLossCard({
       </dd>
     </div>
   )
+}
+
+/** Profit & loss statement for the Reports page's date range. */
+export function ProfitLossCard({
+  tenantId,
+  branchId,
+  from,
+  to,
+  currency,
+}: {
+  tenantId: string | undefined
+  branchId: string | null
+  from: string
+  to: string
+  currency: string
+}) {
+  const pl = useProfitLoss(tenantId, branchId, from, to)
+  const money = (m: number) => formatMoney(m, currency)
+  const p = pl.data
   return (
     <Card className="px-5 py-4" role="region" aria-label="Profit & loss">
       <h3 className="text-[15px] font-semibold">Profit &amp; loss</h3>
@@ -106,24 +111,27 @@ export function ProfitLossCard({
         <Skeleton className="h-40" />
       ) : (
         <dl className="max-w-xl text-sm" data-testid="profit-loss">
-          <Line label="Net sales" value={p.net_sales_minor} />
+          <Line money={money} label="Net sales" value={p.net_sales_minor} />
           <Line
+            money={money}
             label="Food cost"
             value={p.food_cost_minor}
             minus
             hint={p.food_cost_pct !== null ? `${p.food_cost_pct}% of sales` : undefined}
           />
-          <Line label="Wastage" value={p.wastage_minor} minus />
+          <Line money={money} label="Wastage" value={p.wastage_minor} minus />
           {p.stock_count_minor !== 0 && (
             <Line
+              money={money}
               label="Stock count differences"
               value={Math.abs(p.stock_count_minor)}
               minus={p.stock_count_minor > 0}
             />
           )}
-          <Line label="Gross profit" value={p.gross_profit_minor} total />
+          <Line money={money} label="Gross profit" value={p.gross_profit_minor} total />
           {p.expenses.map((e) => (
             <Line
+              money={money}
               key={e.category}
               label={categoryName[e.category] ?? e.category}
               value={e.amount_minor}
@@ -131,8 +139,8 @@ export function ProfitLossCard({
               indent
             />
           ))}
-          <Line label="Expenses" value={p.expenses_minor} minus />
-          <Line label="Net profit" value={p.net_profit_minor} total />
+          <Line money={money} label="Expenses" value={p.expenses_minor} minus />
+          <Line money={money} label="Net profit" value={p.net_profit_minor} total />
         </dl>
       )}
     </Card>

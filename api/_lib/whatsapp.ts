@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto'
 import { rpc } from './db.js'
 import { imsInvoice, postInvoice, type FiscalPayload } from './fiscal.js'
 import { env } from './env.js'
@@ -10,9 +11,9 @@ import { json } from './http.js'
  */
 export type Message = {
   id: string
-  channel: 'whatsapp' | 'fiscal'
+  channel: 'whatsapp' | 'fiscal' | 'webhook'
   mode: 'sandbox' | 'live'
-  kind: 'receipt' | 'order_ready' | 'fiscal' | 'reservation'
+  kind: 'receipt' | 'order_ready' | 'fiscal' | 'reservation' | 'webhook'
   to: string
   params: Record<string, string | number>
   settings: Record<string, string>
@@ -77,7 +78,69 @@ async function sendFiscal(m: Message) {
   return postInvoice(m.settings.authority || 'fbr', m.mode, token, invoice, m.settings.endpoint)
 }
 
+/** Stripe-style signature: t=<unix>,v1=HMAC-SHA256(secret, `${t}.${body}`). */
+export function signWebhook(secret: string, body: string, t = Math.floor(Date.now() / 1000)) {
+  return `t=${t},v1=${createHmac('sha256', secret).update(`${t}.${body}`).digest('hex')}`
+}
+
+async function sendWebhook(m: Message, appUrl: string) {
+  const p = m.params as unknown as {
+    endpoint_id: string
+    event: string
+    created_at: string
+    data: Record<string, unknown>
+  }
+  const orderId = typeof p.data?.order_id === 'string' ? p.data.order_id : null
+  const target = await rpc<{ url: string; active: boolean; secret: string; order: unknown } | null>(
+    'server_webhook_target',
+    {
+      p_endpoint_id: p.endpoint_id,
+      p_order_id: orderId,
+    },
+  )
+  if (!target || !target.active)
+    return { ok: false, final: true, error: 'Endpoint removed or disabled' }
+  const body = JSON.stringify({
+    id: m.id,
+    event: p.event,
+    created_at: p.created_at,
+    data: orderId ? { ...p.data, order: target.order } : p.data,
+  })
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), 10_000)
+  // Automated tests: a reserved host is delivered to the local receiver.
+  const url =
+    env.testGateway() && new URL(target.url).hostname === 'webhook.test'
+      ? `${appUrl}/api/test/webhook-sink`
+      : target.url
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      redirect: 'manual',
+      signal: ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'EdgeX-Webhooks/1',
+        'EdgeX-Event': p.event,
+        'EdgeX-Delivery': m.id,
+        'EdgeX-Signature': signWebhook(target.secret, body),
+      },
+      body,
+    })
+    if (r.ok) return { ok: true, id: `HTTP ${r.status}` }
+    // 4xx (except timeouts / rate limits) won't succeed on retry.
+    return {
+      ok: false,
+      final: r.status >= 400 && r.status < 500 && ![408, 429].includes(r.status),
+      error: `HTTP ${r.status}`,
+    }
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 async function send(m: Message, appUrl: string) {
+  if (m.channel === 'webhook') return sendWebhook(m, appUrl)
   if (m.channel === 'fiscal') return sendFiscal(m)
   const phoneId = m.settings.phone_number_id
   const token = m.secrets.access_token
@@ -128,6 +191,18 @@ export async function flushMessages(req: Request) {
 }
 
 // --- Test doubles (ENABLE_TEST_GATEWAY only) ---------------------------------------
+const hooks: unknown[] = []
+export async function testWebhookSink(req: Request) {
+  if (!env.testGateway()) return json({ error: 'Not found' }, 404)
+  if (req.method === 'GET') return json(hooks)
+  hooks.push({
+    event: req.headers.get('edgex-event'),
+    signature: req.headers.get('edgex-signature'),
+    body: await req.text(),
+  })
+  return json({ received: true })
+}
+
 let invoices = 0
 export async function testFiscal(req: Request) {
   if (!env.testGateway()) return json({ error: 'Not found' }, 404)

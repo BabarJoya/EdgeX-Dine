@@ -57,6 +57,7 @@ export function useLiveTickets(tenantId: string | undefined) {
           filter: `tenant_id=eq.${tenantId}`,
         },
         () => {
+          pokeOutbox() // deliver webhooks for orders placed by guests
           void qc.invalidateQueries({ queryKey: ['tickets'] })
           void qc.invalidateQueries({ queryKey: ['orders'] })
         },

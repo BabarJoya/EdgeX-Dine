@@ -4,7 +4,7 @@ Multi-tenant restaurant management SaaS: QR ordering, kitchen display, waiter ap
 POS with split payments, and multi-branch management.
 
 - **Plan:** [docs/ROADMAP.md](docs/ROADMAP.md)
-- **Status:** Phases 0–10 complete — QR ordering, kitchen display, waiter app, POS with split payments, cashier shifts, subscriptions, support, sales reports, Pakistan integrations (JazzCash / Easypaisa bill payment, Raast, WhatsApp, thermal printers, FBR / PRA invoices), inventory with recipes, food costing and profit & loss, and an ordering website, table bookings, reviews and a customer directory. Phase 11 (hardening and scale) next.
+- **Status:** Phases 0–11 complete — QR ordering, kitchen display, waiter app, POS with split payments, cashier shifts, subscriptions, support, sales reports, Pakistan integrations (JazzCash / Easypaisa bill payment, Raast, WhatsApp, thermal printers, FBR / PRA invoices), inventory with recipes, food costing and profit & loss, an ordering website, table bookings, reviews and a customer directory; hardened (security audit, performance at scale, offline POS, monitoring and backups) with an Enterprise API and webhooks.
 - **Going live:** [docs/SETUP.md](docs/SETUP.md) — connect Supabase and deploy to Vercel.
 
 ## Stack
@@ -25,7 +25,7 @@ Local database (requires Docker):
 ```bash
 npm run db:start   # starts Supabase locally and prints the anon key
 npm run db:reset   # re-applies migrations + seed
-npm run db:test    # 437 pgTAP tests (RLS, tenant isolation, ordering, kitchen, billing, platform, reports, integrations, inventory, online ordering, reservations, reviews)
+npm run db:test    # 485 pgTAP tests (RLS, tenant isolation, security audit, ordering, kitchen, billing, platform, reports, integrations, inventory, online ordering, reservations, reviews, offline sync, API)
 npm run db:types   # regenerate src/lib/database.types.ts
 ```
 
@@ -54,7 +54,7 @@ npm run db:types   # regenerate src/lib/database.types.ts
 
 ## Docs
 
-[Setup](docs/SETUP.md) · [Roadmap](docs/ROADMAP.md) · [Integrations](docs/INTEGRATIONS.md) · [Offline POS](docs/OFFLINE.md) · [Security](docs/SECURITY.md) · [Performance](docs/PERFORMANCE.md) · [Operations](docs/OPERATIONS.md)
+[Setup](docs/SETUP.md) · [Roadmap](docs/ROADMAP.md) · [Integrations](docs/INTEGRATIONS.md) · [Offline POS](docs/OFFLINE.md) · [Security](docs/SECURITY.md) · [Performance](docs/PERFORMANCE.md) · [Operations](docs/OPERATIONS.md) · [API](docs/API.md)
 
 ## Design system
 
