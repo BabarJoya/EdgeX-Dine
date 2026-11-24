@@ -1,6 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { queryClient } from '@/lib/query-client'
+import { clearPersistedCache } from '@/lib/query-persist'
 import { supabase } from '@/lib/supabase'
 
 type AuthState = {
@@ -30,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'SIGNED_OUT') {
         setRecovering(false)
         queryClient.clear()
+        void clearPersistedCache()
       }
     })
     return () => data.subscription.unsubscribe()

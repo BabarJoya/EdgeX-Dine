@@ -52,6 +52,10 @@ npm run db:types   # regenerate src/lib/database.types.ts
 | `/admin`                   | EdgeX team (platform admins) | Restaurants, plans, payments, support |
 | `/design`                  | Developers                   | Live design-system reference          |
 
+## Docs
+
+[Setup](docs/SETUP.md) · [Roadmap](docs/ROADMAP.md) · [Integrations](docs/INTEGRATIONS.md) · [Offline POS](docs/OFFLINE.md) · [Security](docs/SECURITY.md) · [Performance](docs/PERFORMANCE.md)
+
 ## Design system
 
 Defined in `src/styles/globals.css`. Deep navy for brand and primary actions,

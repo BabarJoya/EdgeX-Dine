@@ -38,8 +38,11 @@ export function usePermissions(tenantId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('my_permissions', { p_tenant_id: tenantId! })
       if (error) throw error
-      return new Set<string>(data ?? [])
+      // A plain array (cached on the device for offline use); the Set is
+      // built when reading.
+      return (data ?? []) as string[]
     },
+    select: (list) => new Set<string>(list),
   })
 }
 

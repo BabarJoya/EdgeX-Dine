@@ -1,6 +1,8 @@
 import { Lock, Plus, ShoppingBag, Truck, Wallet } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { OfflineCheckout, OfflineStatus, type PendingSale } from '@/features/offline/offline-sale'
+import { isNetworkError, useOnline } from '@/features/offline/sync'
 import { PrinterSetupButton } from '@/features/printing/printer-setup'
 import { StationLayout } from '@/components/layout/station-layout'
 import { RequirePerm } from '@/components/require-perm'
@@ -61,6 +63,7 @@ function Pos() {
       actions={
         operator && (
           <>
+            <OfflineStatus />
             <PrinterSetupButton />
             {shift.data && (
               <Button
@@ -117,6 +120,8 @@ function Register({ branchId, op }: { branchId: string; op: Operator }) {
   const [tab, setTab] = useState<Tab>('tables')
   const [billId, setBillId] = useState<string | null>(null)
   const [composing, setComposing] = useState<'takeaway' | 'delivery' | null>(null)
+  const [offlineSale, setOfflineSale] = useState<PendingSale | null>(null)
+  const online = useOnline()
   const sittings = useOpenSittings(branchId)
   const bills = useTodayBills(branchId)
   const openBill = useOpenTableBill(op)
@@ -138,171 +143,195 @@ function Register({ branchId, op }: { branchId: string; op: Operator }) {
   const billFor = (sessionId: string) => bills.data?.find((b) => b.session_id === sessionId)
 
   return (
-    <main className="grid min-h-0 flex-1 md:grid-cols-[300px_1fr]">
-      <aside className="flex min-h-0 flex-col border-b md:border-r md:border-b-0">
-        <div className="grid grid-cols-3 gap-1 border-b p-2 text-[13px]">
-          {(
-            [
-              ['tables', 'Tables'],
-              ['counter', 'Takeaway'],
-              ['bills', 'Bills today'],
-            ] as const
-          ).map(([k, l]) => (
-            <button
-              key={k}
-              type="button"
-              aria-pressed={tab === k}
-              onClick={() => setTab(k)}
-              className={cn(
-                'rounded-md py-2 font-medium',
-                tab === k
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent',
-              )}
-            >
-              {l}
-            </button>
-          ))}
+    <>
+      {!online && (
+        <div className="border-b bg-warning-soft px-4 py-2 text-[13px] text-warning" role="status">
+          You&apos;re offline. Takeaway and delivery sales are saved on this device and sync when
+          the internet is back. Table bills open again once you&apos;re online.
         </div>
-        {openBill.error && (
-          <Alert variant="destructive" className="m-2">
-            {errorMessage(openBill.error)}
-          </Alert>
-        )}
-        <div className="flex-1 overflow-y-auto p-2">
-          {tab === 'tables' &&
-            ((sittings.data ?? []).length === 0 ? (
-              <p className="p-4 text-center text-sm text-muted-foreground">
-                No tables with guests.
-              </p>
-            ) : (
-              <ul className="grid gap-1.5">
-                {sittings.data!.map((s) => {
-                  const b = billFor(s.id)
-                  return (
-                    <li key={s.id}>
-                      <button
-                        type="button"
-                        aria-label={`Table ${s.tables?.label}`}
-                        disabled={openBill.isPending}
-                        onClick={() => openBill.mutate(s.id, { onSuccess: (id) => setBillId(id) })}
-                        className={cn(
-                          'flex w-full items-center gap-3 rounded-md border px-3 py-2.5 text-left hover:bg-accent',
-                          b && b.id === billId && 'border-primary bg-accent',
-                        )}
-                      >
-                        <span className="text-lg font-semibold">{s.tables?.label}</span>
-                        <span className="flex-1 text-xs text-muted-foreground">
-                          {ageLabel(s.opened_at, now)}
-                        </span>
-                        <span className="text-right text-sm tabular-nums">
-                          {formatMoney(s.total, currency)}
-                          {b?.status === 'paid' && (
-                            <Badge variant="success" className="ml-1">
-                              Paid
-                            </Badge>
-                          )}
-                        </span>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            ))}
-          {tab === 'counter' && (
-            <div className="grid gap-2 p-2">
-              <Button size="touch" disabled={!guestMenu} onClick={() => setComposing('takeaway')}>
-                <ShoppingBag /> New takeaway
-              </Button>
-              <Button
-                size="touch"
-                variant="secondary"
-                disabled={!guestMenu}
-                onClick={() => setComposing('delivery')}
-              >
-                <Truck /> New delivery
-              </Button>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Dine-in orders are billed from the Tables tab.
-              </p>
-            </div>
-          )}
-          {tab === 'bills' && (
-            <ul className="grid gap-1.5">
-              {(bills.data ?? []).map((b) => (
-                <li key={b.id}>
-                  <button
-                    type="button"
-                    onClick={() => setBillId(b.id)}
-                    className={cn(
-                      'flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-accent',
-                      b.id === billId && 'border-primary bg-accent',
-                    )}
-                  >
-                    <span className="font-mono font-semibold">#{b.bill_number}</span>
-                    <span className="flex-1 truncate">
-                      {b.table_sessions?.tables
-                        ? `Table ${b.table_sessions.tables.label}`
-                        : b.type === 'takeaway'
-                          ? 'Takeaway'
-                          : 'Delivery'}
-                      {b.customer_name && ` · ${b.customer_name}`}
-                    </span>
-                    <Badge
-                      variant={
-                        b.status === 'paid'
-                          ? 'success'
-                          : b.status === 'open'
-                            ? 'warning'
-                            : 'destructive'
-                      }
-                    >
-                      {b.status}
-                    </Badge>
-                    <span className="tabular-nums">
-                      {formatMoney(b.paid_total_minor || b.base_minor, currency)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-              {(bills.data ?? []).length === 0 && (
-                <p className="p-4 text-center text-sm text-muted-foreground">No bills yet today.</p>
-              )}
-            </ul>
-          )}
-        </div>
-        <div className="hidden border-t p-2 md:block">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full"
-            onClick={() => (setTab('counter'), setComposing('takeaway'))}
-            disabled={!guestMenu}
-          >
-            <Plus /> Quick takeaway
-          </Button>
-        </div>
-      </aside>
-
-      <section className="min-h-0">
-        <BillPanel billId={billId} op={op} />
-      </section>
-
-      {composing && guestMenu && (
-        <CounterComposer
-          type={composing}
-          branchId={branchId}
-          op={op}
-          menu={guestMenu}
-          onDone={(id) => {
-            setComposing(null)
-            setBillId(id)
-            setTab('bills')
-          }}
-          onClose={() => setComposing(null)}
-        />
       )}
-    </main>
+      <main className="grid min-h-0 flex-1 md:grid-cols-[300px_1fr]">
+        <aside className="flex min-h-0 flex-col border-b md:border-r md:border-b-0">
+          <div className="grid grid-cols-3 gap-1 border-b p-2 text-[13px]">
+            {(
+              [
+                ['tables', 'Tables'],
+                ['counter', 'Takeaway'],
+                ['bills', 'Bills today'],
+              ] as const
+            ).map(([k, l]) => (
+              <button
+                key={k}
+                type="button"
+                aria-pressed={tab === k}
+                onClick={() => setTab(k)}
+                className={cn(
+                  'rounded-md py-2 font-medium',
+                  tab === k
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent',
+                )}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+          {openBill.error && (
+            <Alert variant="destructive" className="m-2">
+              {errorMessage(openBill.error)}
+            </Alert>
+          )}
+          <div className="flex-1 overflow-y-auto p-2">
+            {tab === 'tables' &&
+              ((sittings.data ?? []).length === 0 ? (
+                <p className="p-4 text-center text-sm text-muted-foreground">
+                  No tables with guests.
+                </p>
+              ) : (
+                <ul className="grid gap-1.5">
+                  {sittings.data!.map((s) => {
+                    const b = billFor(s.id)
+                    return (
+                      <li key={s.id}>
+                        <button
+                          type="button"
+                          aria-label={`Table ${s.tables?.label}`}
+                          disabled={openBill.isPending}
+                          onClick={() =>
+                            openBill.mutate(s.id, { onSuccess: (id) => setBillId(id) })
+                          }
+                          className={cn(
+                            'flex w-full items-center gap-3 rounded-md border px-3 py-2.5 text-left hover:bg-accent',
+                            b && b.id === billId && 'border-primary bg-accent',
+                          )}
+                        >
+                          <span className="text-lg font-semibold">{s.tables?.label}</span>
+                          <span className="flex-1 text-xs text-muted-foreground">
+                            {ageLabel(s.opened_at, now)}
+                          </span>
+                          <span className="text-right text-sm tabular-nums">
+                            {formatMoney(s.total, currency)}
+                            {b?.status === 'paid' && (
+                              <Badge variant="success" className="ml-1">
+                                Paid
+                              </Badge>
+                            )}
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ))}
+            {tab === 'counter' && (
+              <div className="grid gap-2 p-2">
+                <Button size="touch" disabled={!guestMenu} onClick={() => setComposing('takeaway')}>
+                  <ShoppingBag /> New takeaway
+                </Button>
+                <Button
+                  size="touch"
+                  variant="secondary"
+                  disabled={!guestMenu}
+                  onClick={() => setComposing('delivery')}
+                >
+                  <Truck /> New delivery
+                </Button>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Dine-in orders are billed from the Tables tab.
+                </p>
+              </div>
+            )}
+            {tab === 'bills' && (
+              <ul className="grid gap-1.5">
+                {(bills.data ?? []).map((b) => (
+                  <li key={b.id}>
+                    <button
+                      type="button"
+                      onClick={() => setBillId(b.id)}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-md border px-3 py-2 text-left text-sm hover:bg-accent',
+                        b.id === billId && 'border-primary bg-accent',
+                      )}
+                    >
+                      <span className="font-mono font-semibold">#{b.bill_number}</span>
+                      <span className="flex-1 truncate">
+                        {b.table_sessions?.tables
+                          ? `Table ${b.table_sessions.tables.label}`
+                          : b.type === 'takeaway'
+                            ? 'Takeaway'
+                            : 'Delivery'}
+                        {b.customer_name && ` · ${b.customer_name}`}
+                      </span>
+                      <Badge
+                        variant={
+                          b.status === 'paid'
+                            ? 'success'
+                            : b.status === 'open'
+                              ? 'warning'
+                              : 'destructive'
+                        }
+                      >
+                        {b.status}
+                      </Badge>
+                      <span className="tabular-nums">
+                        {formatMoney(b.paid_total_minor || b.base_minor, currency)}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+                {(bills.data ?? []).length === 0 && (
+                  <p className="p-4 text-center text-sm text-muted-foreground">
+                    No bills yet today.
+                  </p>
+                )}
+              </ul>
+            )}
+          </div>
+          <div className="hidden border-t p-2 md:block">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={() => (setTab('counter'), setComposing('takeaway'))}
+              disabled={!guestMenu}
+            >
+              <Plus /> Quick takeaway
+            </Button>
+          </div>
+        </aside>
+
+        <section className="min-h-0">
+          <BillPanel billId={billId} op={op} />
+        </section>
+
+        {composing && guestMenu && (
+          <CounterComposer
+            type={composing}
+            branchId={branchId}
+            op={op}
+            menu={guestMenu}
+            onDone={(id) => {
+              setComposing(null)
+              setBillId(id)
+              setTab('bills')
+            }}
+            onClose={() => setComposing(null)}
+            onOffline={(sale) => {
+              setComposing(null)
+              setOfflineSale(sale)
+            }}
+          />
+        )}
+        {offlineSale && guestMenu && (
+          <OfflineCheckout
+            sale={offlineSale}
+            menu={guestMenu}
+            op={op}
+            onDone={() => setOfflineSale(null)}
+          />
+        )}
+      </main>
+    </>
   )
 }
 
@@ -313,6 +342,7 @@ function CounterComposer({
   menu,
   onDone,
   onClose,
+  onOffline,
 }: {
   type: 'takeaway' | 'delivery'
   branchId: string
@@ -320,6 +350,7 @@ function CounterComposer({
   menu: NonNullable<ReturnType<typeof toGuestMenu>>
   onDone: (billId: string) => void
   onClose: () => void
+  onOffline: (sale: PendingSale) => void
 }) {
   const create = useCounterOrder(op)
   const [name, setName] = useState('')
@@ -348,16 +379,25 @@ function CounterComposer({
       }
       onClose={onClose}
       onSubmit={async (items, notes) => {
-        const r = await create.mutateAsync({
-          branchId,
-          type,
-          items,
-          notes,
-          customerName: name,
-          customerPhone: phone,
-        })
-        toast.success(`Order #${r.order_number} sent to the kitchen`)
-        onDone(r.bill_id)
+        const offline = () =>
+          onOffline({ type, items, notes, customer_name: name, customer_phone: phone })
+        if (!navigator.onLine) return offline()
+        try {
+          const r = await create.mutateAsync({
+            branchId,
+            type,
+            items,
+            notes,
+            customerName: name,
+            customerPhone: phone,
+          })
+          toast.success(`Order #${r.order_number} sent to the kitchen`)
+          onDone(r.bill_id)
+        } catch (e) {
+          // Connection dropped mid-request: take the sale offline instead.
+          if (isNetworkError(e)) return offline()
+          throw e
+        }
       }}
     />
   )
