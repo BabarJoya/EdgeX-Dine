@@ -51,6 +51,8 @@ plan. Run it again whenever new migrations are added in later phases.
      online payments, WhatsApp, FBR; see [INTEGRATIONS.md](INTEGRATIONS.md))
    - `APP_URL` = `https://<your-domain>` (where payment gateways send guests back)
 
+   - `VITE_SENTRY_DSN` (optional) = your Sentry project DSN for error reports
+
    Never set `ENABLE_TEST_GATEWAY` or `VITE_TEST_GATEWAY` in Production: they
    turn on a fake gateway for automated tests.
 
@@ -59,7 +61,12 @@ plan. Run it again whenever new migrations are added in later phases.
 Use a second Supabase project (e.g. `edgex-staging`) for the Vercel **Preview**
 environment so test data never mixes with real restaurants.
 
-## 5. Make yourself platform admin (optional, for Phase 6)
+## 5. Monitoring and backups
+
+Add an uptime check on `https://<your-domain>/api/health` and turn on
+Point-in-Time Recovery in Supabase. Details: [OPERATIONS.md](OPERATIONS.md).
+
+## 6. Make yourself platform admin (optional, for Phase 6)
 
 In Supabase → SQL editor, after signing up:
 

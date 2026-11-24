@@ -126,3 +126,13 @@ test('server endpoints refuse forged input', async ({ request }) => {
     404,
   )
 })
+
+test('health check reports the database and message queue', async ({ request }) => {
+  const r = await request.get('/api/health')
+  expect(r.status()).toBe(200)
+  const body = await r.json()
+  expect(body).toMatchObject({ ok: true, queue: { pending: expect.any(Number) } })
+  expect(body.db_ms).toBeLessThan(5000)
+  // No tenant data in a public endpoint.
+  expect(JSON.stringify(body)).not.toMatch(/tenant|restaurant|phone/i)
+})

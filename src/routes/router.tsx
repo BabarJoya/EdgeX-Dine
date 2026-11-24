@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { RedirectIfAuthed, RequireAuth, RequireTenant } from '@/features/auth/guards'
 import { isSupabaseConfigured } from '@/lib/supabase'
 import { NotFoundPage } from '@/pages/not-found'
+import { RouteErrorPage } from '@/pages/route-error'
 import { SetupRequiredPage } from '@/pages/setup-required'
 
 // Route groups are split into separate chunks: guests scanning a QR code
@@ -64,88 +65,90 @@ function PageFallback() {
 
 const s = (node: ReactNode) => <Suspense fallback={<PageFallback />}>{node}</Suspense>
 
-export const router = createBrowserRouter(
-  isSupabaseConfigured
-    ? [
-        { path: '/', element: <Navigate to="/app" replace /> },
-        { path: '/login', element: <RedirectIfAuthed>{s(<LoginPage />)}</RedirectIfAuthed> },
-        { path: '/signup', element: <RedirectIfAuthed>{s(<SignupPage />)}</RedirectIfAuthed> },
-        { path: '/forgot-password', element: s(<ForgotPasswordPage />) },
-        { path: '/reset-password', element: <RequireAuth>{s(<ResetPasswordPage />)}</RequireAuth> },
-        { path: '/invite/:token', element: s(<AcceptInvitePage />) },
-        { path: '/onboarding', element: <RequireAuth>{s(<OnboardingPage />)}</RequireAuth> },
-        {
-          path: '/app',
-          element: (
-            <RequireAuth>
-              <RequireTenant>{s(<AppShell />)}</RequireTenant>
-            </RequireAuth>
-          ),
-          children: [
-            { index: true, element: s(<OverviewPage />) },
-            { path: 'staff', element: s(<StaffPage />) },
-            { path: 'settings', element: s(<SettingsPage />) },
-            { path: 'menu', element: s(<MenuPage />) },
-            { path: 'tables', element: s(<TablesPage />) },
-            { path: 'orders', element: s(<OrdersPage />) },
-            { path: 'support', element: s(<SupportPage />) },
-            { path: 'reports', element: s(<ReportsPage />) },
-            { path: 'inventory', element: s(<InventoryPage />) },
-            { path: 'customers', element: s(<CustomersPage />) },
-            { path: 'reservations', element: s(<ReservationsPage />) },
-            { path: 'design', element: s(<DesignSystemPage />) },
-          ],
-        },
-        {
-          path: '/print/qr',
-          element: (
-            <RequireAuth>
-              <RequireTenant>{s(<PrintQrPage />)}</RequireTenant>
-            </RequireAuth>
-          ),
-        },
-        {
-          path: '/pos',
-          element: (
-            <RequireAuth>
-              <RequireTenant>{s(<PosPage />)}</RequireTenant>
-            </RequireAuth>
-          ),
-        },
-        { path: '/r/:token', element: s(<ReceiptPage />) },
-        {
-          path: '/kds',
-          element: (
-            <RequireAuth>
-              <RequireTenant>{s(<KitchenPage />)}</RequireTenant>
-            </RequireAuth>
-          ),
-        },
-        {
-          path: '/waiter',
-          element: (
-            <RequireAuth>
-              <RequireTenant>{s(<WaiterPage />)}</RequireTenant>
-            </RequireAuth>
-          ),
-        },
-        {
-          path: '/admin',
-          element: <RequireAuth>{s(<AdminLayout />)}</RequireAuth>,
-          children: [
-            { index: true, element: s(<AdminOverviewPage />) },
-            { path: 'restaurants', element: s(<AdminRestaurantsPage />) },
-            { path: 'plans', element: s(<AdminPlansPage />) },
-            { path: 'support', element: s(<AdminSupportPage />) },
-            { path: 'settings', element: s(<AdminSettingsPage />) },
-          ],
-        },
-        { path: '/m/:slug', element: s(<GuestMenuPage />) },
-        { path: '/book/:slug', element: s(<BookPage />) },
-        { path: '/o/:slug', element: s(<OrderOnlinePage />) },
-        { path: '/o/:slug/track/:token', element: s(<TrackOrderPage />) },
-        { path: '/res/:token', element: s(<ReservationPage />) },
-        { path: '*', element: <NotFoundPage /> },
-      ]
-    : [{ path: '*', element: <SetupRequiredPage /> }],
-)
+const routes = isSupabaseConfigured
+  ? [
+      { path: '/', element: <Navigate to="/app" replace /> },
+      { path: '/login', element: <RedirectIfAuthed>{s(<LoginPage />)}</RedirectIfAuthed> },
+      { path: '/signup', element: <RedirectIfAuthed>{s(<SignupPage />)}</RedirectIfAuthed> },
+      { path: '/forgot-password', element: s(<ForgotPasswordPage />) },
+      { path: '/reset-password', element: <RequireAuth>{s(<ResetPasswordPage />)}</RequireAuth> },
+      { path: '/invite/:token', element: s(<AcceptInvitePage />) },
+      { path: '/onboarding', element: <RequireAuth>{s(<OnboardingPage />)}</RequireAuth> },
+      {
+        path: '/app',
+        element: (
+          <RequireAuth>
+            <RequireTenant>{s(<AppShell />)}</RequireTenant>
+          </RequireAuth>
+        ),
+        children: [
+          { index: true, element: s(<OverviewPage />) },
+          { path: 'staff', element: s(<StaffPage />) },
+          { path: 'settings', element: s(<SettingsPage />) },
+          { path: 'menu', element: s(<MenuPage />) },
+          { path: 'tables', element: s(<TablesPage />) },
+          { path: 'orders', element: s(<OrdersPage />) },
+          { path: 'support', element: s(<SupportPage />) },
+          { path: 'reports', element: s(<ReportsPage />) },
+          { path: 'inventory', element: s(<InventoryPage />) },
+          { path: 'customers', element: s(<CustomersPage />) },
+          { path: 'reservations', element: s(<ReservationsPage />) },
+          { path: 'design', element: s(<DesignSystemPage />) },
+        ],
+      },
+      {
+        path: '/print/qr',
+        element: (
+          <RequireAuth>
+            <RequireTenant>{s(<PrintQrPage />)}</RequireTenant>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/pos',
+        element: (
+          <RequireAuth>
+            <RequireTenant>{s(<PosPage />)}</RequireTenant>
+          </RequireAuth>
+        ),
+      },
+      { path: '/r/:token', element: s(<ReceiptPage />) },
+      {
+        path: '/kds',
+        element: (
+          <RequireAuth>
+            <RequireTenant>{s(<KitchenPage />)}</RequireTenant>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/waiter',
+        element: (
+          <RequireAuth>
+            <RequireTenant>{s(<WaiterPage />)}</RequireTenant>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/admin',
+        element: <RequireAuth>{s(<AdminLayout />)}</RequireAuth>,
+        children: [
+          { index: true, element: s(<AdminOverviewPage />) },
+          { path: 'restaurants', element: s(<AdminRestaurantsPage />) },
+          { path: 'plans', element: s(<AdminPlansPage />) },
+          { path: 'support', element: s(<AdminSupportPage />) },
+          { path: 'settings', element: s(<AdminSettingsPage />) },
+        ],
+      },
+      { path: '/m/:slug', element: s(<GuestMenuPage />) },
+      { path: '/book/:slug', element: s(<BookPage />) },
+      { path: '/o/:slug', element: s(<OrderOnlinePage />) },
+      { path: '/o/:slug/track/:token', element: s(<TrackOrderPage />) },
+      { path: '/res/:token', element: s(<ReservationPage />) },
+      { path: '*', element: <NotFoundPage /> },
+    ]
+  : [{ path: '*', element: <SetupRequiredPage /> }]
+
+// One error boundary for every page: a crash shows a friendly message and is
+// reported, instead of a blank screen.
+export const router = createBrowserRouter([{ errorElement: <RouteErrorPage />, children: routes }])

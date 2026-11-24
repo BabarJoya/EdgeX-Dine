@@ -54,7 +54,7 @@ npm run db:types   # regenerate src/lib/database.types.ts
 
 ## Docs
 
-[Setup](docs/SETUP.md) · [Roadmap](docs/ROADMAP.md) · [Integrations](docs/INTEGRATIONS.md) · [Offline POS](docs/OFFLINE.md) · [Security](docs/SECURITY.md) · [Performance](docs/PERFORMANCE.md)
+[Setup](docs/SETUP.md) · [Roadmap](docs/ROADMAP.md) · [Integrations](docs/INTEGRATIONS.md) · [Offline POS](docs/OFFLINE.md) · [Security](docs/SECURITY.md) · [Performance](docs/PERFORMANCE.md) · [Operations](docs/OPERATIONS.md)
 
 ## Design system
 

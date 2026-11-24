@@ -1,6 +1,15 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 import type { Tables } from '@/lib/supabase'
 import { useAuth } from '@/features/auth/auth-provider'
+import { setMonitoringUser } from '@/lib/monitoring'
 import { useBranches, useMemberships, usePermissions, type Membership } from './api'
 
 const TENANT_KEY = 'edgex-tenant'
@@ -48,6 +57,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
   const membership =
     memberships.find((m) => m.tenant_id === preferredTenant) ?? memberships[0] ?? null
   const tenantId = membership?.tenant_id
+  useEffect(() => setMonitoringUser(user?.id ?? null, tenantId), [user?.id, tenantId])
 
   const permissionsQ = usePermissions(tenantId)
   const branchesQ = useBranches(tenantId)
