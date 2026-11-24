@@ -39,6 +39,8 @@ jobs:
       - run: npm ci
       - run: npx supabase db start
       - run: npx supabase db lint --level warning --fail-on warning
+      # Supabase security + performance advisors (RLS, exposed functions, policies…)
+      - run: npx supabase db advisors --level warn --fail-on warn
       - run: npx supabase test db
 
   e2e:
