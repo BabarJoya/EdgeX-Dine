@@ -65,10 +65,11 @@ test('takeaway sales keep working offline and sync once on reconnect', async ({
     await expect(dialog).toContainText('Offline sale')
     await page.getByLabel('Cash received').fill(tendered)
     await dialog.getByRole('button', { name: 'Complete sale' }).click()
-    await expect(page.getByText('Sale saved on this device')).toBeVisible()
+    await expect(page.getByText('Sale saved on this device').first()).toBeVisible()
   }
   // 2 × 950 = 1,900 + 16% = 2,204
   await sell(2, '2500')
+  await expect(page.getByTestId('offline-status')).toContainText('Offline · 1 saved')
   await sell(1, '1102')
   await expect(page.getByTestId('offline-status')).toContainText('Offline · 2 saved')
   expect(sql(`select count(*) from public.bills where tenant_id = '${tenant}'`)).toBe('0')
